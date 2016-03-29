@@ -11,7 +11,7 @@ let getX (V(x,_,_)) = x
 let getY (V(_,y,_)) = y
 let getZ (V(_,_,z)) = z
 let getCoord (V(x, y, z)) = (x, y, z)
-let multScalar (V(x, y, z)) s = let f n = n * s in V(f x, f y, f z)
+let multScalar (V(x, y, z)) s = V(x*s, y*s, z*s)
 let magnitude (V(x, y, z)) = sqrt(x**2.0 + y**2.0 + z**2.0)
 let dotProduct (V(x1, y1, z1)) (V(x2, y2, z2)) = (x1*x2)+(y1*y2)+(z1*z2)
 let crossProduct (V(x1, y1, z1)) (V(x2, y2, z2)) = 

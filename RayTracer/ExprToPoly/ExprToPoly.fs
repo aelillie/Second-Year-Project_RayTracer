@@ -65,8 +65,12 @@ let simplifyAtomGroup ag =
     let (table, num) = List.fold folder (Map.empty, 1.0) ag
     let mapList = Map.toList table //convert map to list
     let AExList = mapList |> List.map (fun (s, f) -> AExponent (s,f))
-    if num = 0.0 || num = 1.0 //ignore 0.0 and 1.0 numbers
-    then AExList else ANum num :: AExList
+    match (num, AExList) with
+    | (0.0, AExponent (s,f) :: xs)  -> []
+    | (0.0, [])                     -> []
+    | (1.0, AExponent (s,f) :: xs)  -> AExList
+    | (1.0, [])                     -> [ANum (1.0)]
+    | (num, atomGroup)              -> ANum num :: AExList
 
 //implicitly added atom groups
 let simplifySimpleExpr (SE ags) =
@@ -76,17 +80,18 @@ let simplifySimpleExpr (SE ags) =
   let cFolder (a, s) elem =
         match (a, elem) with
         | ([ANum (n)], [ANum (f)]) -> ([ANum (f+n)], s) //acc numbers
-        | _ -> (a, elem :: s) //just cons rest of ag
+        | _ -> (a, elem :: s) //just cons rest of ag'
   let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags'
-  // Last task is to group similar atomGroups into one group.
+  // Last task is to group similar atomGroups into one group
   let eFolder map elem =  //map ag to their number of appearance
         let count = if Map.containsKey elem map //update if exists
                     then (Map.find elem map) + 1.0 else 1.0
         Map.add elem count map
   let agSimMap = List.fold eFolder Map.empty ags''
-  let filterAg (s, f) = if f > 1.0 then (ANum (f)) :: s else s
+  let filterAg (s, f) = if f <> 1.0 && f <> 0.0 
+                        then (ANum (f)) :: s else s
   let agSim = (Map.toList agSimMap) |> List.map filterAg
-  SE (agConst :: agSim)
+  SE (agConst :: agSim) //TODO: This is not always the case
 
 let exprToSimpleExpr e = simplifySimpleExpr (SE (simplify e))
 
