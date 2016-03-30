@@ -76,15 +76,16 @@ let simplifySimpleExpr (SE ags) =
   let cFolder (a, s) elem =
         match (a, elem) with
         | ([ANum (n)], [ANum (f)]) -> ([ANum (f+n)], s) //acc numbers
-        | _ -> (a, elem :: s) //just cons rest of ag
-  let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags'
+        | _ -> (a, elem :: s) //just cons rest of ag'
+  let (agConst, ags'') = List.fold cFolder ([], []) ags'
   // Last task is to group similar atomGroups into one group.
   let eFolder map elem =  //map ag to their number of appearance
         let count = if Map.containsKey elem map //update if exists
                     then (Map.find elem map) + 1.0 else 1.0
         Map.add elem count map
   let agSimMap = List.fold eFolder Map.empty ags''
-  let filterAg (s, f) = if f > 1.0 then (ANum (f)) :: s else s
+  let filterAg (s, f) = if f <> 1.0 && f <> 0.0 
+                        then (ANum (f)) :: s else s
   let agSim = (Map.toList agSimMap) |> List.map filterAg
   SE (agConst :: agSim)
 
