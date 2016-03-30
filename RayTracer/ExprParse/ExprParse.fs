@@ -62,22 +62,34 @@ let scan s =
     | _ -> raise Scanerror
   sc (explode s)
 
-exception MultException
 let rec insertMult = function
   Float r :: Var x :: ts     -> Float r::Mul::insertMult (Var x::ts)
-| Float r1 :: Float r2 :: ts -> raise MultException
-| Float r :: Int i :: ts     -> raise MultException
+| Float r1 :: Float r2 :: ts -> Float r1::Mul::insertMult (Float r2::ts)
+| Float r :: Int i :: ts     -> Float r::Mul::insertMult(Int i::ts)
 | Var x :: Float r :: ts     -> Var x::Mul::insertMult (Float r::ts)
 | Var x1 :: Var x2 :: ts     -> Var x1::Mul::insertMult (Var x2::ts)
 | Var x :: Int i :: ts       -> Var x::Mul::insertMult (Int i::ts)
-| Int i :: Float r :: ts     -> raise MultException
+| Int i :: Float r :: ts     -> Int i::Mul::insertMult (Float r::ts)
 | Int i :: Var x :: ts       -> Int i::Mul::insertMult (Var x::ts)
-| Int i1 :: Int i2 :: ts     -> raise MultException
+| Int i1 :: Int i2 :: ts     -> Int i1::Mul::insertMult (Int i2::ts)
 | Float r :: Lpar :: ts      -> Float r::Mul::Lpar::insertMult ts
 | Var x :: Lpar :: ts        -> Var x::Mul::Lpar::insertMult ts
 | Int i :: Lpar :: ts        -> Int i::Mul::Lpar::insertMult ts
 | t :: ts                    -> t :: insertMult ts
 | []                         -> []
+
+(* Grammar:
+
+E    = T Eopt .
+Eopt = "+" T Eopt | e .
+T    = F Topt .
+Topt = "*" F Topt | e .
+F    = P Fopt .
+Fopt = "^" Int | e .
+P    = Int | Float | Var | "(" E ")" .
+
+e is the empty sequence.
+*)
   
 type expr = 
   | FNum of float
