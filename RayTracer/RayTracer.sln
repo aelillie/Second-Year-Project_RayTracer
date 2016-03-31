@@ -17,6 +17,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ray", "Ray\Ray.fsproj", "{C
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tracer", "TracerAPI\Tracer.fsproj", "{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DrawAttribute", "DrawAttribute\DrawAttribute.fsproj", "{5A5CA447-6AB8-4363-83D5-B515B391FBAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A5CA447-6AB8-4363-83D5-B515B391FBAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A5CA447-6AB8-4363-83D5-B515B391FBAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A5CA447-6AB8-4363-83D5-B515B391FBAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A5CA447-6AB8-4363-83D5-B515B391FBAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
