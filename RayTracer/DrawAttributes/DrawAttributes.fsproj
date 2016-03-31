@@ -52,6 +52,8 @@
     <Compile Include="Colour.fsi" />
     <None Include="App.config" />
     <Compile Include="Colour.fs" />
+    <Compile Include="Material.fs" />
+    <Compile Include="Material.fsi" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
