@@ -1,5 +1,4 @@
 ﻿module Shape
-
 open Point
 open Vector
 open Ray
