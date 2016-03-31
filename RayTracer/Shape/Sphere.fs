@@ -1,9 +1,8 @@
-﻿module Sphere
+﻿module Shape
 
 open Point
 open Vector
 open Ray
-open TracerAPI
 open ExprParse
 (*
     A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
