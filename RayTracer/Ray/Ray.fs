@@ -8,7 +8,9 @@ open Vector
     d = normalized direction vector
  *)
 
- type Ray(p:Point, t:double, d:Vector) = 
-    member this.P = p
-    member this.T = t
-    member this.D = d
+type Ray =
+    | R of int * int * Point * double * Vector
+    override R.ToString() =
+        match R with
+        R(x,y,p,t,d) -> "("+x.ToString()+","+y.ToString()+","+p.ToString()+","+t.ToString()+","+ d.ToString() + ")"
+let mkRay x y p t d = R(x,y,p,t,d)
