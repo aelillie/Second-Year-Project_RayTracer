@@ -5,14 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>4676b211-83ce-4c52-81e0-274c50ad4f69</ProjectGuid>
+    <ProjectGuid>60e1b77c-8213-45ce-8662-21c240d44f5b</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ExprParse</RootNamespace>
-    <AssemblyName>ExprParse</AssemblyName>
+    <RootNamespace>Space3D</RootNamespace>
+    <AssemblyName>Space3D</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>ExprParse</Name>
+    <Name>Space3D</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\ExprParse.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Space3D.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,7 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\ExprParse.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Space3D.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -44,8 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="ExprParse.fsi" />
-    <Compile Include="ExprParse.fs" />
+    <Compile Include="Vector.fsi" />
+    <Compile Include="Vector.fs" />
+    <Compile Include="Point.fsi" />
+    <Compile Include="Point.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

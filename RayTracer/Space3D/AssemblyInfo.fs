@@ -1,4 +1,4 @@
-﻿namespace AssemblyInfo
+﻿namespace Space3D.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("Vector")>]
+[<assembly: AssemblyTitle("Space3D")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("Vector")>]
+[<assembly: AssemblyProduct("Space3D")>]
 [<assembly: AssemblyCopyright("Copyright ©  2016")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("a88dc159-c923-4ddd-8f09-9bb12a95828a")>]
+[<assembly: Guid("60e1b77c-8213-45ce-8662-21c240d44f5b")>]
 
 // Version information for an assembly consists of the following four values:
 // 

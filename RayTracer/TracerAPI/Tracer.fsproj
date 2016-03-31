@@ -8,7 +8,7 @@
     <ProjectGuid>2ed1f7ee-ed05-4f03-bd9e-0a531146bfae</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>TracerAPI</RootNamespace>
-    <AssemblyName>TracerAPI</AssemblyName>
+    <AssemblyName>Tracer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
@@ -52,24 +52,15 @@
     <Compile Include="Tracer.fsi" />
     <Compile Include="Tracer.fs" />
     <None Include="App.config" />
+    <Compile Include="Ray.fs" />
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
     <Compile Include="Drawing.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Point\Point.fsproj">
-      <Name>Point</Name>
-      <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Ray\Ray.fsproj">
-      <Name>Ray</Name>
-      <Project>{cc692a15-6a60-4569-8c60-a98ec9e31aac}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Vector\Vector.fsproj">
-      <Name>Vector</Name>
-      <Project>{a88dc159-c923-4ddd-8f09-9bb12a95828a}</Project>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Name>Space3D</Name>
+      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

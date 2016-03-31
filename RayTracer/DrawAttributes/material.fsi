@@ -1,7 +1,8 @@
-﻿module material
-open colour
+﻿module Material
 
+type Colour
+type Material 
 
-type material 
-
-val mkMaterial : colour -> float -> material
+val mkColour : r:float -> g:float -> b:float -> Colour
+val fromColor : c : System.Drawing.Color -> Colour
+val mkMaterial : Colour -> float -> Material 

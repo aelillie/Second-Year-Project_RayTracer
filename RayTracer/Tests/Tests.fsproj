@@ -58,24 +58,14 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExprParse\ExprParse.fsproj">
-      <Name>ExprParse</Name>
-      <Project>{4676b211-83ce-4c52-81e0-274c50ad4f69}</Project>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Name>DrawAttributes</Name>
+      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ExprToPoly\ExprToPoly.fsproj">
-      <Name>ExprToPoly</Name>
-      <Project>{733a8e96-abdf-43d8-a534-1dbb66fa2c5e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Point\Point.fsproj">
-      <Name>Point</Name>
-      <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Ray\Ray.fsproj">
-      <Name>Ray</Name>
-      <Project>{cc692a15-6a60-4569-8c60-a98ec9e31aac}</Project>
+    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
+      <Name>ExprComp</Name>
+      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Shape\Shape.fsproj">
@@ -83,14 +73,14 @@
       <Project>{ec9f69e3-a481-4793-a6d2-063991184cee}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Name>Space3D</Name>
+      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
       <Name>Tracer</Name>
       <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Vector\Vector.fsproj">
-      <Name>Vector</Name>
-      <Project>{a88dc159-c923-4ddd-8f09-9bb12a95828a}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
