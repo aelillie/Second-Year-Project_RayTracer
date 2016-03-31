@@ -78,6 +78,11 @@
       <Project>{cc692a15-6a60-4569-8c60-a98ec9e31aac}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Shape\Shape.fsproj">
+      <Name>Shape</Name>
+      <Project>{ec9f69e3-a481-4793-a6d2-063991184cee}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
       <Name>Tracer</Name>
       <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>

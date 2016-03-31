@@ -26,7 +26,7 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
     let d = Vector.crossProduct l r |> Vector.normalise
     let p' = Point.move p ( z * l)
     let p' = Point.move p' ((h/2.0) * up)
-    let p' = Point.move p' ((w/2.0) * r )
+    let p' = Point.move p' ((-w/2.0) * r )
     let W = w/float pw
     let H = h/float ph
 

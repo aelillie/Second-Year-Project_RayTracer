@@ -54,6 +54,7 @@
     <None Include="App.config" />
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
+    <Compile Include="Drawing.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Point\Point.fsproj">
