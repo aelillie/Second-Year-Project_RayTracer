@@ -1,6 +1,6 @@
-﻿namespace Tracer
+﻿namespace TracerAPI
 
-module API =
+module Tracer =
   type dummy = unit
 
   type vector = dummy
