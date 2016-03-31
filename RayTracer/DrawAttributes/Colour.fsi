@@ -1,7 +1,6 @@
-﻿// Learn more about F# at http://fsharp.org
-// See the 'F# Tutorial' project for more help.
+﻿module colour
 
-[<EntryPoint>]
-let main argv = 
-    printfn "%A" argv
-    0 // return an integer exit code
+type colour
+
+val mkColour : r:float -> g:float -> b:float -> colour
+val fromColor : c : System.Drawing.Color -> colour
