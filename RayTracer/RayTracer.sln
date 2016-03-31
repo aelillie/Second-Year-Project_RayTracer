@@ -17,6 +17,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ray", "Ray\Ray.fsproj", "{C
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tracer", "TracerAPI\Tracer.fsproj", "{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Shape", "Shape\Shape.fsproj", "{EC9F69E3-A481-4793-A6D2-063991184CEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC9F69E3-A481-4793-A6D2-063991184CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC9F69E3-A481-4793-A6D2-063991184CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC9F69E3-A481-4793-A6D2-063991184CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC9F69E3-A481-4793-A6D2-063991184CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
