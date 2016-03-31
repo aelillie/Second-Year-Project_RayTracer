@@ -9,18 +9,15 @@ open ExprParse
  *)
 
 type Sphere =
-  | R of Point * float * texture
-  override r.ToString() =
-    match r with
-      R(radius) -> "("+r.ToString()+")"
+  | S of Point * float
+  override s.ToString() =
+    match s with
+      S(orego,radius) -> "("+orego.ToString()+","+radius.ToString()+")"
 
-let mkSphere radius = R (radius)
-let getRadius (R(radius)) = radius
+let mkSphere orego radius = S (orego,radius)
+let getRadius (S(_,radius)) = radius
 
-let hit (ray:Ray) (sphere:Sphere) =
-    let p = Ray.getP ray
-    let t = Ray.getT ray
-    let d = Ray.getD ray
+let hit (R(x,y,p,t,d)) (S(p,r)) =
 
     let a = (System.Math.Pow((Vector.getX d),2.0) +
              System.Math.Pow((Vector.getY d),2.0) +
@@ -33,16 +30,16 @@ let hit (ray:Ray) (sphere:Sphere) =
     let c =  System.Math.Pow((Point.getX p),2.0) +
              System.Math.Pow((Point.getY p),2.0) +
              System.Math.Pow((Point.getZ p),2.0) -
-             System.Math.Pow(Sphere. ,2.0)
+             System.Math.Pow(r,2.0)
 
     let d = System.Math.Pow(b,2.0) + 4.0 * a * c
 
-    if(d < 0.0) then (false,0.0,Vector.mkVector(0.0),0.0)
+    if(d < 0.0) then (false,x,y,System.Drawing.Color.Black)
     else
     let answer1 = (-b + System.Math.Sqrt(d)) / (2.0*a)
     let answer2 = (-b - System.Math.Sqrt(d)) / (2.0*a)
-    if  answer1 >= answer2 then (true,answer2,Vector.mkVector(0.0),0.0)
-                           else (true,answer1,Vector.mkVector(0.0),0.0)
+    if  answer1 >= answer2 then (true,x,y,System.Drawing.Color.Blue)
+                           else (true,x,y,System.Drawing.Color.Blue) //remember to return answer 
 
 
 
