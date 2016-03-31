@@ -1,10 +1,10 @@
-﻿namespace Tracer
+﻿namespace TracerTestSuite
 
-open Tracer.API
+open TracerAPI.Tracer
 open System
 open System.Drawing
 
-module TestSuite =
+module TracerTest =
 
   (* Input the path (local or absolute) where you want your files to be stored *)
   let path_to_files = "../../../"

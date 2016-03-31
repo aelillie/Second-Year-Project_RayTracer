@@ -15,7 +15,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ExprToPoly", "ExprToPoly\Ex
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ray", "Ray\Ray.fsproj", "{CC692A15-6A60-4569-8C60-A98EC9E31AAC}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TracerAPI", "TracerAPI\TracerAPI.fsproj", "{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tracer", "TracerAPI\Tracer.fsproj", "{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

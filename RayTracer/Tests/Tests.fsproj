@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +54,7 @@
     <Compile Include="VectorTest.fs" />
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
+    <Compile Include="TracerTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +71,11 @@
     <ProjectReference Include="..\Point\Point.fsproj">
       <Name>Point</Name>
       <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
+      <Name>Tracer</Name>
+      <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Vector\Vector.fsproj">
