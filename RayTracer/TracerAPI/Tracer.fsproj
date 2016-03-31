@@ -52,6 +52,25 @@
     <Compile Include="Tracer.fsi" />
     <Compile Include="Tracer.fs" />
     <None Include="App.config" />
+    <Compile Include="Camera.fsi" />
+    <Compile Include="Camera.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Point\Point.fsproj">
+      <Name>Point</Name>
+      <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Ray\Ray.fsproj">
+      <Name>Ray</Name>
+      <Project>{cc692a15-6a60-4569-8c60-a98ec9e31aac}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Vector\Vector.fsproj">
+      <Name>Vector</Name>
+      <Project>{a88dc159-c923-4ddd-8f09-9bb12a95828a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
