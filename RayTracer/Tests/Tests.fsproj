@@ -73,6 +73,11 @@
       <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Ray\Ray.fsproj">
+      <Name>Ray</Name>
+      <Project>{cc692a15-6a60-4569-8c60-a98ec9e31aac}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
       <Name>Tracer</Name>
       <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>

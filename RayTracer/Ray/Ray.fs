@@ -7,17 +7,13 @@ open Vector
     t = scalar distance (typically a double)
     d = normalized direction vector
  *)
-
-
-
 type Ray =
-  | R of Point * double * Vector
-  override r.ToString() =
-    match r with
-      R(p,t,d) -> "("+p.ToString()+","+t.ToString()+","+d.ToString()+")"
+    | R of int * int * Point * double * Vector
+    override R.ToString() =
+        match R with
+        R(x,y,p,t,d) -> "("+x.ToString()+","+y.ToString()+","+p.ToString()+","+t.ToString()+","+ d.ToString() + ")"
+let mkRay x y p t d = R(x,y,p,t,d)
 
-let mkRay p t d = R(p, t, d)
-
-let getP (R(p,_,_)) = p
-let getT (R(_,t,_)) = t
-let getD (R(_,_,d)) = d
+let getP (R(_, _, p,_,_)) = p
+let getT (R(_, _, _,t,_)) = t
+let getD (R(_, _, _,_,d)) = d

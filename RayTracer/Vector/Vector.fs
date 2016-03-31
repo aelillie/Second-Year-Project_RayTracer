@@ -6,7 +6,7 @@ type Vector =
     match v with
       V(x,y,z) -> "["+x.ToString()+","+y.ToString()+","+z.ToString()+"]"
 
-let mkVector x y z = V (x, y, z)
+let mkVector x y z = V (x, y, z)    
 let getX (V(x,_,_)) = x
 let getY (V(_,y,_)) = y
 let getZ (V(_,_,z)) = z
