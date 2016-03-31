@@ -51,8 +51,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="API.fsi" />
     <Compile Include="API.fs" />
-    <None Include="App.config" />
     <Compile Include="TestSuite.fs" />
+    <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
