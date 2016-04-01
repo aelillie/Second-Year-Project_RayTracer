@@ -58,6 +58,11 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
+      <Name>BaseShape</Name>
+      <Project>{da3c8a8c-19ab-4fc9-abde-be1e7df5346e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
       <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
@@ -66,11 +71,6 @@
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
       <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Shape\Shape.fsproj">
-      <Name>Shape</Name>
-      <Project>{ec9f69e3-a481-4793-a6d2-063991184cee}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">

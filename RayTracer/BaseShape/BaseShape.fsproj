@@ -5,15 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>ec9f69e3-a481-4793-a6d2-063991184cee</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Shape</RootNamespace>
-    <AssemblyName>Shape</AssemblyName>
+    <ProjectGuid>da3c8a8c-19ab-4fc9-abde-be1e7df5346e</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BaseShape</RootNamespace>
+    <AssemblyName>BaseShape</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Shape</Name>
+    <Name>BaseShape</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,9 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Shape.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,9 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\Shape.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Release\BaseShape.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -45,11 +41,19 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Sphere.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Name>DrawAttributes</Name>
+      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
       <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
@@ -65,9 +69,6 @@
       <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
       <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Sphere.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

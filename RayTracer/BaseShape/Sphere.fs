@@ -3,20 +3,22 @@ open Point
 open Vector
 open Ray
 open ExprParse
+open Material
 (*
     A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
  *)
 
 type Sphere =
-  | S of Point * float
+  | S of Point * float * Material
   override s.ToString() =
     match s with
-      S(orego,radius) -> "("+orego.ToString()+","+radius.ToString()+")"
+      S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
 
-let mkSphere orego radius = S (orego,radius)
-let getRadius (S(_,radius)) = radius
+let mkSphere orego radius material = S (orego, radius, material)
+let getRadius (S(_,radius,_)) = radius
+let getMaterial (S(_, _, mat)) = mat
 
-let hit (R(x,y,p,t,d)) (S(_,r)) =
+let hit (R(x,y,p,t,d)) (S(_,r, mat)) =
 
     let a = (System.Math.Pow((Vector.getX d),2.0) +
              System.Math.Pow((Vector.getY d),2.0) +
@@ -37,8 +39,8 @@ let hit (R(x,y,p,t,d)) (S(_,r)) =
     else
     let answer1 = (-b + System.Math.Sqrt(d)) / (2.0*a)
     let answer2 = (-b - System.Math.Sqrt(d)) / (2.0*a)
-    if  answer1 >= answer2 then (true,x,y,System.Drawing.Color.Blue)
-                           else (true,x,y,System.Drawing.Color.Blue) //remember to return answer 
+    if  answer1 >= answer2 then (true,x,y, Material.getColour mat)
+                           else (true,x,y, Material.getColour mat) //remember to return answer 
 
 
 
