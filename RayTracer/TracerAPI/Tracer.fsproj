@@ -49,15 +49,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <None Include="App.config" />
     <Compile Include="Tracer.fsi" />
     <Compile Include="Tracer.fs" />
-    <None Include="App.config" />
     <Compile Include="Ray.fs" />
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
     <Compile Include="Drawing.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Name>DrawAttributes</Name>
+      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
       <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>

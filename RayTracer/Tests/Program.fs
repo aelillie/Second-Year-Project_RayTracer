@@ -14,11 +14,10 @@ let main argv =
 //    ExprToPolyTest.doTest()
     let camera = Camera.mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
     let res = Camera.mkRays camera
-    let mat = mkMaterial (mkColour 1.0 0.0 0.10) 1.0
+    let mat = mkMaterial (mkColour 0.5 0.5 0.5) 1.0
     let sphere = Shape.mkSphere (mkPoint 0.0 0.0 0.0) 2.0 mat
-    let res2 = List.map(fun x -> Shape.hit x sphere) res
-    let res3 = List.map(fun (_,x,y,c) -> (x,y,c)) res2
-    Drawing.mkPicture res3 500 500 |> ignore
+    let pixelPlane = List.map(fun x -> Shape.hit x sphere) res
+    Drawing.mkPicture pixelPlane 500 500 |> ignore
    // for r in res do System.Console.WriteLine(r)
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore

@@ -35,12 +35,12 @@ let hit (R(x,y,p,t,d)) (S(_,r, mat)) =
 
     let d = System.Math.Pow(b,2.0) - 4.0 * a * c
 
-    if(d < 0.0) then (false,x,y,System.Drawing.Color.White)
+    if(d < 0.0) then (x,y,System.Drawing.Color.White)
     else
     let answer1 = (-b + System.Math.Sqrt(d)) / (2.0*a)
     let answer2 = (-b - System.Math.Sqrt(d)) / (2.0*a)
-    if  answer1 >= answer2 then (true,x,y, Material.getColour mat)
-                           else (true,x,y, Material.getColour mat) //remember to return answer 
+    if  answer1 >= answer2 then (x,y, Material.getColour mat)
+                           else (x,y, Material.getColour mat) //remember to return answer 
 
 
 
