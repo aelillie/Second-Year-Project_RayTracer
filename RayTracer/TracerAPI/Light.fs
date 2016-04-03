@@ -26,6 +26,10 @@ let scaleColour (r,g,b) (rd:Vector) (nd:Vector) =
     
     let s = Vector.dotProduct rd nd
 
+    let check s = 
+        if s > 180.0 then 360.0 - s else s
+    let s = check s
+
     let r' = r * s
     let g' = g * s
     let b' = b * s

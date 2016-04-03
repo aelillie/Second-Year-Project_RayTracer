@@ -19,14 +19,14 @@ let main argv =
     let mat = mkMaterial (mkColour 0.5 0.5 0.5) 1.0
     let sphere = Shape.mkSphere (mkPoint 0.0 0.0 0.0) 2.0 mat
     let pixelPlane = List.map(fun x -> Shape.hit x sphere) res
-    let light = Light.mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0
+    let light = Light.mkLight (mkPoint (-1.0) 2.0 4.0) (fromColor Color.White) 1.0
 
     let testScene (R(x,y,p,t,d)) = function
         |None -> (x,y, Color.White)
         |Some(x,y,t',nV,(c:System.Drawing.Color)) ->  let p' = Point.move p (Vector.multScalar d t') 
                                                       let sr = Light.getShadowRay p' nV light 0.0001 
                                                       match Shape.hit sr sphere with
-                                                             None -> (x,y,c)
+                                                             None -> (x,y,System.Drawing.Color.Black)
                                                             |Some(_) -> let c' = Light.scaleColour (0.5,0.5,0.5) nV (Ray.getD sr)    
                                                                         (x,y,c')
 
