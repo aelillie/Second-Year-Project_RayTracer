@@ -17,9 +17,8 @@ let mkPicture list (bmp:Bitmap)=
     let rec mkPictureRec list =
         match list with 
         | []    -> bmp
-        | x::xs -> match x with
-                    None -> mkPictureRec xs
-                   |Some(x,y,_,_,c) -> bmp.SetPixel(x,y,c) 
-                                       mkPictureRec xs 
+        | x::xs -> bmp.SetPixel(x) 
+                   mkPictureRec xs 
+
     let bmp = mkPictureRec list
     bmp.Save("output.jpg")
