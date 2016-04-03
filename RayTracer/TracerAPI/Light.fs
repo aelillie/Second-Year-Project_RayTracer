@@ -8,5 +8,6 @@ type Light =
 type AmbientLight =
     | AL of Colour * float
 
-let mkLight (p : Point) (c : Colour) (i : float) : Light = failwith "mkLight not implemented"
-let mkAmbientLight (c : Colour) (i : float) : AmbientLight = failwith "mkAmbientLight not implemented"
+let mkLight (p : Point) (c : Colour) (i : float) : Light = L(p,c,i)
+let mkAmbientLight (c : Colour) (i : float) : AmbientLight = AL(c,i)
+

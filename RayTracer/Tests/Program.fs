@@ -5,6 +5,7 @@ open Vector
 open Ray
 open Shape
 open Material
+open System.Drawing
 
 [<EntryPoint>]
 let main argv = 
@@ -17,7 +18,8 @@ let main argv =
     let mat = mkMaterial (mkColour 0.5 0.5 0.5) 1.0
     let sphere = Shape.mkSphere (mkPoint 0.0 0.0 0.0) 2.0 mat
     let pixelPlane = List.map(fun x -> Shape.hit x sphere) res
-    Drawing.mkPicture pixelPlane 500 500 |> ignore
+    let bmp = new Bitmap(510,510)
+    Drawing.mkPicture pixelPlane bmp |> ignore
    // for r in res do System.Console.WriteLine(r)
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore

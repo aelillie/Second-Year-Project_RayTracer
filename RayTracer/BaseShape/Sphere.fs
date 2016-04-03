@@ -18,7 +18,15 @@ let mkSphere orego radius material = S (orego, radius, material)
 let getRadius (S(_,radius,_)) = radius
 let getMaterial (S(_, _, mat)) = mat
 
-let hit (R(x,y,p,t,d)) (S(_,r, mat)) =
+let findNormalV t (d:Vector) (p:Point) (o:Point) : Vector = 
+    let p' = Vector.multScalar d t |> Point.move p 
+
+
+    Point.direction o p'
+
+
+
+let hit (R(x,y,p,t,d)) (S(o,r, mat)) =
 
     let a = (System.Math.Pow((Vector.getX d),2.0) +
              System.Math.Pow((Vector.getY d),2.0) +
@@ -33,18 +41,21 @@ let hit (R(x,y,p,t,d)) (S(_,r, mat)) =
              System.Math.Pow((Point.getZ p),2.0) -
              System.Math.Pow(r,2.0)
 
-    let d = System.Math.Pow(b,2.0) - 4.0 * a * c
+    let dis = System.Math.Pow(b,2.0) - 4.0 * a * c
 
-    if(d < 0.0) then (x,y,System.Drawing.Color.White)
+    if(dis < 0.0) then None
     else
-    let answer1 = (-b + System.Math.Sqrt(d)) / (2.0*a)
-    let answer2 = (-b - System.Math.Sqrt(d)) / (2.0*a)
-    if  answer1 >= answer2 then (x,y, Material.getColour mat)
-                           else (x,y, Material.getColour mat) //remember to return answer 
+    let answer1 = (-b + System.Math.Sqrt(dis)) / (2.0*a)
+    let answer2 = (-b - System.Math.Sqrt(dis)) / (2.0*a)
+    if  answer1 >= answer2 then let nV = findNormalV answer2 d p o
+                                Some(x,y, answer2, nV, Material.getColour mat)
+                           else let nV = findNormalV answer1 d p o
+                                Some(x,y, answer2, nV, Material.getColour mat) //remember to return answer 
 
 
 
-    
+
+
 
 (*
 The distance to the hit point

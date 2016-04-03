@@ -13,12 +13,13 @@ type Result = {x:int; y:int; color:Color}
 let resultList = [{x = 3;y = 3;color = Color.Red},{x = 4;y = 4;color = Color.Black},{x = 5;y = 5;color = Color.Blue}]
 
 //Makes a picture by using list provided by the Camera
-let mkPicture list (x:int) (y:int)=
-    let bmp = new Bitmap(x+10,y+10)
+let mkPicture list (bmp:Bitmap)=
     let rec mkPictureRec list =
         match list with 
         | []    -> bmp
-        | x::xs -> bmp.SetPixel(x) 
-                   mkPictureRec xs 
+        | x::xs -> match x with
+                    None -> mkPictureRec xs
+                   |Some(x,y,_,_,c) -> bmp.SetPixel(x,y,c) 
+                                       mkPictureRec xs 
     let bmp = mkPictureRec list
     bmp.Save("output.jpg")
