@@ -18,11 +18,9 @@ let mkSphere orego radius material = S (orego, radius, material)
 let getRadius (S(_,radius,_)) = radius
 let getMaterial (S(_, _, mat)) = mat
 
-let findNormalV t (d:Vector) (p:Point) (o:Point) : Vector = 
-    let p' = Vector.multScalar d t |> Point.move p 
+let findNormalV (p:Point) (o:Point) : Vector = 
 
-
-    Point.direction o p'
+    Point.direction o p
 
 
 
@@ -47,10 +45,12 @@ let hit (R(x,y,p,t,d)) (S(o,r, mat)) =
     else
     let answer1 = (-b + System.Math.Sqrt(dis)) / (2.0*a)
     let answer2 = (-b - System.Math.Sqrt(dis)) / (2.0*a)
-    if  answer1 >= answer2 then let nV = findNormalV answer2 d p o
-                                Some(x,y, answer2, nV, Material.getColour mat)
-                           else let nV = findNormalV answer1 d p o
-                                Some(x,y, answer2, nV, Material.getColour mat) //remember to return answer 
+    if answer1 < 0.0 && answer2 < 0.0 then None
+    else
+    if  answer1 >= answer2 then let nV = findNormalV p o
+                                Some(answer2, nV, Material.getColour mat)
+                           else let nV = findNormalV p o
+                                Some(answer1, nV, Material.getColour mat) //remember to return answer 
 
 
 

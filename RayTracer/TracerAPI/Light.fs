@@ -37,4 +37,11 @@ let scaleColour (r,g,b) (rd:Vector) (nd:Vector) =
     Material.getColour (Material.mkMaterial (Material.mkColour r' g' b') 1.0)
     
 
+let applyAL (AL(c,i)) (r,g,b) = 
     
+    
+    let r' = r * i
+    let g' = g * i
+    let b' = b * i  
+    
+    Material.getColour (Material.mkMaterial (Material.mkColour r' g' b') 1.0)  
