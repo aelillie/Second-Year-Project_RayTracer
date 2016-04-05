@@ -4,12 +4,9 @@ type point = Point.Point
 type vector = Vector.Vector
 type ray = Ray.Ray
 
-type resolution
-type unitRes
-type camera
-type result
+type Resolution
+type UnitRes
+type Camera
 
-
-val mkCamera : point -> point -> vector -> float -> float -> float -> int -> int -> camera
-
-val mkRays : camera -> ray list
+val mkCamera : point -> point -> vector -> float -> float -> float -> int -> int -> Camera
+val mkRays : Camera -> (ray * (int * int)) list

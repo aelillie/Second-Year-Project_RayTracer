@@ -2,23 +2,23 @@
 open TracerAPI
 open System
 open System.Drawing
+open Colour
 
+///Draws a picture from a list of coordinates and a list of
+///information about how each pixel should be rendered
+let mkPicture coords viewPlane resX resY=
 
-let width = 480
-let height = 320
+    let render ((x:int),(y:int)) = function
+     | None -> (x,y, System.Drawing.Color.White)
+     | Some (_,_,c) -> (x,y,Colour.toColor c)
 
+    let vP = List.map2 render coords viewPlane
 
-type Result = {x:int; y:int; color:Color}
-
-let resultList = [{x = 3;y = 3;color = Color.Red},{x = 4;y = 4;color = Color.Black},{x = 5;y = 5;color = Color.Blue}]
-
-//Makes a picture by using list provided by the Camera
-let mkPicture list (bmp:Bitmap)=
-    let rec mkPictureRec list =
-        match list with 
+    let bmp = new Bitmap(resX+10,resY+10)
+    let rec mkPictureRec vP =
+        match vP with 
         | []    -> bmp
         | x::xs -> bmp.SetPixel(x) 
                    mkPictureRec xs 
-
-    let bmp = mkPictureRec list
-    bmp.Save("output.jpg")
+    let bmp = mkPictureRec vP
+    bmp.Save("RayTracer.jpg")
