@@ -10,7 +10,8 @@ type AmbientLight
 val mkLight : position : Point -> colour : Colour -> intensity : float -> Light
 val mkAmbientLight : colour : Colour -> intensity : float -> AmbientLight
 
-val getShadowRay : Point -> Vector -> Light -> float -> Ray
-val scaleColour : float * float * float -> Vector -> Vector -> Colour
+val calculateI :  Vector -> Vector -> float -> float
 
-val applyAL : AmbientLight -> float*float*float -> Colour
+val getPoint : Light -> Point
+val getAmbientI : AmbientLight -> float
+val getLightI : Light -> float

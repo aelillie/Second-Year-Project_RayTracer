@@ -27,3 +27,10 @@ let toColor (C(r,g,b)) =
 let getRGB (C(r,g,b)) = (r,g,b)    
     
 
+let scaleColour (C(r,g,b)) i = 
+    
+    let r' = r * i
+    let g' = g * i
+    let b' = b * i
+
+    C(r',g',b')
