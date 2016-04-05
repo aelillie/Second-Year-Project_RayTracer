@@ -34,7 +34,7 @@ let hit (R(x,y,p,t,d)) (S(_,r)) =
 
     let d = System.Math.Pow(b,2.0) - 4.0 * a * c
 
-    if(d < 0.0) then (false,x,y,System.Drawing.Color.White)
+    if(d < 0.0) then (false,x,y,System.Drawing.Color.Black)
     else
     let answer1 = (-b + System.Math.Sqrt(d)) / (2.0*a)
     let answer2 = (-b - System.Math.Sqrt(d)) / (2.0*a)
