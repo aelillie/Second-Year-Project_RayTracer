@@ -50,5 +50,5 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
 //
 //    Parallel.For (0,pw, (fun x -> for y in 0..ph do result.[(y*x)] <- createRay (x,y) p p')) |> ignore
     
-
+let getPoint (C(p,_,_,_,_,_)) = p
 
