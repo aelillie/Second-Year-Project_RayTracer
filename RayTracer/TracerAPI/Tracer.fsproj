@@ -50,8 +50,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
-    <Compile Include="Tracer.fsi" />
-    <Compile Include="Tracer.fs" />
+    <Compile Include="TracerAPI.fsi" />
+    <Compile Include="TracerAPI.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
