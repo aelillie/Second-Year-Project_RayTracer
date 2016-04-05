@@ -48,6 +48,10 @@ let sphereHit (R(p,t,d)) (S(o,r, mat)) =
         if answer1 < 0.0 && answer2 < 0.0 then None
         else
             let makeNV a = Point.move p (a * d) |> Point.direction o
-            let answer = System.Math.Max(answer1,answer2)
-            Some (answer, makeNV answer, Material.getColour mat)
+            let answer = System.Math.Min(answer1,answer2)
+            if answer < 0.0 
+            then 
+             let answer = System.Math.Max(answer1,answer2)
+             Some (answer, makeNV answer, Material.getColour mat)
+            else Some (answer, makeNV answer, Material.getColour mat)
              
