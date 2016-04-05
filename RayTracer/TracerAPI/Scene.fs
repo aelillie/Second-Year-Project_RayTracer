@@ -1,6 +1,9 @@
 module Scene
 
-type Camera = Camera.Camera
+type camera = Camera.Camera
+type shape = Dummy
+type light = Dummy
+type ambientLight = Dummy
 
 type Scene =
   | S of shape list * light list * ambientLight * camera * int
