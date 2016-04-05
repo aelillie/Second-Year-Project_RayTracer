@@ -21,7 +21,9 @@ let toColor (C(r,g,b)) =
     let g' = System.Math.Max (0, (int (g * 255.0)))
     let b' = System.Math.Max (0, (int (b * 255.0)))
     
-
+    let g' = System.Math.Min (255, (int (g * 255.0)))
+    let r' = System.Math.Min (255, (int (r * 255.0)))
+    let b' = System.Math.Min (255, (int (b * 255.0)))
     Color.FromArgb(255, r',g', b')
 
 let getRGB (C(r,g,b)) = (r,g,b)    

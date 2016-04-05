@@ -25,7 +25,7 @@ let main argv =
     let rays = mkRays camera
     let viewPlane = List.map(fun (r, (x,y)) -> (x,y, r, sphereHit r sphere)) rays
    
-    let getShadowRay (p:Point) (rd:Vector) (l:Light) (x:float) :Ray = 
+    let calculateShadowRay (p:Point) (rd:Vector) (l:Light) (x:float) :Ray = 
     
         let p' = Vector.multScalar rd x |> Point.move p 
 
@@ -39,7 +39,7 @@ let main argv =
 
         |Some (t,nV,c) -> let p' = Point.move p (Vector.multScalar d t) 
                           let i = Light.getAmbientI ambientLight
-                          let sr = getShadowRay p' nV light 0.0001 
+                          let sr = calculateShadowRay p' nV light 0.0001 
                           match sphereHit sr sphere with
                            |None    -> let i' = i + (Light.calculateI nV (Ray.getD sr) (Light.getLightI light))
                                        Colour.toColor (Colour.scaleColour c i')
