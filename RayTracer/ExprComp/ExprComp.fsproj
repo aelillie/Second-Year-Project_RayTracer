@@ -5,15 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>cc692a15-6a60-4569-8c60-a98ec9e31aac</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Ray</RootNamespace>
-    <AssemblyName>Ray</AssemblyName>
+    <ProjectGuid>43cdd2b1-d3d2-469e-93c4-4b536abb3fbe</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ExprComp</RootNamespace>
+    <AssemblyName>ExprComp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Ray</Name>
+    <Name>ExprComp</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,9 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Ray.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Debug\ExprComp.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,9 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\Ray.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Release\ExprComp.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -46,33 +42,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ray.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ExprParse\ExprParse.fsproj">
-      <Name>ExprParse</Name>
-      <Project>{4676b211-83ce-4c52-81e0-274c50ad4f69}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\ExprToPoly\ExprToPoly.fsproj">
-      <Name>ExprToPoly</Name>
-      <Project>{733a8e96-abdf-43d8-a534-1dbb66fa2c5e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Point\Point.fsproj">
-      <Name>Point</Name>
-      <Project>{f9ab6b1c-edb9-4d80-b9c7-68e5c3424018}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Vector\Vector.fsproj">
-      <Name>Vector</Name>
-      <Project>{a88dc159-c923-4ddd-8f09-9bb12a95828a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ExprParse.fsi" />
+    <Compile Include="ExprParse.fs" />
+    <Compile Include="ExprToPoly.fsi" />
+    <Compile Include="ExprToPoly.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

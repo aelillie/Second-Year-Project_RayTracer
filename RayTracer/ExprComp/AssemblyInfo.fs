@@ -1,4 +1,4 @@
-﻿namespace AssemblyInfo
+﻿namespace ExprComp.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("Point")>]
+[<assembly: AssemblyTitle("ExprComp")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("Point")>]
+[<assembly: AssemblyProduct("ExprComp")>]
 [<assembly: AssemblyCopyright("Copyright ©  2016")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("f9ab6b1c-edb9-4d80-b9c7-68e5c3424018")>]
+[<assembly: Guid("43cdd2b1-d3d2-469e-93c4-4b536abb3fbe")>]
 
 // Version information for an assembly consists of the following four values:
 // 

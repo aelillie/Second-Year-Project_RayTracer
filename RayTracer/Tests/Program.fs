@@ -4,6 +4,8 @@ open Point
 open Vector
 open Ray
 open Shape
+open Material
+open Colour
 
 [<EntryPoint>]
 let main argv = 
@@ -11,12 +13,14 @@ let main argv =
 //    VectorTest.doTest()
 //    ExprParseTest.doTest()
 //    ExprToPolyTest.doTest()
-    let camera = Camera.mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000
+    let camera = Camera.mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
     let res = Camera.mkRays camera
-    let sphere = Shape.mkSphere (mkPoint 0.0 0.0 0.0) 1.0
-    let res2 = List.map(fun x -> Shape.hit x sphere) res
-    let res3 = List.map(fun (_,x,y,c) -> (x,y,c)) res2
-    Drawing.mkPicture res3 1000 1000 |> ignore
+    let mat = mkMaterial (mkColour 0.5 0.5 0.5) 1.0
+    let sphere = Shape.mkSphere (mkPoint 0.0 0.0 0.0) 2.0 mat
+    let pixelPlane = List.map(fun (x, (_,_)) -> Shape.hit x sphere) res
+    let xy = List.map (fun (r,p) -> p) res
+    
+    Drawing.mkPicture xy pixelPlane 500 500 |> ignore
    // for r in res do System.Console.WriteLine(r)
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore

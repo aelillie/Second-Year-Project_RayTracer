@@ -12,4 +12,4 @@ type result
 
 val mkCamera : point -> point -> vector -> float -> float -> float -> int -> int -> camera
 
-val mkRays : camera -> ray list
+val mkRays : camera -> (ray * (int * int)) list
