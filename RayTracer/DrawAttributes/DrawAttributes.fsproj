@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
+    <Compile Include="Colour.fsi" />
+    <Compile Include="Colour.fs" />
     <Compile Include="Material.fsi" />
     <Compile Include="Material.fs" />
     <Compile Include="Texture.fsi" />

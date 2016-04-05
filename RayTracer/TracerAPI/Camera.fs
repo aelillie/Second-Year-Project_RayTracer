@@ -34,11 +34,11 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
         let p2 = Point.move p2 (((float a + 0.5) * W) * r)
         let p2 = Point.move p2 (((float b + 0.5) * H) * d)
         let v = Point.direction p1 p2
-        Ray.mkRay a b p2 1.0 v
-
+        Ray.mkRay p2 1.0 v
+       
     [for x in 0..pw do
          for y in 0..ph do           
-            yield createRay (x,y) p p']
+            yield createRay (x,y) p p', (x,y)]
 //    let result = List.init (pw * ph)
 //
 //    Parallel.For (0,pw, (fun x -> for y in 0..ph do result.[(y*x)] <- createRay (x,y) p p')) |> ignore
