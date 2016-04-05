@@ -21,14 +21,13 @@ let getMaterial (S(_, _, mat)) = mat
 //and returns information on how the point
 ///should be rendered
 let sphereHit (R(p,t,d)) (S(o,r, mat)) =
+    
+    let makeNV a = Point.move p (a * d) |> Point.direction o
+    
     let pow (x, y) = System.Math.Pow(x, y)
     let a = (pow((Vector.getX d),2.0) +
              pow((Vector.getY d),2.0) +
              pow((Vector.getZ d),2.0))
-
-    let a = (System.Math.Pow((Vector.getX d),2.0) +
-             System.Math.Pow((Vector.getY d),2.0) +
-             System.Math.Pow((Vector.getZ d),2.0))
 
     let b = (2.0 * Point.getX p * Vector.getX d +
              2.0 * Point.getY p * Vector.getY d +
@@ -47,7 +46,7 @@ let sphereHit (R(p,t,d)) (S(o,r, mat)) =
         let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
         if answer1 < 0.0 && answer2 < 0.0 then None
         else
-            let makeNV a = Point.move p (a * d) |> Point.direction o
+            
             let answer = System.Math.Min(answer1,answer2)
             if answer < 0.0 
             then 
