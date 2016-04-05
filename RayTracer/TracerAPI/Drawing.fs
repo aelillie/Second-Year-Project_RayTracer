@@ -6,13 +6,7 @@ open Colour
 
 ///Draws a picture from a list of coordinates and a list of
 ///information about how each pixel should be rendered
-let mkPicture coords viewPlane resX resY=
-
-    let render ((x:int),(y:int)) = function
-     | None -> (x,y, System.Drawing.Color.White)
-     | Some (_,_,c) -> (x,y,Colour.toColor c)
-
-    let vP = List.map2 render coords viewPlane
+let mkPicture viewPlane resX resY=
 
     let bmp = new Bitmap(resX+10,resY+10)
     let rec mkPictureRec vP =
@@ -20,5 +14,5 @@ let mkPicture coords viewPlane resX resY=
         | []    -> bmp
         | x::xs -> bmp.SetPixel(x) 
                    mkPictureRec xs 
-    let bmp = mkPictureRec vP
+    let bmp = mkPictureRec viewPlane
     bmp.Save("RayTracer.jpg")
