@@ -16,7 +16,7 @@ let main argv =
 //    ExprParseTest.doTest()
 //    ExprToPolyTest.doTest()
 
-    let light = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0 
+    let light = mkLight (mkPoint 0.0 2.0 4.0) (fromColor Color.White) 1.0 
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 
     let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (mkMaterial (fromColor Color.Blue) 0.0)
