@@ -49,7 +49,7 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
         let intersections = List.collect (fun x -> sort x) hitResults
 
         match intersections with 
-            | [] -> Colour.mkColour 1.0 1.0 1.0
+            | [] -> Colour.mkColour 0.1 0.7 0.4
             | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV
                     let i = Light.getAmbientI ambi
@@ -67,14 +67,14 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
                     then
                         match reflNumber with
                          | _ when reflNumber < maxRefl -> let reflV = Material.getReflection m
-                                                          (Colour.merge reflV c' (castRay reflRay (reflNumber+1)))
-                         | _ -> Colour.scaleColour c' (1.0 - Material.getReflection m)
-                    else Colour.scaleColour c' (1.0 - Material.getReflection m)     
+                                                          (Colour.merge reflV (castRay reflRay (reflNumber+1) ) c')
+                         | _ -> c'
+                    else c'    
 
 
 
 
-    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r n)) rays
+    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 1)) rays
 
 
     let pixelplane' = List.map (fun (x,y,c) -> x, y, Colour.toColor c) pixelplane
