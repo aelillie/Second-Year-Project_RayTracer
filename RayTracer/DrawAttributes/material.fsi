@@ -6,3 +6,5 @@ type Material
 val mkMaterial : Colour -> float -> Material 
 
 val getColour : Material -> Colour
+
+val getReflection : Material -> float

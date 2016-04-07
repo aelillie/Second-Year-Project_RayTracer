@@ -17,15 +17,14 @@ let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, amb
 // recursively casts rays to determine the color a given ray should register
 let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
     let rays = mkRays cam
+    let maxRefl = n
 
-
-    let rec castRay (ray:Ray) n = 
-        let intersects = List.map (fun x -> Shape.hit ray x) shapes 
+    let rec castRay (ray:Ray) reflNumber = 
+        let hitResults = List.map (fun x -> Shape.hit ray x) shapes 
         
-        let calculateShadowRay (p:Point) (rd:Vector) (l:Light) (x:float) :Ray = 
-            let p' = Vector.multScalar rd x |> Point.move p 
-            let sr = Point.direction p' (Light.getPoint l)
-            Ray.mkRay p' 1.0 sr
+        let mkShadowRay (p:Point) (rd:Vector) (l:Light)  :Ray = 
+            let sr = Point.direction p (Light.getPoint l)
+            Ray.mkRay p 1.0 sr
         
         let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
 
@@ -44,25 +43,43 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
 
         let sort = function
             |None -> [] 
-            |Some(t,nV,c) -> [(t,nV,c)]
+            |Some(t,nV,m) -> [(t,nV,m)]
 
 
-        let intersects = List.collect (fun x -> sort x) intersects
+        let intersections = List.collect (fun x -> sort x) hitResults
 
-        match intersects with 
-            | [] -> System.Drawing.Color.White
-            | _  -> let (t,nV,c) = List.minBy (fun (t,_,_) -> t ) intersects
+        match intersections with 
+            | [] -> Colour.mkColour 1.0 1.0 1.0
+            | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV
                     let i = Light.getAmbientI ambi
-                    let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)
-                    let srays = List.map (fun x -> (x, calculateShadowRay p nV' x 0.0001)) lights
+                    let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
+                    let p' = Point.move p (Vector.multScalar nV' 0.0001)
+                    let srays = List.map (fun x -> (x, mkShadowRay p' nV' x )) lights
                     let i' = List.filter (fun (l, r) -> not (isShaded r shapes l)) srays
                                  |> List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r) (Light.getLightI l)))
                                  |> List.fold (fun acc x -> acc + x) 0.0
-                    Colour.toColor (Colour.scaleColour c (i+i'))
+
+                    let c' = (Colour.scaleColour (Material.getColour m) (i+i'))
+                    let reflectDir = Ray.getD ray - 2.0 * Vector.normalise((Ray.getD ray * nV' * nV'))
+                    let reflRay = Ray.mkRay p' 1.0 reflectDir
+                    if Material.getReflection m > 0.0 
+                    then
+                        match reflNumber with
+                         | _ when reflNumber < maxRefl -> let reflV = Material.getReflection m
+                                                          (Colour.merge reflV c' (castRay reflRay (reflNumber+1)))
+                         | _ -> Colour.scaleColour c' (1.0 - Material.getReflection m)
+                    else Colour.scaleColour c' (1.0 - Material.getReflection m)     
+
+
+
+
     let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r n)) rays
 
-    Drawing.mkPicture pixelplane 500 500 filename 
+
+    let pixelplane' = List.map (fun (x,y,c) -> x, y, Colour.toColor c) pixelplane
+
+    Drawing.mkPicture pixelplane' 500 500 filename 
 
 
 

@@ -51,6 +51,6 @@ let hit (R(p,t,d)) (s:Shape) =
                             if answer < 0.0 
                             then 
                              let answer = System.Math.Max(answer1,answer2)
-                             Some (answer, makeNV answer, Material.getColour mat)
-                            else Some (answer, makeNV answer, Material.getColour mat)
+                             Some (answer, makeNV answer, mat)
+                            else Some (answer, makeNV answer, mat)
              
