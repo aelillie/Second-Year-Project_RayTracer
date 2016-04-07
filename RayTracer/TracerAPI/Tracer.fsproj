@@ -56,6 +56,8 @@
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
     <Compile Include="Drawing.fs" />
+    <Compile Include="Light.fsi" />
+    <Compile Include="Light.fs" />
     <Compile Include="Scene.fsi" />
     <Compile Include="Scene.fs" />
   </ItemGroup>
