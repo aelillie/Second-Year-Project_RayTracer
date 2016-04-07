@@ -1,5 +1,10 @@
-﻿module OptimusPrime
+﻿module Transformation
 
+type shape = unit
 
-  let translate (x : float) (y : float) (z : float) : transformation = failwith "translate not implemented"
+type Transformation =
+    | T of float[,] * float[,]
 
+let idMatrix = Array2D.init<float> 4 4 
+                (fun row col -> if row = col then 1.0 else 0.0)
+    
