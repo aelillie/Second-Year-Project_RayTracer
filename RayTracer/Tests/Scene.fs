@@ -27,18 +27,20 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
             let sr = Point.direction p' (Light.getPoint l)
             Ray.mkRay p' 1.0 sr
         
-        let lightIntensity (r:Ray) (s:Shape) (l:Light) nV =
-             match hit ray s with
-             |None    -> let i = (Light.calculateI nV (Ray.getD r) (Light.getLightI l))
-                         i
-             |Some(t',_,_) -> let o = Camera.getPoint cam
-                              let tlight = Point.distance (Ray.getP r) o |> Vector.magnitude  
-                              if t' < tlight 
-                              then 
-                                let i =(Light.calculateI nV (Ray.getD r) (Light.getLightI l))
-                                i
-                              else
-                                0.0
+        let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
+
+             match xs with
+             |[] -> false
+             | s::xs'  ->
+                 match hit ray s with
+                 |None   -> isShaded r xs' l
+                 |Some(t',_,_) -> let o = Camera.getPoint cam
+                                  let tlight = Point.distance (Ray.getP r) o |> Vector.magnitude  
+                                  if t' < tlight 
+                                  then 
+                                    isShaded r xs' l
+                                  else
+                                    true
 
         let sort = function
             |None -> [] 
@@ -54,8 +56,9 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
                     let i = Light.getAmbientI ambi
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)
                     let srays = List.map (fun x -> (x, calculateShadowRay p nV' x 0.0001)) lights
-                    let il = List.map2 (fun (l, r) s -> lightIntensity r s l nV') srays shapes
-                    let i' = List.fold (fun acc x -> acc + x) 0.0 il
+                    let i' = List.filter (fun (l, r) -> not (isShaded r shapes l)) srays
+                                 |> List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r) (Light.getLightI l)))
+                                 |> List.fold (fun acc x -> acc + x) 0.0
                     Colour.toColor (Colour.scaleColour c (i+i'))
     let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r n)) rays
 
