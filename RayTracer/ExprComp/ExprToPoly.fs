@@ -66,10 +66,10 @@ let simplifyAtomGroup ag =
     let mapList = Map.toList table //convert map to list
     let AExList = mapList |> List.map (fun (s, f) -> AExponent (s,f))
     match (num, AExList) with
-    | (0.0, AExponent (s,f) :: xs)  -> []
-    | (0.0, [])                     -> []
-    | (1.0, AExponent (s,f) :: xs)  -> AExList
-    | (1.0, [])                     -> [ANum (1.0)]
+    | (0.0, AExponent (s,f) :: xs)  -> [] //0 * expr is 0
+    | (0.0, [])                     -> [] //No need to keep the 0
+    | (1.0, AExponent (s,f) :: xs)  -> AExList //1 * expr is expr
+    | (1.0, [])                     -> [ANum 1.0] //Constants must remain
     | (num, atomGroup)              -> ANum num :: AExList
 
 //implicitly added atom groups
@@ -91,7 +91,8 @@ let simplifySimpleExpr (SE ags) =
   let filterAg (s, f) = if f <> 1.0 && f <> 0.0 
                         then (ANum (f)) :: s else s
   let agSim = (Map.toList agSimMap) |> List.map filterAg
-  SE (agConst :: agSim) //TODO: This is not always the case
+  if agConst.Head = ANum (0.0) then SE (agSim) //dispose 0s
+  else SE (agConst :: agSim) 
 
 let exprToSimpleExpr e = simplifySimpleExpr (SE (simplify e))
 
