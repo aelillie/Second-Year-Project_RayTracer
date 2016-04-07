@@ -15,4 +15,4 @@ let mkPicture viewPlane resX resY=
         | x::xs -> bmp.SetPixel(x) 
                    mkPictureRec xs 
     let bmp = mkPictureRec viewPlane
-    bmp.Save("RayTracer.jpg")
+    bmp.Save("RayTqeracer.jpg")
