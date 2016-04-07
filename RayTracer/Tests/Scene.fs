@@ -19,37 +19,36 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
     let rays = mkRays cam
     let maxRefl = n
 
+    let mkShadowRay (p:Point) (rd:Vector) (l:Light)  :Ray = 
+        let sr = Point.direction p (Light.getPoint l)
+        Ray.mkRay p 1.0 sr
+        
+    let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
+            match xs with
+            |[] -> false
+            | s::xs'  ->
+                match hit r s with
+                |None   -> isShaded r xs' l
+                |Some(t',_,_) -> let o = Camera.getPoint cam
+                                 let tlight = Point.distance (Ray.getP r) o |> Vector.magnitude  
+                                 if t' > tlight 
+                                 then 
+                                  isShaded r xs' l
+                                 else
+                                  true
+    let sort = function
+        |None -> [] 
+        |Some(t,nV,m) -> [(t,nV,m)]
+
+
+
     let rec castRay (ray:Ray) reflNumber = 
         let hitResults = List.map (fun x -> Shape.hit ray x) shapes 
         
-        let mkShadowRay (p:Point) (rd:Vector) (l:Light)  :Ray = 
-            let sr = Point.direction p (Light.getPoint l)
-            Ray.mkRay p 1.0 sr
-        
-        let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
-
-             match xs with
-             |[] -> false
-             | s::xs'  ->
-                 match hit ray s with
-                 |None   -> isShaded r xs' l
-                 |Some(t',_,_) -> let o = Camera.getPoint cam
-                                  let tlight = Point.distance (Ray.getP r) o |> Vector.magnitude  
-                                  if t' < tlight 
-                                  then 
-                                    isShaded r xs' l
-                                  else
-                                    true
-
-        let sort = function
-            |None -> [] 
-            |Some(t,nV,m) -> [(t,nV,m)]
-
-
         let intersections = List.collect (fun x -> sort x) hitResults
 
         match intersections with 
-            | [] -> Colour.mkColour 0.1 0.7 0.4
+            | [] -> Colour.mkColour 1.0 1.0 1.0 
             | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV
                     let i = Light.getAmbientI ambi
