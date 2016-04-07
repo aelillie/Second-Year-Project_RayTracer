@@ -1,6 +1,6 @@
 ﻿namespace TracerTestSuite
 
-open TracerAPI.Tracer
+open Tracer.API
 open System
 open System.Drawing
 
