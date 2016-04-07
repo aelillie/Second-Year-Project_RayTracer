@@ -13,7 +13,7 @@ type Transformation
 //val sheareYZ : distance : float -> Transformation
 //val sheareZX : distance : float -> Transformation
 //val sheareZY : distance : float -> Transformation
-//val scale : x : float -> y : float -> z : float -> Transformation
+val scale : x : float -> y : float -> z : float -> Transformation
 //
 //val translate : x : float -> y : float -> z : float -> Transformation
 //
