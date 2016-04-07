@@ -1,6 +1,6 @@
-﻿namespace TracerAPI
+﻿namespace Tracer
 
-module Tracer =
+module API = 
   type dummy = unit
 
   type vector = dummy
@@ -27,11 +27,22 @@ module Tracer =
 
   let mkShape (b : baseShape) (t : texture) : shape = failwith "mkShape not implemented"
   let mkSphere (p : point) (r : float) (m : material) : shape = failwith "mkSphere not implemented"
+  let mkRectangle (corner : point) (width : float) (height : float) (t : texture) : shape
+    = failwith "mkRectangle not implemented"
   let mkTriangle (a:point) (b:point) (c:point) (m : material) : shape = failwith "mkTriangle not implemented"
-  let mkPlane (p : point) (n : vector) (m : material) : shape = failwith "mkPlane not implemented"
+  let mkPlane (m : texture) : shape = failwith "mkPlane not implemented"
   let mkImplicit (s : string) : baseShape = failwith "mkImplicit not implemented"
-  let mkPLY (filename : string) : baseShape = failwith "mkPLY not implemented"
+  let mkPLY (filename : string) (smooth : bool) : baseShape = failwith "mkPLY not implemented"
 
+  let mkHollowCylinder (c : point) (r : float) (h : float) (t : texture) : shape = failwith "mkHollowCylinder not implemented"
+  let mkSolidCylinder (c : point) (r : float) (h : float) (t : texture) (top : texture) (bottom : texture) : shape
+      = failwith "mkSolidCylinder not implemented"
+  let mkDisc (c : point) (r : float) (t : texture) : shape = failwith "mkDisc not implemented"
+  let mkBox (low : point) (high : point) (front : texture) (back : texture) (top : texture) (bottom : texture) (left : texture) (right : texture) : shape
+      = failwith "mkBox not implemented"
+ 
+
+  let group (s1 : shape) (s2 : shape) : shape = failwith "group not implemented"
   let union (s1 : shape) (s2 : shape) : shape = failwith "union not implemented"
   let intersection (s1 : shape) (s2 : shape) : shape = failwith "intersection not implemented"
   let subtraction (s1 : shape) (s2 : shape) : shape = failwith "subtraction not implemented"
