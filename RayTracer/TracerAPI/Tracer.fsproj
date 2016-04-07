@@ -60,6 +60,8 @@
     <Compile Include="Light.fs" />
     <Compile Include="Scene.fsi" />
     <Compile Include="Scene.fs" />
+    <Compile Include="Transformation.fs" />
+    <Compile Include="Transformation.fsi" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
