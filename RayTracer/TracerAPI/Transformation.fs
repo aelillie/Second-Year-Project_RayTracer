@@ -68,6 +68,50 @@ let mirrorZ =
     m.[2,2] <- -1.0
     T(m, m)
 
+exception SheareWithZero
+
+let sheareXY distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[1, 0] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
+let sheareXZ distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[2, 0] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
+let sheareYX distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[0, 1] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
+let sheareYZ distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[2, 1] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
+let sheareZX distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[0, 2] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
+let sheareZY distance = 
+    if distance = 0.0 then raise SheareWithZero
+    let m = idMatrix
+    m.[1, 2] <- distance
+    let m' = failwith "Missing inverse matrix"
+    T(m, m')
+
 let transpose (m : float[,]) = 
     Array2D.init<float> 4 4 (fun row col -> m.[col, row])
 
