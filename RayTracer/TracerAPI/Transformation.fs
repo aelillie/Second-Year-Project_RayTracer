@@ -3,39 +3,64 @@
 type shape = unit
 
 type Transformation =
-    | T of float[,] * float[,]
+    | T of float[,] * float[,] //normal matrix and inverse matrix
 
-let idMatrix = Array2D.init<float> 4 4 
+let idMatrix = Array2D.init 4 4 
                 (fun row col -> if row = col then 1.0 else 0.0)
-    
-<<<<<<< HEAD
-let makeInverse a =
-    let m = Array2D.copy a //Arrays are mutable
-    m.[0, 3] <- m.[0, 3]*(-1.0)
-    m.[1, 3] <- m.[1, 3]*(-1.0)
-    m.[2, 3] <- m.[2, 3]*(-1.0)
-    m
 
 let scale x y z = 
     let m = idMatrix
     m.[0, 0] <- x
     m.[1, 1] <- y
     m.[2, 2] <- z
-=======
-let makeInverse (m : float[,]) =
-    let a = m.[0, 3]*(-1.0)
-    let b = m.[1, 3]*(-1.0)
-    let c = m.[2, 3]*(-1.0)
-    Array2D.set m 0 3 a
-    Array2D.set m 1 3 b
-    Array2D.set m 2 3 c
-    m
+    let m' = Array2D.copy m //Arrays are mutable
+    m'.[0, 0] <- 1.0/x
+    m'.[1, 1] <- 1.0/y
+    m'.[2, 2] <- 1.0/z
+    T(m, m')
 
-let scale x y z = 
-    let m = Array2D.zeroCreate<float> 4 4
-    Array2D.set m 0 0 x
-    Array2D.set m 1 1 y
-    Array2D.set m 2 2 z
-    Array2D.set m 3 3 1.0
->>>>>>> b2884ca75899aa09e187888e5c45f830420203b0
-    T(m, makeInverse m)
+ 
+let rotateX angle =
+    let m = idMatrix
+    m.[1, 1] <- System.Math.Cos angle
+    m.[2, 2] <- System.Math.Cos angle
+    m.[1, 2] <- (System.Math.Sin angle)*(-1.0)
+    m.[2, 1] <- System.Math.Sin angle
+    let m' = Array2D.copy m
+    m'.[1, 2] <- m.[2, 1]
+    m'.[2, 1] <- m.[1, 2]
+    T(m, m')
+
+let rotateY angle =
+    let m = idMatrix
+    m.[0, 0] <- System.Math.Cos angle
+    m.[2, 2] <- System.Math.Cos angle
+    m.[2, 0] <- (System.Math.Sin angle)*(-1.0)
+    m.[0, 2] <- System.Math.Sin angle
+    let m' = Array2D.copy m
+    m'.[2, 0] <- m.[0, 2]
+    m'.[0, 2] <- m.[2, 0]
+    T(m, m')
+
+let rotateZ angle =
+    let m = idMatrix
+    m.[0, 0] <- System.Math.Cos angle
+    m.[1, 1] <- System.Math.Cos angle
+    m.[0, 1] <- (System.Math.Sin angle)*(-1.0)
+    m.[1, 0] <- System.Math.Sin angle
+    let m' = Array2D.copy m
+    m'.[0, 1] <- m.[1, 0]
+    m'.[1, 0] <- m.[0, 1]
+    T(m, m')
+ 
+
+let transpose (m : float[,]) = 
+    Array2D.init<float> 4 4 (fun row col -> m.[col, row])
+
+let mEx =
+    let m = idMatrix
+    m.[1, 2] <- 5.0
+    m.[2, 1] <- 6.4
+    m.[3, 0] <- 4.0
+    m.[0, 3] <- 2.7
+    m

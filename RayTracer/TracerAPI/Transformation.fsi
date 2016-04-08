@@ -4,9 +4,9 @@ type shape = unit
 
 type Transformation
 
-//val rotateX : angle : float -> Transformation
-//val rotateY : angle : float -> Transformation
-//val rotateZ : angle : float -> Transformation
+val rotateX : angle : float -> Transformation
+val rotateY : angle : float -> Transformation
+val rotateZ : angle : float -> Transformation
 //val sheareXY : distance : float -> Transformation
 //val sheareXZ : distance : float -> Transformation
 //val sheareYX : distance : float -> Transformation
