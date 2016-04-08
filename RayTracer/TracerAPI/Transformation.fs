@@ -53,6 +53,20 @@ let rotateZ angle =
     m'.[1, 0] <- m.[0, 1]
     T(m, m')
  
+let mirrorX =
+    let m = idMatrix
+    m.[0,0] <- -1.0
+    T(m, m)
+
+let mirrorY =
+    let m = idMatrix
+    m.[1,1] <- -1.0
+    T(m, m)
+
+let mirrorZ =
+    let m = idMatrix
+    m.[2,2] <- -1.0
+    T(m, m)
 
 let transpose (m : float[,]) = 
     Array2D.init<float> 4 4 (fun row col -> m.[col, row])

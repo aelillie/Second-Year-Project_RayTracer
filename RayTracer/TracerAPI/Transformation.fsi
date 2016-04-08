@@ -18,9 +18,9 @@ val scale : x : float -> y : float -> z : float -> Transformation
 //val translate : x : float -> y : float -> z : float -> Transformation
 //
 //
-//val mirrorX : Transformation
-//val mirrorY : Transformation
-//val mirrorZ : Transformation
+val mirrorX : Transformation
+val mirrorY : Transformation
+val mirrorZ : Transformation
 ///// Merge the givne list of transformations into one, such that the resulting
 ///// transformation is equivalent to applying the individual transformations
 ///// from left to right (i.e. starting with the first element in the list).
