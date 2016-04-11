@@ -1,9 +1,12 @@
 ﻿module Transformation
-
+open Point
 type shape = unit
 
 type Transformation =
     | T of float[,] * float[,] //normal matrix and inverse matrix
+
+let getTransMatrix (T(m, m')) = m
+let getInvTransMatrix (T(m, m')) = m'
 
 let idMatrix = Array2D.init 4 4 
                 (fun row col -> if row = col then 1.0 else 0.0)
@@ -114,6 +117,22 @@ let sheareZY distance =
 
 let transpose (m : float[,]) = 
     Array2D.init<float> 4 4 (fun row col -> m.[col, row])
+
+let multiply (t : Transformation) (p : Point) =
+    let m = getTransMatrix t
+    let mutable x = 0.0
+    let mutable y = 0.0
+    let mutable z = 0.0
+    let mult row col elem =
+        match col with
+        | 0 -> x <- x + (Point.getX p) * elem
+        | 1 -> y <- y + (Point.getY p) * elem
+        | 2 -> z <- z + (Point.getZ p) * elem
+        | _ -> () //Do nothing
+    Array2D.iteri mult m
+    Point.mkPoint x y z
+
+    
 
 let mEx =
     let m = idMatrix
