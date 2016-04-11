@@ -39,3 +39,6 @@ let scaleColour (C(r,g,b)) i =
 
     C(r',g',b')
 
+
+let merge refl (C(r1,g1,b1)) (C(r2,g2,b2)) = 
+    C((refl * r1 + (1.0 - refl) * r2, refl * g1 + (1.0 - refl) * g2, refl * b1 + (1.0 - refl) * b2))
