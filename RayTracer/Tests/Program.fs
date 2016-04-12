@@ -12,10 +12,10 @@ open TracerTest
 
 [<EntryPoint>]
 let main argv = 
-    PointTest.doTest()
+    (*PointTest.doTest()
     VectorTest.doTest()
     ExprParseTest.doTest()
-    ExprToPolyTest.doTest()
+    ExprToPolyTest.doTest()*)
     TracerTest.doTest()  
 
     System.Console.WriteLine "Press any key to close..."
