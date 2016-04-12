@@ -9,13 +9,20 @@ open Material
 
 type Shape =
   | S of Point * float * Material
+  | P of Point * Vector * Material
   override s.ToString() =
     match s with
-      S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
+      |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
+      |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
 
 let mkSphere orego radius material = S (orego, radius, material)
-let getRadius (S(_,radius,_)) = radius
-let getMaterial (S(_, _, mat)) = mat
+let getSphereRadius (S(_,radius,_)) = radius
+let getSphereMaterial (S(_, _, mat)) = mat
+let mkPlane point normVector material = P (point, normVector, material)
+let getPlanePoint (P(point,_,_)) = point
+let getPlaneNormVector (P(_,normVector,_)) = normVector
+let getPlaneMaterial (P(_, _, mat)) = mat
+
 
 ///Given a ray, computes the hit point for a sphere,
 //and returns information on how the point
@@ -53,4 +60,11 @@ let hit (R(p,t,d)) (s:Shape) =
                              let answer = System.Math.Max(answer1,answer2)
                              Some (answer, makeNV answer, mat)
                             else Some (answer, makeNV answer, mat)
+
+    |P(pVector,n, mat) -> let denom = Vector.dotProduct d n
+                          if(denom > 0.0) then
+                              let v = Point.distance p pVector
+                              let result = Vector.dotProduct v n
+                              Some (result, n, mat)
+                          else None
              
