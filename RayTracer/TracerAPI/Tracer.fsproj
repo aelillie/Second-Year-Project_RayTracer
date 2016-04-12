@@ -58,8 +58,6 @@
     <Compile Include="Drawing.fs" />
     <Compile Include="Light.fsi" />
     <Compile Include="Light.fs" />
-    <Compile Include="Scene.fsi" />
-    <Compile Include="Scene.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
   </ItemGroup>

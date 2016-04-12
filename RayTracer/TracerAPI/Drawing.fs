@@ -6,7 +6,7 @@ open Colour
 
 ///Draws a picture from a list of coordinates and a list of
 ///information about how each pixel should be rendered
-let mkPicture viewPlane resX resY=
+let mkPicture viewPlane resX resY s=
 
     let bmp = new Bitmap(resX+10,resY+10)
     let rec mkPictureRec vP =
@@ -15,4 +15,4 @@ let mkPicture viewPlane resX resY=
         | x::xs -> bmp.SetPixel(x) 
                    mkPictureRec xs 
     let bmp = mkPictureRec viewPlane
-    bmp.Save("RayTracer.jpg")
+    bmp.Save(s)

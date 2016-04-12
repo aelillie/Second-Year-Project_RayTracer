@@ -1,37 +1,46 @@
-﻿namespace TracerTestSuite
+﻿module TracerTest
 
-open Tracer.API
+open Camera
+open Shape
+open Light
+open Tracer
+open Ray
+open Point
+open Vector
 open System
 open System.Drawing
 
-module TracerTest =
-
+ 
+  let doTest() =
   (* Input the path (local or absolute) where you want your files to be stored *)
-  let path_to_files = "../../../"
+      let path_to_files = ""
 
-  let doRender scene toFile =
-    match toFile with
-    | Some filename -> renderToFile scene filename
-    | None -> renderToScreen scene
+      let doRender scene toFile =
+        match toFile with
+        | Some filename -> Scene.renderToFile scene filename
+        | None -> ()
+      let toScreen = false 
+      let renderSphere toScreen =
+        let light = mkLight (mkPoint 3.0 2.0 2.3) (Colour.fromColor Color.White) 2.0 in
+        let light2 = mkLight (mkPoint -3.0 -2.0 2.3) (Colour.fromColor Color.White) 2.0 in
+        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0) in
+        let scene = Scene.mkScene [sphere] [light;light2] ambientLight camera 2 in
+        if toScreen then
+          doRender scene None
+        else
+          doRender scene (Some ("renderSphere.png"))
 
-  let renderSphere toScreen =
-    let light = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0 in
-    let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
-    let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) in
-    let scene = mkScene [sphere] [light] ambientLight camera 0 in
-    if toScreen then
-      doRender scene None
-    else
-      doRender scene (Some (path_to_files + "renderSphere.png"))
-
-  let renderInsideSphere toScreen =
-    let light = mkLight (mkPoint 0.0 0.0 0.0) (fromColor Color.White) 3.0 in
-    let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
-    let camera = mkCamera (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 4.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0)) in
-    let scene = mkScene [sphere] [light] ambientLight camera 0 in
-    if toScreen then
-      doRender scene None
-    else
-      doRender scene (Some (path_to_files + "renderInsideSphere.png"))  
+      let renderInsideSphere toScreen =
+        let light = mkLight (mkPoint 0.0 0.0 0.0) (Colour.fromColor Color.White) 3.0 in
+        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
+        let camera = mkCamera (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 4.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
+        let scene = Scene.mkScene [sphere] [light] ambientLight camera 0 in
+        if toScreen then
+          doRender scene None
+        else
+          doRender scene (Some ("renderInsideSphere.png"))  
+      renderSphere false
+      renderInsideSphere false
