@@ -24,6 +24,7 @@ let main argv =
     let scene = Scene.mkScene [sphere] [light] ambientLight camera 0
     Scene.renderToFile scene "fuck dat" |> ignore
     *)
+
     System.Console.WriteLine "Saved image!"
 
     System.Console.WriteLine "Press any key to close..."
