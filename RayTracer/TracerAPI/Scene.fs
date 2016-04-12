@@ -38,7 +38,7 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
                                   true
     let sort = function
         |None -> [] 
-        |Some(t,nV,m) -> [(t,nV,m)]
+        |Some(x) -> [x]
 
 
 
@@ -48,7 +48,7 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
         let intersections = List.collect (fun x -> sort x) hitResults
 
         match intersections with 
-            | [] -> Colour.mkColour 1.0 1.0 1.0 
+            | [] -> None
             | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV
                     let i = Light.getAmbientI ambi
@@ -60,25 +60,35 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
                                  |> List.fold (fun acc x -> acc + x) 0.0
 
                     let c' = (Colour.scaleColour (Material.getColour m) (i+i'))
-                    let reflectDir = Ray.getD ray - 2.0 * Vector.normalise((Ray.getD ray * nV' * nV'))
+                    let x2 = ((Ray.getD ray) * nV') * 2.0
+                    let reflectDir = Vector.normalise ((Ray.getD ray) - (x2 * nV'))
                     let reflRay = Ray.mkRay p' 1.0 reflectDir
                     if Material.getReflection m > 0.0 
                     then
                         match reflNumber with
                          | _ when reflNumber < maxRefl -> let reflV = Material.getReflection m
-                                                          (Colour.merge reflV (castRay reflRay (reflNumber+1) ) c')
-                         | _ -> c'
-                    else c'    
+                                                          let res = castRay reflRay (reflNumber+1)
+                                                          match res with
+                                                           |None -> Some c'
+                                                           |Some (cRef) -> Some (Colour.merge reflV cRef c' )
+                                                         
+                                                          
+                         | _ -> Some c'
+                    else Some c'    
 
 
+    let toColor xs =
+        match xs with
+        |[] -> System.Drawing.Color.Black
+        |v::xs -> Colour.toColor v
+         
+
+    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
 
 
-    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 1)) rays
+    let pixelplane' = List.map (fun (x,y,c) -> x,y, sort c |> toColor) pixelplane
 
-
-    let pixelplane' = List.map (fun (x,y,c) -> x, y, Colour.toColor c) pixelplane
-
-    Drawing.mkPicture pixelplane' 500 500 filename 
+    Drawing.mkPicture pixelplane' 1000 1000 filename 
 
 
 
