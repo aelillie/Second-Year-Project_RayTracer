@@ -15,6 +15,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Space3D", "Space3D\Space3D.
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BaseShape", "BaseShape\BaseShape.fsproj", "{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Main", "Main\Main.fsproj", "{F8E23745-D937-49E0-A513-A814D23D4BB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,6 +49,7 @@
     <Compile Include="Vector.fs" />
     <Compile Include="Point.fsi" />
     <Compile Include="Point.fs" />
+    <Compile Include="Ray.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

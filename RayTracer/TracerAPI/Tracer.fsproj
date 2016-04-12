@@ -52,7 +52,6 @@
     <None Include="App.config" />
     <Compile Include="TracerAPI.fsi" />
     <Compile Include="TracerAPI.fs" />
-    <Compile Include="Ray.fs" />
     <Compile Include="Camera.fsi" />
     <Compile Include="Camera.fs" />
     <Compile Include="Drawing.fs" />
@@ -60,8 +59,15 @@
     <Compile Include="Light.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
+    <Compile Include="Scene.fsi" />
+    <Compile Include="Scene.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
+      <Name>BaseShape</Name>
+      <Project>{da3c8a8c-19ab-4fc9-abde-be1e7df5346e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
       <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
