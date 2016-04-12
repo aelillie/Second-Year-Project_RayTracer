@@ -54,6 +54,8 @@
     <Compile Include="VectorTest.fs" />
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
+    <Compile Include="Scene.fsi" />
+    <Compile Include="Scene.fs" />
     <Compile Include="TracerTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

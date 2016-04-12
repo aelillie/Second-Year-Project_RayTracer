@@ -1,8 +1,8 @@
-﻿namespace TracerAPI
+﻿namespace Tracer
 
-module Tracer =
+
+module API =
   type dummy = unit
-
   type vector = dummy
   type point = dummy
   type colour = dummy
@@ -21,7 +21,10 @@ module Tracer =
   val fromColor : c : System.Drawing.Color -> colour
   val mkColour : r:float -> g:float -> b:float -> colour
 
-  val mkMaterial : colour -> float -> material
+  /// Construct a material with the given colour and reflectivity. Reflectivity
+  /// is the ratio of how much the material reflects (1.0 means it is a perfect
+  /// mirror and 0.0 means that the material does not reflect anything).
+  val mkMaterial : colour -> reflectivity : float -> material
   /// Textures are functions that take x-y coordinates and produce a material.
   /// The x-y coordinates range over the texture space specified for the
   /// individual basic shapes (mkSphere, mkPlane etc.).
@@ -35,26 +38,50 @@ module Tracer =
   val mkShape : baseShape -> texture -> shape
 
   /// Construct a sphere.
-  /// texture space: [0,1] X [0,1]
+  /// texture coordinates: [0,1] X [0,1]
   val mkSphere : center : point -> radius : float -> texture -> shape
+  /// Construct a rectangle.
+  /// texture coordinates: [0,1] X [0,1]
+  val mkRectangle : corner : point -> width : float -> height : float -> texture -> shape
   /// Constructe a triangle.
-  /// texture space: [0,1] X [0,1]
-  val mkTriangle : a:point -> b:point -> c:point -> texture -> shape
-  /// Construct a plane.
-  /// texture space: R X R
-  val mkPlane : a : point -> normal : vector -> texture -> shape
+  val mkTriangle : a:point -> b:point -> c:point -> material -> shape
+  /// Construct a plane with the equation z = 0,
+  /// i.e. the x-y plane
+  /// texture coordinates: R X R
+  val mkPlane : texture -> shape
   /// Construct an implicit surface.
-  /// texture space: {(0,0)}
+  /// texture coordinates: {(0,0)}, i.e. has only a single material
   val mkImplicit : string -> baseShape
   /// Load a triangle mesh from a PLY file.
-  /// texture space: [0,1] X [0,1]
-  val mkPLY : filename : string -> baseShape
+  /// texture coordinates: [0,1] X [0,1]
+  val mkPLY : filename : string -> smoothShading : bool -> baseShape
+  /// construct a hollow cylinder (i.e. open on both ends)
+  /// texture coordinates: [0,1] X [0,1]
+  val mkHollowCylinder : center : point -> radius : float -> height : float -> texture -> shape
+  /// construct a solid cylinder (i.e. closed on either end by a disk)
+  /// texture space: hollow cylinder part is textured like mkHollowCylinder;
+  ///                top and bottom disk are textured like mkDisk
+  val mkSolidCylinder : center : point -> radius : float -> height : float -> 
+                        cylinder: texture -> bottom : texture -> top : texture -> shape
+  /// construct a disk at point p in the plane parallel
+  /// to the x-y plane
+  /// texture coordinates: [0,1] X [0,1]
+  val mkDisc : p : point -> radius : float -> texture -> shape
+  /// construct an axis-aligned box with lower corner low
+  /// and higher corner high
+  /// textures: the six faces of the box are textured like mkRectangle
+  val mkBox : low : point -> high : point -> front : texture -> back : texture ->
+              top : texture -> bottom : texture -> left : texture -> right : texture  -> shape
+
   val union : shape -> shape -> shape
   val intersection : shape -> shape -> shape
   val subtraction : shape -> shape -> shape
+  val group : shape -> shape -> shape
 
- 
-  val mkCamera : position : point -> lookat : point -> up : vector -> zoom : float -> 
+  /// Construct a camera at 'position' pointed at 'lookat'. The 'up' vector describes which way is up.
+  /// The viewplane is has dimensions 'unitWidth' and 'unitHeight', has a pixel resolution of 'pixelWidth' 
+  /// times 'pixelHeight', and is 'distance' units in front of the camera.
+  val mkCamera : position : point -> lookat : point -> up : vector -> distance : float -> 
     unitWidth : float -> unitHeight : float -> pixelWidth : int -> pixelHeight : int -> camera
 
   val mkLight : position : point -> colour : colour -> intensity : float -> light
@@ -79,5 +106,8 @@ module Tracer =
   val mirrorX : transformation
   val mirrorY : transformation
   val mirrorZ : transformation
+  /// Merge the givne list of transformations into one, such that the resulting
+  /// transformation is equivalent to applying the individual transformations
+  /// from left to right (i.e. starting with the first element in the list).
   val mergeTransformations : transformation list -> transformation
   val transform : shape -> transformation -> shape
