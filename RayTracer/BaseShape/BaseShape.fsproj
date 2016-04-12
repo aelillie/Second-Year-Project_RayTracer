@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Sphere.fs" />
     <Compile Include="Plane.fs" />
+    <Compile Include="Transformation.fsi" />
+    <Compile Include="Transformation.fs" />
+    <Compile Include="Sphere.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">

@@ -1,11 +1,15 @@
 ﻿module Transformation
-
+open Point
+open Vector
 type shape = unit
 
 type Transformation
 
-val getTransMatrix : Transformation -> float[,]
-val getInvTransMatrix : Transformation -> float[,]
+val getT : Transformation -> float[,]
+val getInv : Transformation -> float[,]
+val transpose : float[,] -> float[,]
+val multPoint : float[,] -> Point -> Point
+val multVector : float[,] -> Vector -> Vector
 
 val translate : x : float -> y : float -> z : float -> Transformation
 val rotateX : angle : float -> Transformation

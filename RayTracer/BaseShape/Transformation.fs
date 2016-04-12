@@ -1,14 +1,15 @@
 ﻿///Transformation matrices for object manipulation
 module Transformation
 open Point
+open Vector
 
 type shape = unit //Dummy type for testing
 
 type Transformation =
     | T of float[,] * float[,] //normal matrix and inverse matrix
 
-let getTransMatrix (T(m, m')) = m
-let getInvTransMatrix (T(m, m')) = m'
+let getT (T(m, m')) = m
+let getInv (T(m, m')) = m'
 
 ///'Base' matrix for all transformations
 let idMatrix = Array2D.init 4 4 
@@ -161,8 +162,7 @@ let transpose (m : float[,]) =
 ///Multiply a transformation matrix with some point.
 ///Returns a new point, with same dimensions, but
 ///with updated values
-let multTrans (t : Transformation) (p : Point) =
-    let m = getTransMatrix t
+let multPoint (m : float[,]) (p : Point) =
     let mutable x = 0.0
     let mutable y = 0.0
     let mutable z = 0.0
@@ -174,3 +174,16 @@ let multTrans (t : Transformation) (p : Point) =
         | _ -> () //Do nothing
     Array2D.iteri mult m
     Point.mkPoint x y z
+
+let multVector (m : float[,]) (v : Vector) =
+    let mutable x = 0.0
+    let mutable y = 0.0
+    let mutable z = 0.0
+    let mult row col elem =
+        match col with
+        | 0 -> x <- x + (Vector.getX v) * elem
+        | 1 -> y <- y + (Vector.getY v) * elem
+        | 2 -> z <- z + (Vector.getZ v) * elem
+        | _ -> () //Do nothing
+    Array2D.iteri mult m
+    Vector.mkVector x y z
