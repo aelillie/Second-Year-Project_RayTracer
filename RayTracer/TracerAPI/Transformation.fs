@@ -21,9 +21,9 @@ let translate x y z =
     m.[1, 3] <- y
     m.[2, 3] <- z
     let m' = Array2D.copy m //Use for inverse matrix
-    m.[0, 3] <- -1.0*x
-    m.[1, 3] <- -1.0*y
-    m.[2, 3] <- -1.0*z
+    m'.[0, 3] <- -1.0*x
+    m'.[1, 3] <- -1.0*y
+    m'.[2, 3] <- -1.0*z
     T(m, m')
 
 ///Scale a shape with a factor n in some direction/dimension
