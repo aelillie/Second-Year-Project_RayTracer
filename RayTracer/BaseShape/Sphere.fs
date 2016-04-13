@@ -4,8 +4,22 @@ open Vector
 open Ray
 open ExprParse
 open Material
+open ExprParse
+open ExprToPoly
+
 
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
+// Implicit Surfaces:
+// 1. Parsing
+// 2. Plug in the ray equation
+// 3. simplify equation
+// 4. Find number of roots using Sturms
+// 5. Find the roots using Newton
+
+
+type baseShape =
+  | BS of Point * float 
+  
 
 type Shape =
   | S of Point * float * Material
@@ -22,6 +36,26 @@ let mkPlane point normVector material = P (point, normVector, material)
 let getPlanePoint (P(point,_,_)) = point
 let getPlaneNormVector (P(_,normVector,_)) = normVector
 let getPlaneMaterial (P(_, _, mat)) = mat
+
+
+let mkImplicit (s : string) : baseShape = 
+    //parse polynomial string
+    let polExpr = parseStr s
+
+    //replace x,y,z with the ray equations corresponding values
+    let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
+    let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
+    let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
+    let eR = FNum -1.0
+    let polX = subst polExpr ("x", ex)
+    let polY = subst polExpr ("y", ey)
+    let polZ = subst polExpr ("z", ez)
+    
+    //simplify equation
+    failwith "bla"
+
+
+                                          
 
 
 ///Given a ray, computes the hit point for a sphere,
