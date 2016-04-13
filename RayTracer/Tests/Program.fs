@@ -20,7 +20,7 @@ let main argv =
     ExprToPolyTest.doTest()*)
     //TracerTest.doTest()  
 
-    let file = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
+    let file = @"C:\Users\i5-4670K\Documents\urn2.ply.txt"
 
 
     

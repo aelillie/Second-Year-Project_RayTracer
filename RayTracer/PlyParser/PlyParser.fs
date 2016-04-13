@@ -41,10 +41,10 @@ let pFace: Parser<_> = pint32 >>? spaces1 >>. many1 (pint32 .>> spaces1) |>> (fu
 
 let pDummyData: Parser<_> = skipRestOfLine true |>> (fun _ -> DummyData)
 
-let pElement: Parser<_> = pstring "element" >>. spaces >>. manyChars anyChar .>> spaces .>>.  pint32 |>> (fun (x,f) -> Element (x,f))
+let pElement: Parser<_> = pstring "element" >>. spaces >>. (many1Chars anyChar) .>> spaces .>>.  pint32 |>> (fun (x,f) -> Element (x,f))
 
 
-let pPly: Parser<_> = (pComment <|> pEndHeader) <|> (attempt pFace <|> pVertex) <|> pElement <|> pDummyData
+let pPly: Parser<_> = (pComment <|> pEndHeader) <|> (attempt pFace <|> pVertex) <|> (pElement <|> pDummyData)
 
 
 let pPlys: Parser<_> = many (pPly .>> spaces)
@@ -65,9 +65,11 @@ let parsePly filePath =
     let lines = readLines filePath
     
     let s = Seq.map (fun x -> parse pPly x) lines |> Seq.toList
+    
 
+    let writer = new StreamWriter (@"C:\Users\i5-4670K\Documents\test.rtf", false, System.Text.Encoding.UTF8,512)
 
-    let writer = new StreamWriter (@"C:\Users\i5-4670K\Documents\test.txt")
+    writer.AutoFlush <- true
 
     let print p = 
         match p with
@@ -80,5 +82,7 @@ let parsePly filePath =
 
 
     Seq.iter(fun x -> print x) s
+    
+
 
 
