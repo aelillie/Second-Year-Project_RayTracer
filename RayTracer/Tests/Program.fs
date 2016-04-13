@@ -9,6 +9,8 @@ open Light
 open System.Drawing
 open Point
 open TracerTest
+open PlyParse
+open System.IO
 
 [<EntryPoint>]
 let main argv = 
@@ -16,8 +18,13 @@ let main argv =
     VectorTest.doTest()
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
-    TracerTest.doTest()  
+    //TracerTest.doTest()  
 
+    let file = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
+
+
+    
+    PlyParse.parsePly file |> ignore
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
