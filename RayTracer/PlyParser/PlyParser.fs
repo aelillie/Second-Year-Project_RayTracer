@@ -72,7 +72,7 @@ let parsePly filePath =
     let print p = 
         match p with
          | Vertex (x,y,z) -> fprintf writer "Vertex %f %f %f \n" x y z
-         | Face (x) ->       fprintf writer "Face %O" x
+         | Face (x) ->       fprintf writer "Face %O \n" x
          | Comment x -> fprintf writer "Comment %s \n" x
          | DummyData -> fprintf writer "DummyData \n"
          | Element (e, n) -> fprintf writer "Element %s, %d \n" e n
