@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>da3c8a8c-19ab-4fc9-abde-be1e7df5346e</ProjectGuid>
+    <ProjectGuid>{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BaseShape</RootNamespace>
     <AssemblyName>BaseShape</AssemblyName>
@@ -17,7 +16,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
@@ -33,37 +31,37 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\BaseShape.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
+    <Compile Include="BoundingBox.fsi" />
+    <Compile Include="BoundingBox.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
-      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
-      <Private>True</Private>
+      <Project>{C9DCF27D-0261-4D55-8AF9-2CDD4210E888}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
-      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
-      <Private>True</Private>
+      <Project>{43CDD2B1-D3D2-469E-93C4-4B536ABB3FBE}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
-      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
-      <Private>True</Private>
+      <Project>{60E1B77C-8213-45CE-8662-21C240D44F5B}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

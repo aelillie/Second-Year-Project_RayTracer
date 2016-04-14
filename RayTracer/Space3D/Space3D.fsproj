@@ -49,8 +49,6 @@
     <Compile Include="Point.fsi" />
     <Compile Include="Point.fs" />
     <Compile Include="Ray.fs" />
-    <Compile Include="BoundingBox.fsi" />
-    <Compile Include="BoundingBox.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
