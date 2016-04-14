@@ -24,6 +24,7 @@ let calcL s =
         let hz = (Point.getZ p) + f + epsilon 
         let h = P(hx,hy,hz)
         B(l,h)
+   (* Triangle bounding box
     | S(a,b,c,m) -> 
         let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
         let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
@@ -31,4 +32,4 @@ let calcL s =
 
         let l = P((List.min xlist), (List.min ylist), (List.min zlist))
         let h = P((List.max xlist), (List.max ylist), (List.max zlist))
-        B(l,h)
+        B(l,h) *)
