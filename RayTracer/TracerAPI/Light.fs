@@ -19,7 +19,6 @@ let getPoint (L(p,c,i)) = p
 
 
 let calculateI (rd:Vector) (nd:Vector) i = 
-    
     (Vector.dotProduct rd nd) * i
     
 
