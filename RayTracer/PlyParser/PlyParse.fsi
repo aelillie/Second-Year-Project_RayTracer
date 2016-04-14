@@ -2,4 +2,4 @@
 
 type Ply
 
-val parsePly : string -> unit
+val parsePly : string -> Ply list

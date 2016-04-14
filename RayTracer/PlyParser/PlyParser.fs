@@ -17,8 +17,6 @@ type Ply =
 
 type Parser<'t> = Parser<'t, UserState>    
 
-let file = @"C:\Users\i5-4670K\Documents\airplane.ply.txt"
-
 let readLines (filePath:string) = seq {
     use sr = new StreamReader (filePath)
     while not sr.EndOfStream do
@@ -64,24 +62,8 @@ let parsePly filePath =
 
     let lines = readLines filePath
     
-    let s = Seq.map (fun x -> parse pPly x) lines |> Seq.toList
+    Seq.map (fun x -> parse pPly x) lines |> Seq.toList
     
-
-    let writer = new StreamWriter (@"C:\Users\i5-4670K\Documents\test.rtf", false, System.Text.Encoding.UTF8,512)
-
-    writer.AutoFlush <- true
-
-    let print p = 
-        match p with
-         | Vertex (x,y,z) -> fprintf writer "Vertex %f %f %f \n" x y z
-         | Face (x) ->       fprintf writer "Face %O \n" x
-         | Comment x -> fprintf writer "Comment %s \n" x
-         | DummyData -> fprintf writer "DummyData \n"
-         | Element (e, n) -> fprintf writer "Element %s, %d \n" e n
-         | Endheader -> fprintf writer "end_header \n"
-
-
-    Seq.iter(fun x -> print x) s
     
 
 

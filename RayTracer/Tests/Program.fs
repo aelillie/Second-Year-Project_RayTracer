@@ -18,13 +18,10 @@ let main argv =
     VectorTest.doTest()
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
-    //TracerTest.doTest()  
-
-    let file = @"C:\Users\i5-4670K\Documents\urn2.ply.txt"
+    TracerTest.doTest()  
 
 
     
-    PlyParse.parsePly file |> ignore
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
