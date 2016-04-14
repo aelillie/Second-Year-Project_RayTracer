@@ -2,7 +2,6 @@
 module Transformation
 open Point
 open Vector
-open Shape
 
 type shape = unit //Dummy type for testing
 
@@ -188,5 +187,3 @@ let multVector (m : float[,]) (v : Vector) =
         | _ -> () //Do nothing
     Array2D.iteri mult m
     Vector.mkVector x y z
-
-let transform (s : Shape) (t : Transformation)

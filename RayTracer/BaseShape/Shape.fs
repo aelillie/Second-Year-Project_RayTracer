@@ -37,13 +37,13 @@ let hit (R(p,t,d)) (s:Shape) =
                              pow((Vector.getY d),2.0) +
                              pow((Vector.getZ d),2.0))
 
-                    let b = (2.0 * Point.getX p * Vector.getX d +
-                             2.0 * Point.getY p * Vector.getY d +
-                             2.0 * Point.getZ p * Vector.getZ d)
+                    let b =  (2.0 * (Point.getX p - Point.getX o) * Vector.getX d) +
+                             (2.0 * (Point.getY p - Point.getY o) * Vector.getY d) +
+                             (2.0 * (Point.getZ p - Point.getZ o) * Vector.getZ d)
 
-                    let c =  pow((Point.getX p),2.0) +
-                             pow((Point.getY p),2.0) +
-                             pow((Point.getZ p),2.0) -
+                    let c =  pow((Point.getX p - Point.getX o),2.0) +
+                             pow((Point.getY p - Point.getY o),2.0) +
+                             pow((Point.getZ p - Point.getZ o),2.0) -
                              pow(r,2.0)
 
                     let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
@@ -76,3 +76,5 @@ let transHit (R(p,t,d)) (s:Shape) trans =
     | None -> None
     | Some(dist, dir, mat) -> let dir' = multVector (transpose (getInv trans)) dir
                               Some(dist, dir', mat)
+
+//let transform (s : Shape) (t : Transformation) =

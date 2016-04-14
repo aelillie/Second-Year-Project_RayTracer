@@ -1,7 +1,6 @@
 ﻿module Transformation
 open Point
 open Vector
-open Shape
 
 type Transformation
 
@@ -30,4 +29,3 @@ val mirrorZ : Transformation
 //transformation is equivalent to applying the individual transformations
 //from left to right (i.e. starting with the first element in the list).
 //val mergeTransformations : Transformation list -> Transformation
-val transform : shape -> Transformation -> shape
