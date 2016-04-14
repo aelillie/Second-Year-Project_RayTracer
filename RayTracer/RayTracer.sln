@@ -17,6 +17,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BaseShape", "BaseShape\Base
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Main", "Main\Main.fsproj", "{F8E23745-D937-49E0-A513-A814D23D4BB9}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PlyParser", "PlyParser\PlyParser.fsproj", "{EA58233C-8BAE-4FA2-8A21-D9F34373481C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

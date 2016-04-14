@@ -88,7 +88,7 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
 
     let pixelplane' = List.map (fun (x,y,c) -> x,y, sort c |> toColor) pixelplane
 
-    Drawing.mkPicture pixelplane' 1000 1000 filename 
+    Drawing.mkPicture pixelplane' 500 500 filename 
 
 
 
