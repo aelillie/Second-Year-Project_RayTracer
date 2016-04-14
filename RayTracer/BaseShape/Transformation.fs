@@ -96,6 +96,23 @@ let rotateZ angle =
     m'.[1, 0] <- m.[0, 1]
     T(m, m')
 
+///Inverse any shearing transformation matrix
+let inverseShear (m : float [,]) = 
+    let m' = Array2D.copy m
+    let d = 1.0 - m.[1,0]*m.[0,1]-m.[2,0]*m.[0,3]-m.[2,1]*m.[1,3]
+                + m.[1,0]*m.[2,1]*m.[0,3]+m.[2,0]*m.[0,1]*m.[1,2] 
+    m'.[0,0] <-  1.0-m.[2,1]*m.[1,2]
+    m'.[1,0] <- -1.0*m.[1,0]+m.[2,0]*m.[1,2]
+    m'.[2,0] <- -1.0*m.[2,0]+m.[1,0]*m.[2,1]
+    m'.[0,1] <- -1.0*m.[0,1]+m.[2,1]*m.[0,2]
+    m'.[1,1] <-  1.0-m.[0,2]*m.[0,2]
+    m'.[2,1] <- -1.0*m.[2,1]+m.[2,0]*m.[0,1]
+    m'.[0,2] <- -1.0*m.[0,2]+m.[0,1]*m.[1,2]
+    m'.[1,2] <- -1.0*m.[1,2]+m.[1,0]*m.[0,3]
+    m'.[2,2] <-  1.0-m.[1,0]*m.[0,1]
+    m'.[3,3] <- d
+    Array2D.map (fun elem -> elem/d) m'
+
 exception SheareWithZero
 
 ///Shear shape some distance with respect
@@ -106,7 +123,7 @@ let sheareXY distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[1, 0] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
 
 ///Shear shape some distance with respect
@@ -115,7 +132,7 @@ let sheareXZ distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[2, 0] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
 
 ///Shear shape some distance with respect
@@ -124,7 +141,7 @@ let sheareYX distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[0, 1] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
 
 ///Shear shape some distance with respect
@@ -133,7 +150,7 @@ let sheareYZ distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[2, 1] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
 
 ///Shear shape some distance with respect
@@ -142,7 +159,7 @@ let sheareZX distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[0, 2] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
 
 ///Shear shape some distance with respect
@@ -151,8 +168,13 @@ let sheareZY distance =
     if distance = 0.0 then raise SheareWithZero
     let m = idMatrix
     m.[1, 2] <- distance
-    let m' = failwith "Missing inverse matrix"
+    let m' = inverseShear m
     T(m, m')
+        
+
+let d (m : float[,]) = 
+            1.0 - m.[1,0]*m.[0,1]-m.[2,0]*m.[0,3]-m.[2,1]*m.[1,3]
+                + m.[1,0]*m.[2,1]*m.[0,3] + m.[2,0]*m.[0,1]*m.[1,2]
 
 ///Transpose a transformation matrix
 ///by swapping all rows with columns

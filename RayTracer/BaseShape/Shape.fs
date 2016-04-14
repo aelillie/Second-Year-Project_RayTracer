@@ -77,4 +77,6 @@ let transHit (R(p,t,d)) (s:Shape) trans =
     | Some(dist, dir, mat) -> let dir' = multVector (transpose (getInv trans)) dir
                               Some(dist, dir', mat)
 
-//let transform (s : Shape) (t : Transformation) =
+///Entry point for transforming a shape
+//Should call transHit or contain the logic itself
+let transform (s : Shape) (t : Transformation) = failwith "To be implemented"
