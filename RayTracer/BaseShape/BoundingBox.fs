@@ -1,8 +1,8 @@
 ﻿module BoundingBox
 open System
-open Point 
+open Point g
 open Shape
-open Vector 
+
 
 type BoundingBox = 
     | B of Point * Point 

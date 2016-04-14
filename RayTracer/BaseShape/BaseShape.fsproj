@@ -50,20 +50,6 @@
     <Compile Include="BoundingBox.fsi" />
     <Compile Include="BoundingBox.fs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
-      <Name>DrawAttributes</Name>
-      <Project>{C9DCF27D-0261-4D55-8AF9-2CDD4210E888}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
-      <Name>ExprComp</Name>
-      <Project>{43CDD2B1-D3D2-469E-93C4-4B536ABB3FBE}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Space3D\Space3D.fsproj">
-      <Name>Space3D</Name>
-      <Project>{60E1B77C-8213-45CE-8662-21C240D44F5B}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -87,4 +73,18 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Project>{60E1B77C-8213-45CE-8662-21C240D44F5B}</Project>
+      <Name>Space3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Project>{C9DCF27D-0261-4D55-8AF9-2CDD4210E888}</Project>
+      <Name>DrawAttributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
+      <Project>{43CDD2B1-D3D2-469E-93C4-4B536ABB3FBE}</Project>
+      <Name>ExprComp</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
