@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Sphere.fs" />
+    <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
   </ItemGroup>
   <ItemGroup>
