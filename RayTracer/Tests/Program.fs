@@ -4,6 +4,7 @@ open Ray
 open Shape
 open Material
 open Colour
+open BoundingBox 
 open Camera
 open Drawing
 open Light
@@ -18,8 +19,9 @@ let main argv =
     (*PointTest.doTest()
     VectorTest.doTest()
     ExprParseTest.doTest()
-    ExprToPolyTest.doTest()*)
-    BoundingBoxTest.doTest()  
+    ExprToPolyTest.doTest()
+    BoundingBoxTest.doTest()*)
+    TracerTest.doTest()  
 
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore

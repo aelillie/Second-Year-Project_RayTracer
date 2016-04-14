@@ -54,8 +54,8 @@
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
     <Compile Include="TracerTest.fs" />
-    <Compile Include="Program.fs" />
     <Compile Include="BoundingBoxTest.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
