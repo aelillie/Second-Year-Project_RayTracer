@@ -1,7 +1,7 @@
 ﻿module Transformation
 open Point
 open Vector
-type shape = unit
+open Shape
 
 type Transformation
 
@@ -26,8 +26,8 @@ val mirrorX : Transformation
 val mirrorY : Transformation
 val mirrorZ : Transformation
 
-/// Merge the givne list of transformations into one, such that the resulting
-/// transformation is equivalent to applying the individual transformations
-/// from left to right (i.e. starting with the first element in the list).
+//Merge the givne list of transformations into one, such that the resulting
+//transformation is equivalent to applying the individual transformations
+//from left to right (i.e. starting with the first element in the list).
 //val mergeTransformations : Transformation list -> Transformation
-//val transform : shape -> Transformation -> shape
+val transform : shape -> Transformation -> shape
