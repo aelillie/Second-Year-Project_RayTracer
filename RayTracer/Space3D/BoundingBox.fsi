@@ -1,5 +1,6 @@
 ﻿module BoundingBox
 open Point 
+open Shape
 
 type BoundingBox 
 
