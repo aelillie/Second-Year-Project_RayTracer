@@ -6,6 +6,9 @@ open Shape
 
 type BoundingBox = 
     | B of Point * Point 
+    override b.ToString() =
+        match b with
+          B(l,h) -> "("+l.ToString()+","+h.ToString()+")"
 
 let mkBoundingBox l h = B(l,h)
 
