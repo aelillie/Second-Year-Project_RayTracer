@@ -31,9 +31,11 @@ open System.Drawing
         let sphere3 = mkSphere (mkPoint 0.0 1.0 -2.5) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.3) in
         let sphere4 = mkSphere (mkPoint 3.0 0.0 1.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Orange) 0.3) in
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
-        let tsphere = transform sphere (sheareXY 2.0)
+        let hc = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+        let tsphere = transform sphere (scale 0.5 0.5 0.5)
+        let thc = transform hc (scale 0.5 1.0 1.5)
 
-        let scene = Scene.mkScene [tsphere] [light] ambientLight camera 2 in
+        let scene = Scene.mkScene [thc] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else
