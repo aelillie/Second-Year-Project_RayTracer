@@ -10,6 +10,7 @@ open Transformation
 
 type Shape =
   | S of Point * float * Material
+  | TShape of Shape * Transformation
   | P of Point * Vector * Material
   override s.ToString() =
     match s with
@@ -24,11 +25,16 @@ let getPlanePoint (P(point,_,_)) = point
 let getPlaneNormVector (P(_,normVector,_)) = normVector
 let getPlaneMaterial (P(_, _, mat)) = mat
 
+///Entry point for transforming a shape
+//Should call transHit or contain the logic itself
+let transform (s : Shape) (t : Transformation) = TShape(s, t)
+
+    
 
 ///Given a ray, computes the hit point for a shape,
 ///and returns information on how the point
 ///should be rendered
-let hit (R(p,t,d)) (s:Shape) =
+let rec hit (R(p,t,d)) (s:Shape) =
     match s with
     |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
     
@@ -68,15 +74,10 @@ let hit (R(p,t,d)) (s:Shape) =
                               let result = Vector.dotProduct v n
                               Some (result, n, mat)
                           else None
+    | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
+                       let d' = transVector (getInv tr) d //transformed direction
+                       match hit (R(p', t, d')) s with
+                       | None -> None
+                       | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
+                                                 Some(dist, dir', mat)
             
-let transHit (R(p,t,d)) (s:Shape) trans =
-    let p' = transPoint (getInv trans) p //transformed Ray origin
-    let d' = transVector (getInv trans) d //transformed direction
-    match hit (R(p', t, d')) s with
-    | None -> None
-    | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv trans)) dir
-                              Some(dist, dir', mat)
-
-///Entry point for transforming a shape
-//Should call transHit or contain the logic itself
-let transform (s : Shape) (t : Transformation) = failwith "To be implemented"
