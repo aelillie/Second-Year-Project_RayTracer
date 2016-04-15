@@ -204,23 +204,30 @@ let transpose (m : float[,]) =
 ///Multiply a transformation matrix with some point.
 ///Returns a new point, with same dimensions, but
 ///with updated values
-let transPoint (m : float[,]) (p : Point) =
+let modPoint (m : float[,]) (p : Point) =
     let mutable x = 0.0
     let mutable y = 0.0
     let mutable z = 0.0
-    let mult row col elem =
+    let mult row col =
         match col with
-        | 0 -> x <- x + (Point.getX p) * elem
-        | 1 -> y <- y + (Point.getY p) * elem
-        | 2 -> z <- z + (Point.getZ p) * elem
-        | _ -> () //Do nothing
-    Array2D.iteri mult m
+        | 0 -> (Point.getX p) * m.[row, col]
+        | 1 -> (Point.getY p) * m.[row, col]
+        | 2 -> (Point.getZ p) * m.[row, col]
+        | _ -> m.[row,col]
+    let m' = Array2D.init 4 4 mult
+    let mult1 row col elem =
+        match row with
+        | 0 -> x <- x + elem
+        | 1 -> y <- y + elem
+        | 2 -> z <- z + elem
+        | _ -> ()
+    Array2D.iteri mult1 m'
     Point.mkPoint x y z
 
 ///Multiply a transformation matrix with some vector.
 ///Returns a new vector, with same dimensions, but
 ///with updated values
-let transVector (m : float[,]) (v : Vector) =
+let modVector (m : float[,]) (v : Vector) =
     let mutable x = 0.0
     let mutable y = 0.0
     let mutable z = 0.0

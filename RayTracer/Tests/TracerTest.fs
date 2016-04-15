@@ -33,7 +33,7 @@ open System.Drawing
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
         let hc = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
         let tsphere = transform sphere (sheareYZ 2.0)
-        let thc = transform hc (sheareXY 10.0)
+        let thc = transform hc (rotateZ 1.57079633)
 
         let scene = Scene.mkScene [thc] [light] ambientLight camera 2 in
         if toScreen then

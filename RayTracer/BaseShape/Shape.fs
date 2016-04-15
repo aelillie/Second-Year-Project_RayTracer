@@ -130,11 +130,11 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                               let result = Vector.dotProduct v n
                               Some (result, n, mat)
                           else None
-    | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
-                       let d' = transVector (getInv tr) d //transformed direction
+    | TShape(s, tr) -> let p' = modPoint (getInv tr) p //transformed Ray origin
+                       let d' = modVector (getInv tr) d //transformed direction
                        match hit (R(p', t, d')) s with
                        | None -> None
-                       | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
+                       | Some(dist, dir, mat) -> let dir' = modVector (transpose (getInv tr)) dir
                                                  Some(dist, dir', mat)
     |D(_) as disc -> hitDisc ray disc
 
