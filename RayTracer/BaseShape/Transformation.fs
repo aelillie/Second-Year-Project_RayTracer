@@ -184,7 +184,7 @@ let transpose (m : float[,]) =
 ///Multiply a transformation matrix with some point.
 ///Returns a new point, with same dimensions, but
 ///with updated values
-let multPoint (m : float[,]) (p : Point) =
+let transPoint (m : float[,]) (p : Point) =
     let mutable x = 0.0
     let mutable y = 0.0
     let mutable z = 0.0
@@ -197,7 +197,10 @@ let multPoint (m : float[,]) (p : Point) =
     Array2D.iteri mult m
     Point.mkPoint x y z
 
-let multVector (m : float[,]) (v : Vector) =
+///Multiply a transformation matrix with some vector.
+///Returns a new vector, with same dimensions, but
+///with updated values
+let transVector (m : float[,]) (v : Vector) =
     let mutable x = 0.0
     let mutable y = 0.0
     let mutable z = 0.0
@@ -209,3 +212,9 @@ let multVector (m : float[,]) (v : Vector) =
         | _ -> () //Do nothing
     Array2D.iteri mult m
     Vector.mkVector x y z
+
+//let mergeTransformations (tL : Transformation list) =
+//    let m = idMatrix
+//    let rec merge =
+//        match tL with
+//        | t :: tLs  -> failwith "to be implemented"

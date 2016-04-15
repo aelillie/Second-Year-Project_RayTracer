@@ -70,11 +70,11 @@ let hit (R(p,t,d)) (s:Shape) =
                           else None
             
 let transHit (R(p,t,d)) (s:Shape) trans =
-    let p' = multPoint (getInv trans) p //transformed Ray origin
-    let d' = multVector (getInv trans) d //transformed direction
+    let p' = transPoint (getInv trans) p //transformed Ray origin
+    let d' = transVector (getInv trans) d //transformed direction
     match hit (R(p', t, d')) s with
     | None -> None
-    | Some(dist, dir, mat) -> let dir' = multVector (transpose (getInv trans)) dir
+    | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv trans)) dir
                               Some(dist, dir', mat)
 
 ///Entry point for transforming a shape
