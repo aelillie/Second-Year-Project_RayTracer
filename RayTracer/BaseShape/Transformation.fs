@@ -18,83 +18,95 @@ let idMatrix = Array2D.init 4 4
 
 ///Move a shape in some direction/dimension
 let translate x y z =
-    let m = idMatrix
-    m.[0, 3] <- x
-    m.[1, 3] <- y
-    m.[2, 3] <- z
-    let m' = Array2D.copy m //Use for inverse matrix
-    m'.[0, 3] <- -1.0*x
-    m'.[1, 3] <- -1.0*y
-    m'.[2, 3] <- -1.0*z
+    let m = array2D [[1.0; 0.0; 0.0; x]
+                     [0.0; 1.0; 0.0; y]
+                     [0.0; 0.0; 1.0; z]
+                     [0.0; 0.0; 0.0; 1.0]]
+    let m' = array2D [[1.0; 0.0; 0.0; -x]
+                      [0.0; 1.0; 0.0; -y]
+                      [0.0; 0.0; 1.0; -z]
+                      [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
 ///Scale a shape with a factor n in some direction/dimension
 let scale x y z = 
-    let m = idMatrix
-    m.[0, 0] <- x
-    m.[1, 1] <- y
-    m.[2, 2] <- z
-    let m' = Array2D.copy m
-    m'.[0, 0] <- 1.0/x
-    m'.[1, 1] <- 1.0/y
-    m'.[2, 2] <- 1.0/z
+    let m = array2D [[x; 0.0; 0.0; 0.0]
+                     [0.0; y; 0.0; 0.0]
+                     [0.0; 0.0; z; 0.0]
+                     [0.0; 0.0; 0.0; 1.0]]
+    let m' = array2D [[1.0/x; 0.0; 0.0; 0.0]
+                      [0.0; 1.0/y; 0.0; 0.0]
+                      [0.0; 0.0; 1.0/z; 0.0]
+                      [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
 ///Mirror shape around the x-axis
 let mirrorX =
-    let m = idMatrix
-    m.[0,0] <- -1.0
+    let m = array2D [[-1.0; 0.0; 0.0; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     T(m, m) //Its own inverse transformation matrix
 
 ///Mirror shape around the y-axis
 let mirrorY =
-    let m = idMatrix
-    m.[1,1] <- -1.0
+    let m = array2D [[1.0;  0.0; 0.0; 0.0]
+                     [0.0; -1.0; 0.0; 0.0]
+                     [0.0;  0.0; 1.0; 0.0]
+                     [0.0;  0.0; 0.0; 1.0]]
     T(m, m)
 
 ///Mirror shape around the z-axis
 let mirrorZ =
-    let m = idMatrix
-    m.[2,2] <- -1.0
+    let m = array2D [[1.0; 0.0;  0.0; 0.0]
+                     [0.0; 1.0;  0.0; 0.0]
+                     [0.0; 0.0; -1.0; 0.0]
+                     [0.0; 0.0;  0.0; 1.0]]
     T(m, m)
  
 ///Rotate shape around the x-axis by the given angle
 ///measured in radians
 let rotateX angle =
-    let m = idMatrix
-    m.[1, 1] <- System.Math.Cos angle
-    m.[2, 2] <- System.Math.Cos angle
-    m.[1, 2] <- (System.Math.Sin angle)*(-1.0)
-    m.[2, 1] <- System.Math.Sin angle
-    let m' = Array2D.copy m
-    m'.[1, 2] <- m.[2, 1]
-    m'.[2, 1] <- m.[1, 2]
+    let cos = System.Math.Cos angle
+    let sin = System.Math.Sin angle
+    let m = array2D [[1.0; 0.0; 0.0; 0.0]
+                     [0.0; cos;-sin; 0.0]
+                     [0.0; sin; cos; 0.0]
+                     [0.0; 0.0; 0.0; 1.0]]
+    let m' = array2D [[1.0; 0.0; 0.0; 0.0]
+                      [0.0; cos; sin; 0.0]
+                      [0.0;-sin; cos; 0.0]
+                      [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
 ///Rotate shape around the y-axis by the given angle
 ///measured in radians
 let rotateY angle =
-    let m = idMatrix
-    m.[0, 0] <- System.Math.Cos angle
-    m.[2, 2] <- System.Math.Cos angle
-    m.[2, 0] <- (System.Math.Sin angle)*(-1.0)
-    m.[0, 2] <- System.Math.Sin angle
-    let m' = Array2D.copy m
-    m'.[2, 0] <- m.[0, 2]
-    m'.[0, 2] <- m.[2, 0]
+    let cos = System.Math.Cos angle
+    let sin = System.Math.Sin angle
+    let m = array2D [[ cos; 0.0; sin; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [-sin; 0.0; cos; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
+    let m' = array2D [[cos; 0.0;-sin; 0.0]
+                      [0.0; 1.0; 0.0; 0.0]
+                      [sin; 0.0; cos; 0.0]
+                      [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
 ///Rotate shape around the z-axis by the given angle
 ///measured in radians
 let rotateZ angle =
-    let m = idMatrix
-    m.[0, 0] <- System.Math.Cos angle
-    m.[1, 1] <- System.Math.Cos angle
-    m.[0, 1] <- (System.Math.Sin angle)*(-1.0)
-    m.[1, 0] <- System.Math.Sin angle
-    let m' = Array2D.copy m
-    m'.[0, 1] <- m.[1, 0]
-    m'.[1, 0] <- m.[0, 1]
+    let cos = System.Math.Cos angle
+    let sin = System.Math.Sin angle
+    let m = array2D [[ cos;-sin; 0.0; 0.0]
+                     [ sin; cos; 0.0; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
+    let m' = array2D [[ cos; sin; 0.0; 0.0]
+                      [-sin; cos; 0.0; 0.0]
+                      [ 0.0; 0.0; 1.0; 0.0]
+                      [ 0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
 ///Inverse any shearing transformation matrix
@@ -122,8 +134,10 @@ let sheareXY distance =
 //Just to notify the user. The id matrix will
 //have a 0.0 in its place either way.
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[1, 0] <- distance
+    let m = array2D [[ 1.0; 0.0; 0.0; 0.0]
+                     [ distance; 1.0; 0.0; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
 
@@ -131,8 +145,10 @@ let sheareXY distance =
 ///to the x- and z-axis
 let sheareXZ distance = 
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[2, 0] <- distance
+    let m = array2D [[ 1.0; 0.0; 0.0; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [ distance; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
 
@@ -140,8 +156,10 @@ let sheareXZ distance =
 ///to the y- and x-axis
 let sheareYX distance = 
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[0, 1] <- distance
+    let m = array2D [[ 1.0; distance; 0.0; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
 
@@ -149,8 +167,10 @@ let sheareYX distance =
 ///to the y- and z-axis
 let sheareYZ distance = 
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[2, 1] <- distance
+    let m = array2D [[ 1.0; 0.0; 0.0; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [ 0.0; distance; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
 
@@ -158,8 +178,10 @@ let sheareYZ distance =
 ///to the z- and x-axis
 let sheareZX distance = 
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[0, 2] <- distance
+    let m = array2D [[ 1.0; 0.0; distance; 0.0]
+                     [ 0.0; 1.0; 0.0; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
 
@@ -167,15 +189,13 @@ let sheareZX distance =
 ///to the z- and y-axis
 let sheareZY distance = 
     if distance = 0.0 then raise SheareWithZero
-    let m = idMatrix
-    m.[1, 2] <- distance
+    let m = array2D [[ 1.0; 0.0; 0.0; 0.0]
+                     [ 0.0; 1.0; distance; 0.0]
+                     [ 0.0; 0.0; 1.0; 0.0]
+                     [ 0.0; 0.0; 0.0; 1.0]]
     let m' = inverseShear m
     T(m, m')
         
-
-let d (m : float[,]) = 
-            1.0 - m.[1,0]*m.[0,1]-m.[2,0]*m.[0,3]-m.[2,1]*m.[1,3]
-                + m.[1,0]*m.[2,1]*m.[0,3] + m.[2,0]*m.[0,1]*m.[1,2]
 
 ///Transpose a transformation matrix
 ///by swapping all rows with columns
@@ -223,3 +243,4 @@ let mergeTransformations (tL : Transformation list) =
     //Apply transformation in reverse order
     List.foldBack (fun (T(a, a')) (T(m, m')) -> // accumulator and element
                     T((matrixMult a m), (matrixMult a' m'))) tL t
+
