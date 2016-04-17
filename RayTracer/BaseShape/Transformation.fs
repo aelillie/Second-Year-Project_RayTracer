@@ -1,5 +1,6 @@
 ﻿///Transformation matrices for object manipulation
 module Transformation
+open System.Threading.Tasks
 open Point
 open Vector
 
@@ -185,36 +186,40 @@ let transpose (m : float[,]) =
 ///Returns a new point, with same dimensions, but
 ///with updated values
 let transPoint (m : float[,]) (p : Point) =
-    let mutable x = 0.0
-    let mutable y = 0.0
-    let mutable z = 0.0
-    let mult row col elem =
-        match col with
-        | 0 -> x <- x + (Point.getX p) * elem
-        | 1 -> y <- y + (Point.getY p) * elem
-        | 2 -> z <- z + (Point.getZ p) * elem
-        | _ -> () //Do nothing
-    Array2D.iteri mult m
-    Point.mkPoint x y z
+    let px = [|Point.getX p; Point.getY p; Point.getZ p; 1.0|]
+    let out = [|0.0; 0.0; 0.0; 0.0;|]
+    Array2D.iteri (fun row col elem -> out.[row] <- out.[row] + px.[col] * elem) m
+    Point.mkPoint out.[0] out.[1] out.[2]
 
 ///Multiply a transformation matrix with some vector.
 ///Returns a new vector, with same dimensions, but
 ///with updated values
+//Same as transPoint, except the vector has a 0.0 in its
+//4th dimension
 let transVector (m : float[,]) (v : Vector) =
-    let mutable x = 0.0
-    let mutable y = 0.0
-    let mutable z = 0.0
-    let mult row col elem =
-        match col with
-        | 0 -> x <- x + (Vector.getX v) * elem
-        | 1 -> y <- y + (Vector.getY v) * elem
-        | 2 -> z <- z + (Vector.getZ v) * elem
-        | _ -> () //Do nothing
-    Array2D.iteri mult m
-    Vector.mkVector x y z
+    let vx = [|Vector.getX v; Vector.getY v; Vector.getZ v; 0.0|]
+    let out = [|0.0; 0.0; 0.0; 0.0;|]
+    Array2D.iteri (fun row col elem -> out.[row] <- out.[row] + vx.[col] * elem) m
+    Vector.mkVector out.[0] out.[1] out.[2]
 
-//let mergeTransformations (tL : Transformation list) =
-//    let m = idMatrix
-//    let rec merge =
-//        match tL with
-//        | t :: tLs  -> failwith "to be implemented"
+//From https://msdn.microsoft.com/en-us/library/hh304369(v=vs.100).aspx
+let matrixMult (a:float[,]) (b:float[,]) =
+    let rowsA, colsA = Array2D.length1 a, Array2D.length2 a
+    let rowsB, colsB = Array2D.length1 b, Array2D.length2 b
+    let result = Array2D.create rowsA colsB 0.0
+    Parallel.For(0, rowsA, (fun i->
+        for j = 0 to colsB - 1 do
+           for k = 0 to colsA - 1 do
+              result.[i,j] <- result.[i,j] + a.[i,k] * b.[k,j]))  
+    |> ignore
+    result
+
+///Merge the given list of transformations into one, such that the resulting
+///transformation is equivalent to applying the individual transformations
+///from left to right (i.e. starting with the first element in the list).
+let mergeTransformations (tL : Transformation list) =
+    let idM = Array2D.init<float> 4 4 (fun row col -> if row = col then 1.0 else 0.0)
+    let t = T(idM, idM) //initial state of multiplication
+    //Apply transformation in reverse order
+    List.foldBack (fun (T(a, a')) (T(m, m')) -> // accumulator and element
+                    T((matrixMult a m), (matrixMult a' m'))) tL t
