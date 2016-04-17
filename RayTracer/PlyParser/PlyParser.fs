@@ -44,20 +44,19 @@ let mkVertex n (xs:float list) =
     |_ -> failwith "Encounted an errornous number of values when creating a vertex of %d, %O" n xs
     
 //Helper parsers
-let pSingleSpace: Parser<_> = satisfy (fun c ->  System.Char.IsWhiteSpace c) 
 let pElementName: Parser<_> = satisfy (fun c ->  System.Char.IsLetterOrDigit c)
-let pList n : Parser<_> = parray n (pint32 .>> spaces)
+let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else failFatally "lol"
 
 
 // Set up parsers for each type  
 let pComment: Parser<_> =  pstring "comment" >>. restOfLine true |>> (fun x -> Comment x)
 let pEndHeader: Parser<_> = pstring "end_header" .>> skipRestOfLine true |>> (fun _ -> Endheader)
-let pVertex: Parser<_> = many1 (pfloat .>> pSingleSpace) .>> spaces |>> (fun x -> mkVertex x.Length x)
+let pVertex: Parser<_> = spaces >>. many1 (pfloat .>> spaces) .>> spaces |>> (fun x -> mkVertex x.Length x)
 //let pVertex: Parser<_> = pfloat .>>. (spaces >>. pfloat) .>>. (spaces >>. pfloat) |>> (fun ((x,y),z) -> Vertex (x,y,z))
 //let pFace: Parser<_> = pint32 .>>? spaces1 >>= pList .>> spaces |>> (fun x -> mkFace x)
-let pFace: Parser<_> = pint32 .>>? spaces1 >>= pList |>> (fun x -> Face (Array.toList x))
+let pFace: Parser<_> = pint32 .>>? spaces1 >>=? pList |>> (fun x -> Face (Array.toList x))
 //let pFace: Parser<_> = pint32 .>>? spaces1 .>>. many1 (pint32 .>> spaces1) |>> (fun (y,x) -> Face (x))
-let pDummyData: Parser<_> = skipRestOfLine true |>> (fun x -> DummyData "R")
+let pDummyData: Parser<_> = restOfLine true |>> (fun x -> DummyData x)
 let pElement: Parser<_> = pstring "element" >>. spaces >>. (many1Chars pElementName) .>> spaces .>>.  pint32 |>> (fun (x,f) -> Element (x,f))
 
 

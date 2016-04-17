@@ -25,7 +25,7 @@ let main argv =
     writer.AutoFlush <- true
 
 
-    let filepath = @"C:\Users\i5-4670K\Documents\urn2.ply.txt"
+    let filepath = @"C:\Users\i5-4670K\Documents\PlyFiles\tommygun.ply.txt"
 
 
     let ply = PlyParse.parsePly filepath
