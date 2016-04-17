@@ -30,8 +30,8 @@ open System.Drawing
         let sphere = mkSphere (mkPoint -1.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
         let sphere3 = mkSphere (mkPoint 0.0 1.0 -2.5) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.3) in
         let sphere4 = mkSphere (mkPoint 3.0 0.0 1.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Orange) 0.3) in
- 
-        let scene = Scene.mkScene [sphere3;sphere4;sphere2;sphere;plane] [light] ambientLight camera 2 in
+        let rect = mkRectangle (mkPoint 0.0 0.0 0.0) 2.0 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
+        let scene = Scene.mkScene [rect] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else

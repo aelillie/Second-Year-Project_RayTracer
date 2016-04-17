@@ -13,12 +13,16 @@ type Shape =
   | D of Point * float * Material
   | HC of Point * float * float * Material
   | SC of Point * float * float * Material * Shape * Shape
+  | Rec of Point * float * float * Material
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
       |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
 
 let pow (x, y) = System.Math.Pow(x, y)
+//Rectangle
+let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
+    = Rec(corner, width, height, t)
 
 //Sphere
 let mkSphere orego radius material = S (orego, radius, material)
@@ -36,6 +40,23 @@ let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape 
 let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
 let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
      = failwith "not implemented yet need transformation for discs" 
+
+//Hit function for Rectangle. Rectangle is AXis alligned with XY. Can be moved by transforming.
+let hitRec (R(p,t,d)) (Rec(c,w,h,m)) = 
+    let dz = Vector.getZ d
+    let pz = Point.getZ p
+    let distance = (-1.0 * pz) / dz
+    let p' = Point.move p (Vector.multScalar d distance)
+    
+    let px = Point.getX p'
+    let py = Point.getY p'
+    let ax = Point.getX c
+    let ay = Point.getY c
+
+
+    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h)
+    then Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
+    else None
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
 let hitDisc (R(p,t,d)) (D(c,r,m)) = 
@@ -130,4 +151,6 @@ let hit ((R(p,t,d)) as ray) (s:Shape) =
     |D(_) as disc -> hitDisc ray disc
 
     |HC(_) as hc -> hitCylinder ray hc
+
+    |Rec(_) as rect -> hitRec ray rect
              

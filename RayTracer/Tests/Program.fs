@@ -20,7 +20,7 @@ let main argv =
     ExprToPolyTest.doTest()*)
     TracerTest.doTest()  
 
-
+    
     
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
