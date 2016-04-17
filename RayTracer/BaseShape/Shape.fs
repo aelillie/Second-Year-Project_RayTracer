@@ -11,6 +11,7 @@ type Shape =
   | S of Point * float * Material
   | P of Point * Vector * Material
   | D of Point * float * Material
+  | B 
   | HC of Point * float * float * Material
   | SC of Point * float * float * Material * Shape * Shape
   | Rec of Point * float * float * Material
@@ -23,7 +24,9 @@ let pow (x, y) = System.Math.Pow(x, y)
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
     = Rec(corner, width, height, t)
-
+//Box
+let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
+      = failwith "mkBox not implemented"
 //Sphere
 let mkSphere orego radius material = S (orego, radius, material)
 let getSphereRadius (S(_,radius,_)) = radius
