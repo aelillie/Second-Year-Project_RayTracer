@@ -8,7 +8,9 @@ val getT : Transformation -> float[,]
 val getInv : Transformation -> float[,]
 val transpose : float[,] -> float[,]
 val transPoint : float[,] -> Point -> Point
+val transPointParallel : float[,] -> Point -> Point
 val transVector : float[,] -> Vector -> Vector
+val transVectorParallel : float[,] -> Vector -> Vector
 
 val translate : x : float -> y : float -> z : float -> Transformation
 val rotateX : angle : float -> Transformation

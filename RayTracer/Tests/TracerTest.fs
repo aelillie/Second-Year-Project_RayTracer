@@ -33,14 +33,15 @@ open System.Drawing
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
         let hc = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
 
-        let tsphere = transform sphere (sheareYX 2.0)
+        let tsphere = transform sphere (mergeTransformations [sheareXY 2.0;(scale 2.0 2.0 2.0);mirrorY])
+        let tsphere' = transform sphere (scale 2.0 2.0 2.0)
         let thc = transform hc (translate 0.5 0.5 0.5)
 
         let scene = Scene.mkScene [tsphere] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else
-          doRender scene (Some ("transform.png"))
+          doRender scene (Some ("sphere.png"))
 
       let renderInsideSphere toScreen =
         let light = mkLight (mkPoint 0.0 0.0 0.0) (Colour.fromColor Color.White) 3.0 in
