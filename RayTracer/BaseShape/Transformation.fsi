@@ -1,11 +1,14 @@
 ﻿module Transformation
-
-type shape = unit
+open Point
+open Vector
 
 type Transformation
 
-val getTransMatrix : Transformation -> float[,]
-val getInvTransMatrix : Transformation -> float[,]
+val getT : Transformation -> float[,]
+val getInv : Transformation -> float[,]
+val transpose : float[,] -> float[,]
+val transPoint : float[,] -> Point -> Point
+val transVector : float[,] -> Vector -> Vector
 
 val translate : x : float -> y : float -> z : float -> Transformation
 val rotateX : angle : float -> Transformation
@@ -22,8 +25,4 @@ val mirrorX : Transformation
 val mirrorY : Transformation
 val mirrorZ : Transformation
 
-/// Merge the givne list of transformations into one, such that the resulting
-/// transformation is equivalent to applying the individual transformations
-/// from left to right (i.e. starting with the first element in the list).
-//val mergeTransformations : Transformation list -> Transformation
-//val transform : shape -> Transformation -> shape
+val mergeTransformations : Transformation list -> Transformation

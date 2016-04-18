@@ -1,5 +1,5 @@
 ﻿module TracerTest
-
+open Transformation
 open Camera
 open Shape
 open Light
@@ -35,7 +35,7 @@ open System.Drawing
         if toScreen then
           doRender scene None
         else
-          doRender scene (Some ("renderSphere.png"))
+          doRender scene (Some ("transform.png"))
 
       let renderInsideSphere toScreen =
         let light = mkLight (mkPoint 0.0 0.0 0.0) (Colour.fromColor Color.White) 3.0 in
