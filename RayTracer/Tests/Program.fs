@@ -18,7 +18,8 @@ let main argv =
     VectorTest.doTest()
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
-    TracerTest.doTest()  
+    //TracerTest.doTest()  
+    TransformationTest.doTest()
 
 
     

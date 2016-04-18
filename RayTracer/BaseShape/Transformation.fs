@@ -8,6 +8,17 @@ type shape = unit //Dummy type for testing
 
 type Transformation =
     | T of float[,] * float[,] //normal matrix and inverse matrix
+    override t.ToString() =
+        match t with
+            T(m, m') -> "[["+m.[0,0].ToString()+" ; "+m.[0,1].ToString()+" ; "+m.[0,2].ToString()+" ; "+m.[0,3].ToString()+"]\n"+
+                        " ["+m.[1,0].ToString()+" ; "+m.[1,1].ToString()+" ; "+m.[1,2].ToString()+" ; "+m.[1,3].ToString()+"]\n"+
+                        " ["+m.[2,0].ToString()+" ; "+m.[2,1].ToString()+" ; "+m.[2,2].ToString()+" ; "+m.[2,3].ToString()+"]\n"+
+                        " ["+m.[3,0].ToString()+" ; "+m.[3,1].ToString()+" ; "+m.[3,2].ToString()+" ; "+m.[3,3].ToString()+"]]\n"
+                        + ",\n" +
+                        "[["+m'.[0,0].ToString()+" ; "+m'.[0,1].ToString()+" ; "+m'.[0,2].ToString()+" ; "+m'.[0,3].ToString()+"]\n"+
+                        " ["+m'.[1,0].ToString()+" ; "+m'.[1,1].ToString()+" ; "+m'.[1,2].ToString()+" ; "+m'.[1,3].ToString()+"]\n"+
+                        " ["+m'.[2,0].ToString()+" ; "+m'.[2,1].ToString()+" ; "+m'.[2,2].ToString()+" ; "+m'.[2,3].ToString()+"]\n"+
+                        " ["+m'.[3,0].ToString()+" ; "+m'.[3,1].ToString()+" ; "+m'.[3,2].ToString()+" ; "+m'.[3,3].ToString()+"]]\n"
 
 let getT (T(m, m')) = m
 let getInv (T(m, m')) = m'
@@ -240,7 +251,7 @@ let matrixMult (a:float[,]) (b:float[,]) =
 let mergeTransformations (tL : Transformation list) =
     let idM = Array2D.init<float> 4 4 (fun row col -> if row = col then 1.0 else 0.0)
     let t = T(idM, idM) //initial state of multiplication
-    //Apply transformation in reverse order
+    //Take care of order
     List.foldBack (fun (T(a, a')) (T(m, m')) -> // accumulator and element
                     T((matrixMult a m), (matrixMult a' m'))) tL t
 
