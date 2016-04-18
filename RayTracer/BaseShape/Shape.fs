@@ -6,8 +6,10 @@ open ExprParse
 open Material
 open Transformation
 
-//A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 
+
+//A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
+let pi = System.Math.PI
 type Shape =
   | S of Point * float * Material
   | TShape of Shape * Transformation
@@ -15,7 +17,7 @@ type Shape =
   | D of Point * float * Material
   | B 
   | HC of Point * float * float * Material
-  | SC of Point * float * float * Material * Shape * Shape
+  | SC of Shape * Shape * Shape
   | Rec of Point * float * float * Material
   override s.ToString() =
     match s with
@@ -49,7 +51,19 @@ let transform (s : Shape) (t : Transformation) = TShape(s, t)
 let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
 let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
 let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
-     = failwith "not implemented yet need transformation for discs" 
+     = 
+     let cyl = mkHollowCylinder c r h t 
+     let botDisc = mkDisc c r bottom
+     let topDisc = mkDisc c r top
+
+     let transTop = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (h/2.0) 0.0;]
+     let transBot = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (-h/2.0) 0.0; ]
+     let topDisc' = transform topDisc transTop
+     let botDisc' = transform botDisc transBot
+
+     SC(cyl,topDisc',botDisc')
+
+
 
 //Hit function for Rectangle. Rectangle is AXis alligned with XY. Can be moved by transforming.
 let hitRec (R(p,t,d)) (Rec(c,w,h,m)) = 
@@ -94,23 +108,22 @@ let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) =
     else 
      let (t1, t2) = (-b + System.Math.Sqrt(dis)) / (2.0*a), (-b - System.Math.Sqrt(dis)) / (2.0*a)
      let (tbig, tlittle) = System.Math.Max(t1,t2), System.Math.Min(t1,t2)
-     let pyt1 = Point.getY p * tlittle * Vector.getY d
-     let pyt2 = Point.getY p * tbig * Vector.getY d
+     let pyt1 = Point.getY p + tlittle * Vector.getY d
+     let pyt2 = Point.getY p + tbig * Vector.getY d
      
-     if (-h / 2.0) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
+     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
      then 
         let px = Point.getX p * tlittle * Vector.getX d
         let pz = Point.getZ p * tlittle * Vector.getZ d
         Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), m)
-     elif (-h / 2.0) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
+     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
      then
         let px = Point.getX p * tbig * Vector.getX d
         let pz = Point.getZ p * tbig * Vector.getZ d
         Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
      else None
 
-
-     
+ 
 ///Given a ray, computes the hit point for a shape,
 ///and returns information on how the point
 ///should be rendered
@@ -165,4 +178,8 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
     |HC(_) as hc -> hitCylinder ray hc
              
     |Rec(_) as rect -> hitRec ray rect
-             
+
+    |SC(c,top,bot) -> let min = List.map(fun x -> hit ray x) [c;top;bot] |> List.choose id
+                      match min with
+                      |[] -> None
+                      |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)

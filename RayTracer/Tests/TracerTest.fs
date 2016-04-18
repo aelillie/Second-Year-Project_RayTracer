@@ -20,6 +20,7 @@ open System.Drawing
         | Some filename -> Scene.renderToFile scene filename
         | None -> ()
       let toScreen = false 
+
       let renderSphere toScreen =
         let light = mkLight (mkPoint 0.0 3.0 0.0) (Colour.fromColor Color.White) 1.0 in
         //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
@@ -30,8 +31,9 @@ open System.Drawing
         let sphere = mkSphere (mkPoint -1.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
         let sphere3 = mkSphere (mkPoint 0.0 1.0 -2.5) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.3) in
         let sphere4 = mkSphere (mkPoint 3.0 0.0 1.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Orange) 0.3) in
-        let rect = mkRectangle (mkPoint 0.0 0.0 0.0) 2.0 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
-        let scene = Scene.mkScene [rect] [light] ambientLight camera 2 in
+        let solidC = mkSolidCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) in
+        let solidC' = transform solidC (rotateX (-(System.Math.PI / 1.5)))
+        let scene = Scene.mkScene [solidC'] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else
