@@ -19,9 +19,9 @@ let main argv =
     (*PointTest.doTest()
     VectorTest.doTest()
     ExprParseTest.doTest()
-    ExprToPolyTest.doTest()
-    BoundingBoxTest.doTest()*)
-    TracerTest.doTest()  
+    ExprToPolyTest.doTest()*)
+    BoundingBoxTest.doTest()
+    //TracerTest.doTest()  
 
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore

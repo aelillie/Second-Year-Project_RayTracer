@@ -29,6 +29,7 @@ let calc s =
         let hz = (Point.getZ p) + f + epsilon 
         let h = mkPoint hx hy hz
         mkBoundingBox l h
+    | P(_,_,_) -> failwith "Can't make boundingbox for that sphere"
 
    (* Triangle bounding box
     | S(a,b,c,m) -> 
