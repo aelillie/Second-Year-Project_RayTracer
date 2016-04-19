@@ -7,6 +7,9 @@ open Material
 open Transformation
 
 
+///Entry point for transforming a shape
+//Should call transHit or contain the logic itself
+
 
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 let pi = System.Math.PI
@@ -15,7 +18,7 @@ type Shape =
   | TShape of Shape * Transformation
   | P of Point * Vector * Material
   | D of Point * float * Material
-  | B 
+  | B of Shape list
   | HC of Point * float * float * Material
   | SC of Shape * Shape * Shape
   | Rec of Point * float * float * Material
@@ -24,13 +27,49 @@ type Shape =
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
       |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
 
+
 let pow (x, y) = System.Math.Pow(x, y)
+let transform (s : Shape) (t : Transformation) = TShape(s, t)
+
+
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
     = Rec(corner, width, height, t)
 //Box
 let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
-      = failwith "mkBox not implemented"
+      = let width = System.Math.Abs(Point.getX high - Point.getX low)
+        let height = System.Math.Abs(Point.getY high - Point.getY low)
+        let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
+        let az = System.Math.Min(Point.getZ high, Point.getZ low)
+
+
+        let frontT = translate (Point.getX low) (Point.getY low) az 
+        let backT = mergeTransformations [frontT; translate 0.0 0.0 depth]
+        let bottomT = mergeTransformations [rotateX (pi/2.0); frontT]
+        let topT = mergeTransformations [bottomT; translate 0.0 height 0.0]
+        let leftT = mergeTransformations [rotateY (-(pi/2.0)); frontT]
+        let rightT = mergeTransformations [leftT; translate width 0.0 0.0]
+
+        let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
+
+        let frontR = mkRectangle (mkPoint 0.0 0.0 0.0) width height front
+        let backR =  mkRectangle (mkPoint 0.0 0.0 0.0) width height back
+        let bottomR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth bottom
+        let topR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth top
+        let leftR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height left
+        let rightR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height right
+
+        let rectangles = [frontR;backR;bottomR;topR;leftR;rightR] 
+
+        let rects = List.map2 (fun s t -> transform s t) rectangles transformations
+
+        B(rects)
+
+        
+        
+        
+        
+         
 //Sphere
 let mkSphere orego radius material = S (orego, radius, material)
 let getSphereRadius (S(_,radius,_)) = radius
@@ -43,9 +82,6 @@ let getPlaneNormVector (P(_,normVector,_)) = normVector
 let getPlaneMaterial (P(_, _, mat)) = mat
 
 
-///Entry point for transforming a shape
-//Should call transHit or contain the logic itself
-let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
 //Cylinders and Discs
 let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
@@ -183,3 +219,7 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                       match min with
                       |[] -> None
                       |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+    |B(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
+                 match min with
+                 |[] -> None
+                 |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
