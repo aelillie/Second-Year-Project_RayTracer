@@ -1,8 +1,10 @@
-﻿open Vector
+﻿module Program
+open Vector
 open Ray
 open Shape
 open Material
 open Colour
+open BoundingBox 
 open Camera
 open Drawing
 open Light
@@ -21,10 +23,13 @@ let main argv =
     ExprToPolyTest.doTest()*)
     TracerTest.doTest()  
     //TransformationTest.doTest()
+    BoundingBoxTest.doTest()
+    //TracerTest.doTest() 
 
 
     stopWatch.Stop()
-    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds
+    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
+
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
