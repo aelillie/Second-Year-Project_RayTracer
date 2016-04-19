@@ -16,12 +16,19 @@ open System.IO
 
 [<EntryPoint>]
 let main argv = 
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     (*PointTest.doTest()
     VectorTest.doTest()
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
+    TracerTest.doTest()  
+    //TransformationTest.doTest()
     BoundingBoxTest.doTest()
-    //TracerTest.doTest()  
+    //TracerTest.doTest() 
+
+
+    stopWatch.Stop()
+    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
 
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
