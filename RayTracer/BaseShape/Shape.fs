@@ -46,11 +46,11 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
 
 
         let frontT = translate (Point.getX low) (Point.getY low) az 
-        let backT = mergeTransformations [frontT; translate 0.0 0.0 depth]
-        let bottomT = mergeTransformations [rotateX (pi/2.0); frontT]
-        let topT = mergeTransformations [bottomT; translate 0.0 height 0.0]
-        let leftT = mergeTransformations [rotateY (-(pi/2.0)); frontT]
-        let rightT = mergeTransformations [leftT; translate width 0.0 0.0]
+        let backT = mergeTransformations [translate 0.0 0.0 depth; frontT;]
+        let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
+        let topT = mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
+        let leftT = mergeTransformations [frontT; rotateY (-(pi/2.0))]
+        let rightT = mergeTransformations [translate width 0.0 0.0; leftT;]
 
         let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
 
@@ -66,6 +66,7 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
+
 
         
         
@@ -94,8 +95,8 @@ let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Ma
      let botDisc = mkDisc c r bottom
      let topDisc = mkDisc c r top
 
-     let transTop = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (h/2.0) 0.0;]
-     let transBot = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (-h/2.0) 0.0; ]
+     let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
+     let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX (-(pi/2.0)) ]
      let topDisc' = transform topDisc transTop
      let botDisc' = transform botDisc transBot
 

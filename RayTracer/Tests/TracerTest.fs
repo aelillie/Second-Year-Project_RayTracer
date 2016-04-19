@@ -28,13 +28,15 @@ open System.Drawing
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
         let sphere1 = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.2)
         let sphere2 = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Purple) 0.2)
-        let hc = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
-
-        let tsphere = transform sphere (mergeTransformations [scale 2.0 2.0 2.0;sheareYX 1.0;translate 1.0 2.5 -2.0;mirrorZ])
-        let tsphere1 = transform sphere1 (mergeTransformations [scale 0.5 0.5 0.5;sheareXY 1.0;translate -1.0 1.5 -2.0])
-        let tsphere2 = transform sphere2 (mergeTransformations [scale 1.0 1.0 1.0;sheareXZ 1.0;translate 2.0 -1.0 -1.0])
-
-        let scene = Scene.mkScene [plane; tsphere; tsphere1; tsphere2] [light] ambientLight camera 2
+        let box = mkBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) 
+                    (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
+                    (Material.mkMaterial (Colour.fromColor Color.Green) 0.0)
+                    (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+                    (Material.mkMaterial (Colour.fromColor Color.White) 0.0)
+                    (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.0)
+                    (Material.mkMaterial (Colour.fromColor Color.Purple) 0.0)
+        let box' = transform box (rotateY (System.Math.PI / 0.07543532))
+        let scene = Scene.mkScene [box'] [light] ambientLight camera 2
         if toScreen then
           doRender scene None
         else
