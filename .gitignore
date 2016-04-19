@@ -537,3 +537,10 @@ bin
 *.ptx
 *.cubin
 *.fatbin
+
+
+### XamarinStudio ###
+bin/
+obj/
+*.userprefs
+
