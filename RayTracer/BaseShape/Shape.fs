@@ -63,12 +63,12 @@ let mkTriangleMesh p (plyList:Ply list) =
     
     let tri = makeTriangles vertexList faceList
 
-    tri
+    TM(tri)
 
 ///Given a ray, computes the hit point for a sphere,
 //and returns information on how the point
 ///should be rendered
-let hit (R(p,t,d)) (s:Shape) =
+let rec hit (R(p,t,d)) (s:Shape) =
     match s with
     |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
     
@@ -109,7 +109,6 @@ let hit (R(p,t,d)) (s:Shape) =
                               Some (result, n, mat)
                           else None
     | T(a,b,c,mat) -> 
-
         let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
         let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getZ a)) ((Point.getZ c) - (Point.getZ a))
 
@@ -148,4 +147,11 @@ let hit (R(p,t,d)) (s:Shape) =
              Some(t, vectorN v u, mat)
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
+    | TM(list) ->
+        let newlist = list |> List.map (fun e -> hit (R(p,t,d)) e)
+        let sortedList = newlist |> List.choose id
+        if List.isEmpty sortedList then None else
+        let minDist = List.minBy (fun (dis,nv,mat) -> dis) sortedList
+        Some minDist
+     
          

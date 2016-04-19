@@ -1,5 +1,6 @@
 ﻿module TracerTest
 
+open PlyParse
 open Camera
 open Shape
 open Light
@@ -26,12 +27,9 @@ open System.Drawing
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
-        let sphere2 = mkSphere (mkPoint 2.0 2.0 -1.2) 1.0 (Material.mkMaterial (Colour.fromColor Color.Green) 0.5) in
-        let sphere = mkSphere (mkPoint -1.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
-        let sphere3 = mkSphere (mkPoint 0.0 1.0 -2.5) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.3) in
-        let sphere4 = mkSphere (mkPoint 3.0 0.0 1.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Orange) 0.3) in
-        let triangle = mkTriangle(mkPoint 2.0 1.0 -3.0) (mkPoint 3.0 1.0 -2.0) (mkPoint 2.5 0.0 -1.0) (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2) in
-        let scene = Scene.mkScene [sphere3;sphere4;sphere2;sphere;plane;triangle] [light] ambientLight camera 2 in
+        let plyFile = parsePly "C:\Users\SecondBanana\Documents\GitHubVisualStudio\Ray-Tracer-Project\RayTracer\ant.ply"
+        let ant = mkTriangleMesh (mkPoint 0.0 0.0 -40.0) plyFile
+        let scene = Scene.mkScene [ant] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else
