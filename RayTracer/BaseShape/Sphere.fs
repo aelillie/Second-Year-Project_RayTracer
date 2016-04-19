@@ -78,10 +78,10 @@ let hit (R(p,t,d)) (s:Shape) =
     | T(a,b,c,mat) -> 
 
         let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getZ a)) ((Point.getZ c) - (Point.getZ a))
+        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
 
-        //Create the normal of the triangle
-        let vectorN u v = Vector.normalise (Vector.crossProduct u v)
+        //Function to find the normal of the triangle
+        let vectorN a b = Vector.normalise (Vector.crossProduct a b)
 
         let a1 = (Point.getX a) - (Point.getX b)
         let b1 = (Point.getX a) - (Point.getX c)
@@ -102,7 +102,7 @@ let hit (R(p,t,d)) (s:Shape) =
 
         //Find the unknowns
         //If D!=0 we have a solution    
-        if (D > 0.0)  then 
+        if (D <> 0.0)  then 
           let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
           let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
           let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
@@ -110,8 +110,8 @@ let hit (R(p,t,d)) (s:Shape) =
           if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
            then 
              let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
-       
-          ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
+  
+         ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
              Some(t, vectorN v u, mat)
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
