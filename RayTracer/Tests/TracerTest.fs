@@ -25,7 +25,7 @@ open System.Drawing
         let light1 = mkLight (mkPoint -2.5 -3.0 -3.0) (Colour.fromColor Color.White) 2.0 in
         //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
-        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000 in
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
         let sphere2 = mkSphere (mkPoint 0.0 0.0 0.0) 0.5 (Material.mkMaterial (Colour.fromColor Color.Green) 0.3) in
         let sphere = mkSphere (mkPoint -2.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
