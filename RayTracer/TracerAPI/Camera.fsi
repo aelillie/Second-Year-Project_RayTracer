@@ -9,6 +9,8 @@ type UnitRes
 type Camera
 
 val mkCamera : point -> point -> vector -> float -> float -> float -> int -> int -> Camera
+
+//Takes a camera and creates all the ray from it coupled together with the corresponding xy coordinat.
 val mkRays : Camera -> (ray * (int * int)) list
 
 val getPoint : Camera -> point
