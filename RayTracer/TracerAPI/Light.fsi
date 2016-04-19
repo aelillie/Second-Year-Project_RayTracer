@@ -10,6 +10,8 @@ type AmbientLight
 val mkLight : position : Point -> colour : Colour -> intensity : float -> Light
 val mkAmbientLight : colour : Colour -> intensity : float -> AmbientLight
 
+//Calculates the intensity the light has on a point, given the direction of the shadowRay and the original rays direction
+//and the lightsource intensity.
 val calculateI :  Vector -> Vector -> float -> float
 
 val getPoint : Light -> Point
