@@ -77,10 +77,11 @@ let hitImplicit (R(p,t,d)) (po:poly) =
         match aGroup with
         | xs -> xs
 
-    
+    let mapToAtomList map =
+        Map.map (fun x y -> getSEList y) map
  
 
-    let substSE (SE ags) = 
+    let substSE ags  = 
         List.map (fun x -> List.map (fun a -> match a with
                                                 | AExponent (s,i) -> let sub s = 
                                                                         match s with
@@ -92,8 +93,9 @@ let hitImplicit (R(p,t,d)) (po:poly) =
                                                                         | "dz" -> Vector.getZ d
                                                                         | _ -> failwith ""
                                                                      pow (sub s,(float i)) 
-                                                | ANum c  -> c ) x) 
-    let blab m = Map.map (fun x y -> List.collect id (substSE y) )
+                                                | ANum c  -> c ) x)  ags
+
+    let blab m = Map.map (fun x y -> List.collect id (substSE y) ) m
 
     let subbedMap m = Map.map (fun x y -> Map.add (x,(List.collect id (substSE y))) m) polyMap
 
@@ -101,6 +103,8 @@ let hitImplicit (R(p,t,d)) (po:poly) =
 
     let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
 
+    //takes poly gives map<int,float>
+    let doneHere m = (polyToMap >> mapToAtomList >> blab >> foldMap)  m
 
     let polyMapOfFloats : Map<int,float> = foldMap (subbedMap empty)
 
