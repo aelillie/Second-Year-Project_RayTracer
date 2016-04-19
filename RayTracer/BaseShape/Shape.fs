@@ -24,7 +24,6 @@ type Shape =
   | T of Point * Point * Point * Material
   | SC of Shape * Shape * Shape
   | Rec of Point * float * float * Material
-  | T of Point * Point * Point * Material
   | TM of Shape list
   override s.ToString() =
     match s with
