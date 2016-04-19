@@ -18,7 +18,7 @@ open ExprToPoly
 type poly = ExprToPoly.poly
 
 type baseShape =
-  | I of poly
+  | Bs of poly
   
 
 type Shape =
@@ -39,13 +39,13 @@ let getPlaneMaterial (P(_, _, mat)) = mat
 let pow (x, y) = System.Math.Pow(x, y)
 
 
-let mkImplicit (s : string) : baseShape = I (exprToPoly (parseStr s) "t")
+let mkImplicit (s : string) : baseShape = Bs (exprToPoly (parseStr s) "t")
 
 
 
 let hitImplicit (R(p,t,d)) (po:poly) = 
 
-    //convert poly to string and after to expression
+    //convert poly to string and after, to expression
     let polyExpr = parseStr (ppPoly "p" po)
      
     //replace x,y,z with the ray equations corresponding values
@@ -59,28 +59,21 @@ let hitImplicit (R(p,t,d)) (po:poly) =
     //simplify equation 
     let simpPoly = exprToPoly polyExprSubbed "t" 
 
-    //Turn the poly into a map
+    //Turn poly into a map
     let polyToMap p : Map<int,simpleExpr> =
         match p with
         |Po (x) -> x
-
-    let polyMap = polyToMap simpPoly
-
-    //Count the number of elements in maps (aka degrees of poly)
-    let mapCount = polyMap.Count
-
+    
+    // SE to atomGroup list (atom list list)
     let getSEList s : atomGroup list = 
         match s with
         | SE (x) -> x
 
-    let getAtomList aGroup : (atom list list) =
-        match aGroup with
-        | xs -> xs
-
-    
+    // map of SE to map of atomGroupList (atom list list)
+    let mapToAtomList m = Map.map (fun x y -> getSEList y) m
  
-
-    let substSE (SE ags) = 
+    //substitute atoms with float values: atom list list -> float list list
+    let substSE ags = 
         List.map (fun x -> List.map (fun a -> match a with
                                                 | AExponent (s,i) -> let sub s = 
                                                                         match s with
@@ -92,34 +85,29 @@ let hitImplicit (R(p,t,d)) (po:poly) =
                                                                         | "dz" -> Vector.getZ d
                                                                         | _ -> failwith ""
                                                                      pow (sub s,(float i)) 
-                                                | ANum c  -> c ) x) 
-    let blab m = Map.map (fun x y -> List.collect id (substSE y) )
+                                                | ANum c  -> c ) x) ags 
 
-    let subbedMap m = Map.map (fun x y -> Map.add (x,(List.collect id (substSE y))) m) polyMap
-
-       
-
+    //Collect the float list list into a single float list
+    let collectFloats m = Map.map (fun x y -> List.collect id (substSE y)) m 
+    
+    //Add the floats in each list of the map     
     let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
 
+    //Poly into Map<int,float>
+    let polyMapOfFloats m = (polyToMap >> mapToAtomList >> collectFloats>> foldMap)  m
 
-    let polyMapOfFloats : Map<int,float> = foldMap (subbedMap empty)
 
-
-
+    let floatMap = polyMapOfFloats simpPoly
 
     //check what degree of poly we are dealing with, and solve it
     let solveDegreePoly =
-        match mapCount with
+        match floatMap.Count with
         | 1 -> failwith ""
-        | 2 -> let pow (x, y) = System.Math.Pow(x, y)
-               let a = polyMapOfFloats.Item 
+        | 2 -> let a = floatMap.Item 2
 
-               let b = ""
+               let b = floatMap.Item 1
 
-               let c =  pow((Point.getX p),2.0) +
-                             pow((Point.getY p),2.0) +
-                             pow((Point.getZ p),2.0) -
-                             pow(r,2.0)
+               let c = floatMap.Item 0
 
                let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
                if(disc < 0.0) then None
