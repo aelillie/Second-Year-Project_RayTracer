@@ -20,20 +20,21 @@ open System.Drawing
         | Some filename -> Scene.renderToFile scene filename
         | None -> ()
       let toScreen = false 
-
       let renderSphere toScreen =
-        let light = mkLight (mkPoint 0.0 3.0 0.0) (Colour.fromColor Color.White) 1.0 in
-        //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
-        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
-        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-        let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
-        let sphere2 = mkSphere (mkPoint 2.0 2.0 -1.2) 1.0 (Material.mkMaterial (Colour.fromColor Color.Green) 0.5) in
-        let sphere = mkSphere (mkPoint -1.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1) in
-        let sphere3 = mkSphere (mkPoint 0.0 1.0 -2.5) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.3) in
-        let sphere4 = mkSphere (mkPoint 3.0 0.0 1.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Orange) 0.3) in
-        let solidC = mkSolidCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) in
-        let solidC' = transform solidC (rotateX (-(System.Math.PI / 1.5)))
-        let scene = Scene.mkScene [solidC'] [light] ambientLight camera 2 in
+        let light = mkLight (mkPoint 0.0 3.0 0.0) (Colour.fromColor Color.White) 1.0
+        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
+        let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.mkColour 0.35 0.24 0.67) 0.0)
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
+        let sphere1 = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.2)
+        let sphere2 = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Purple) 0.2)
+        let hc = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+
+        let tsphere = transform sphere (mergeTransformations [scale 2.0 2.0 2.0;sheareYX 1.0;translate 1.0 2.5 -2.0;mirrorZ])
+        let tsphere1 = transform sphere1 (mergeTransformations [scale 0.5 0.5 0.5;sheareXY 1.0;translate -1.0 1.5 -2.0])
+        let tsphere2 = transform sphere2 (mergeTransformations [scale 1.0 1.0 1.0;sheareXZ 1.0;translate 2.0 -1.0 -1.0])
+
+        let scene = Scene.mkScene [plane; tsphere; tsphere1; tsphere2] [light] ambientLight camera 2
         if toScreen then
           doRender scene None
         else
@@ -44,6 +45,7 @@ open System.Drawing
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
         let camera = mkCamera (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 4.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
+ //     let triangle = mkTriangle (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
         let scene = Scene.mkScene [sphere] [light] ambientLight camera 0 in
         if toScreen then
           doRender scene None
