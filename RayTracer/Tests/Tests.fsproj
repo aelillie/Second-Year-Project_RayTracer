@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>46a92043-450a-45dd-88b5-de4e5bb42795</ProjectGuid>
+    <ProjectGuid>{46A92043-450A-45DD-88B5-DE4E5BB42795}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
@@ -16,7 +15,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
@@ -36,16 +34,17 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\Tests.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -55,38 +54,33 @@
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
     <Compile Include="TracerTest.fs" />
+    <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
       <Name>BaseShape</Name>
-      <Project>{da3c8a8c-19ab-4fc9-abde-be1e7df5346e}</Project>
-      <Private>True</Private>
+      <Project>{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}</Project>
     </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
-      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
-      <Private>True</Private>
+      <Project>{C9DCF27D-0261-4D55-8AF9-2CDD4210E888}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
-      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
-      <Private>True</Private>
+      <Project>{43CDD2B1-D3D2-469E-93C4-4B536ABB3FBE}</Project>
     </ProjectReference>
     <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
       <Name>PlyParser</Name>
-      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
-      <Private>True</Private>
+      <Project>{EA58233C-8BAE-4FA2-8A21-D9F34373481C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
-      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
-      <Private>True</Private>
+      <Project>{60E1B77C-8213-45CE-8662-21C240D44F5B}</Project>
     </ProjectReference>
     <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
       <Name>Tracer</Name>
-      <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
-      <Private>True</Private>
+      <Project>{2ED1F7EE-ED05-4F03-BD9E-0A531146BFAE}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
