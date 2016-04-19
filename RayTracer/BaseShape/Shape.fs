@@ -4,6 +4,8 @@ open Vector
 open Ray
 open ExprParse
 open Material
+open PlyParse
+
 
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 
@@ -11,6 +13,7 @@ type Shape =
   | S of Point * float * Material
   | P of Point * Vector * Material
   | T of Point * Point * Point * Material
+  | TM of Shape list
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
@@ -31,6 +34,36 @@ let getTriangleB (T(_,b,_,_)) = b
 let getTriangleC (T(_,_,c,_)) = c
 let getTriangleMat (T(_,_,_,mat)) = mat
 
+let collectFaces = function
+ |Face(x) -> [x]
+ |_ -> []
+
+let collectVertices = function
+ |Vertex(x,y,z) -> [x,y,z]
+ |_ -> []
+
+let mkPointFromIndex p i list =
+    let (x,y,z) = List.item i list
+    Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
+    
+
+let mkTriangleMesh p (plyList:Ply list) =
+    let vertexList = plyList |> List.collect collectVertices
+    let faceList = plyList |> List.collect collectFaces
+    
+    let rec makeTriangles vList fList = 
+        match fList with
+         |[] -> []
+         |l::fList' ->  
+                        let p1 = mkPointFromIndex p (List.item 0 l) vList
+                        let p2 = mkPointFromIndex p (List.item 1 l) vList
+                        let p3 = mkPointFromIndex p (List.item 2 l) vList
+                        
+                        (mkTriangle p1 p2 p3 (Material.mkMaterial (Colour.mkColour 1.0 1.0 1.0) 0.0))::makeTriangles vList fList'
+    
+    let tri = makeTriangles vertexList faceList
+
+    tri
 
 ///Given a ray, computes the hit point for a sphere,
 //and returns information on how the point
