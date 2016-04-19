@@ -23,7 +23,7 @@ let main argv =
     ExprToPolyTest.doTest()*)
     TracerTest.doTest()  
     //TransformationTest.doTest()
-    BoundingBoxTest.doTest()
+    //BoundingBoxTest.doTest()
     //TracerTest.doTest() 
 
 
