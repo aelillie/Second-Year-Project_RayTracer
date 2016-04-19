@@ -30,13 +30,12 @@ let calc s =
         let h = mkPoint hx hy hz
         mkBoundingBox l h
     | P(_,_,_) -> failwith "Can't make boundingbox for that sphere"
-
-   (* Triangle bounding box
-    | S(a,b,c,m) -> 
+    //Triangle bounding box
+    | T(a,b,c,m) -> 
         let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
         let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
         let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
 
-        let l = P(((List.min xlist) + epsilon), ((List.min ylist)+epsilon), ((List.min zlist)+epsilon))
-        let h = P(((List.max xlist) + epsilon), ((List.max ylist)+epsilon), ((List.max zlist)+epsilon))
-        B(l,h) *)
+        let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
+        let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
+        B(l,h) 

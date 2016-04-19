@@ -54,6 +54,7 @@
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
     <Compile Include="TracerTest.fs" />
+    <Compile Include="TransformationTest.fs" />
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

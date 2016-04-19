@@ -1,4 +1,5 @@
 ﻿module TracerTest
+open Transformation
 
 open PlyParse
 open Camera
@@ -33,7 +34,8 @@ open System.Drawing
         if toScreen then
           doRender scene None
         else
-          doRender scene (Some ("renderSphere.png"))
+          doRender scene (Some ("transform.png"))
+
       let renderInsideSphere toScreen =
         let light = mkLight (mkPoint 0.0 0.0 0.0) (Colour.fromColor Color.White) 3.0 in
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
