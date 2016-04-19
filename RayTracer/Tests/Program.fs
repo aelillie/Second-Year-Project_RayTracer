@@ -1,8 +1,10 @@
-﻿open Vector
+﻿module Program
+open Vector
 open Ray
 open Shape
 open Material
 open Colour
+open BoundingBox 
 open Camera
 open Drawing
 open Light
@@ -18,10 +20,9 @@ let main argv =
     VectorTest.doTest()
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
-    TracerTest.doTest()  
+    BoundingBoxTest.doTest()
+    //TracerTest.doTest()  
 
-
-    
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code

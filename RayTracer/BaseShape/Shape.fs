@@ -13,10 +13,12 @@ type Shape =
   | D of Point * float * Material
   | HC of Point * float * float * Material
   | SC of Point * float * float * Material * Shape * Shape
+  | T of Point * Point * Point * Material
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
       |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
+      |T(a,b,c,mat) -> "("+a.ToString()+","+ b.ToString()+","+c.ToString()+","+mat.ToString()+")"
 
 let pow (x, y) = System.Math.Pow(x, y)
 
@@ -36,6 +38,13 @@ let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape 
 let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
 let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
      = failwith "not implemented yet need transformation for discs" 
+
+//Triangle
+let mkTriangle a b c mat = T(a,b,c,mat)
+let getTriangleA (T(a,_,_,_)) = a
+let getTriangleB (T(_,b,_,_)) = b
+let getTriangleC (T(_,_,c,_)) = c
+let getTriangleMat (T(_,_,_,mat)) = mat
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
 let hitDisc (R(p,t,d)) (D(c,r,m)) = 
@@ -77,11 +86,6 @@ let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) =
         let pz = Point.getZ p * tbig * Vector.getZ d
         Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
      else None
-
-
-     
-
-    
 
 ///Given a ray, computes the hit point for a sphere,
 //and returns information on how the point
@@ -130,4 +134,45 @@ let hit ((R(p,t,d)) as ray) (s:Shape) =
     |D(_) as disc -> hitDisc ray disc
 
     |HC(_) as hc -> hitCylinder ray hc
-             
+
+    | T(a,b,c,mat) -> 
+
+        let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
+        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
+
+        //Function to find the normal of the triangle
+        let vectorN a b = Vector.normalise (Vector.crossProduct a b)
+
+        let a1 = (Point.getX a) - (Point.getX b)
+        let b1 = (Point.getX a) - (Point.getX c)
+        let c1 = Vector.getX d
+        let d1 = (Point.getX a) - (Point.getX p)
+
+        let e = (Point.getY a) - (Point.getY b)
+        let f = (Point.getY a) - (Point.getY c)
+        let g = Vector.getY d
+        let h = (Point.getY a) - (Point.getY p)
+    
+        let i = (Point.getZ a) - (Point.getZ b)
+        let j = (Point.getZ a) - (Point.getZ c)
+        let k = Vector.getZ d
+        let l = (Point.getZ a) - (Point.getZ p)
+
+        let D = a1*(f*k - g*j) + b1*(g*i-e*k) + c1*(e*j-f*i) 
+
+        //Find the unknowns
+        //If D!=0 we have a solution    
+        if (D <> 0.0)  then 
+          let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
+          let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
+          let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
+          
+          if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
+           then 
+             let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
+  
+         ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
+             Some(t, vectorN v u, mat)
+          else None //gamma + beta is less than 0 or greater than 1
+        else None // Can't divide with zero
+         
