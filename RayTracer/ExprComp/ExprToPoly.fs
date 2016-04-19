@@ -22,12 +22,16 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FMult(e1,e2)    -> FMult(subst e1 (x,ex), subst e2 (x,ex))
   | FExponent(z, n) -> FExponent(subst z (x,ex), n)
 
+
+
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
 type atom = ANum of float | AExponent of string * int
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
+
+
 
 let ppAtom = function
   | ANum c -> string(c)
@@ -96,9 +100,9 @@ let simplifySimpleExpr (SE ags) =
 
 let exprToSimpleExpr e = simplifySimpleExpr (SE (simplify e))
 
-type poly = P of Map<int,simpleExpr>
+type poly = Po of Map<int,simpleExpr>
 
-let ppPoly v (P p) =
+let ppPoly v (Po p) =
   let pp (d,ags) =
     let prefix = if d=0 then "" else ppAtom (AExponent(v,d))
     let postfix = if isSimpleExprEmpty ags then "" else "(" + (ppSimpleExpr ags) + ")"
@@ -128,6 +132,6 @@ let splitAG v m = function
       | None -> addMap 0 ag m
 
 let simpleExprToPoly (SE ags) v =
-  P (List.fold (splitAG v) Map.empty ags)
+  Po (List.fold (splitAG v) Map.empty ags)
 
 let exprToPoly e v = (exprToSimpleExpr >> simplifySimpleExpr >> simpleExprToPoly) e v

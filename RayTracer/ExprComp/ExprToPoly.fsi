@@ -11,7 +11,7 @@ val exprToSimpleExpr: expr -> simpleExpr
 val simplifyAtomGroup: atomGroup -> atomGroup
 val simplifySimpleExpr: simpleExpr -> simpleExpr
 
-type poly
+type poly =  Po of Map<int,simpleExpr>
 val ppPoly: string -> poly -> string
 val simpleExprToPoly: simpleExpr -> string -> poly
 val exprToPoly: expr -> string -> poly

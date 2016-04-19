@@ -2,6 +2,8 @@ module ExprToPolyTest
 
 open ExprParse
 open ExprToPoly
+open BaseShape
+
 
 let chk (name,t,r) =
   printf "%s %s\n" name (if t = r then "OK" else "FAILED[t="+(string)t+",r="+(string)r+"]")
@@ -56,6 +58,39 @@ let test03() =
    ("TestPoly06",ppPoly "t" circleStr_d,"(oz^2+oy^2+ox^2+-1*r^2)+t(2*dz*oz+2*dy*oy+2*dx*ox)+t^2(dz^2+dy^2+dx^2)")]
 
 
+let test003() =
+    let polyExpr = parseStr "x^2+y^2+z^2+-1r^2"
+    let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
+    let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
+    let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
+    let polX = subst polyExpr ("x", ex)
+    let polY = subst polX ("y", ey)
+    let polyExprSubbed = subst polY ("z", ez)
+    let simpPoly = exprToPoly polyExprSubbed "t" 
+    let polyToMap p : Map<int,simpleExpr> =
+        match p with
+        |Po (x) -> x
+    let polyMap = polyToMap simpPoly
+    let expr = polyMap.Item 2
+    let rec substSE (SE ags) = List.map (fun x -> match x with
+                                                    | AExponent (s,i) -> let sub s = 
+                                                                            match s with
+                                                                            | "px" -> Point.getX p
+                                                                            | "py" -> Point.getY p
+                                                                            | "pz" -> Point.getZ p
+                                                                            | "dx" -> Vector.getX d
+                                                                            | "dy" -> Vector.getY d
+                                                                            | "dz" -> Vector.getZ d
+                                                                            | _ -> failwith ""
+                                                                         pow (sub s,(float i))
+                                                    | ANum c -> c
+                                                    | _ -> failwith"nonexistant Atom")
+    let subbed = substSE expr
+    [("testbllabla",subbed,"something")]
+
+
+    
+
 let test04() =
   let es = List.map (fun n -> FExponent (FAdd (FVar "a", FVar "b"), n)) [1 .. 5]
   let esStr = List.map (fun n -> parseStr ("(a+b)^"+((string)n))) [1 .. 5]
@@ -108,6 +143,7 @@ let t4 = ("TestSE02",
           SE [[ANum 7.0]; [ANum 2.0; AExponent ("x",2); AExponent ("y",3)]])
 
 let t5 = ("TestSimplify11", (parseStr >> exprToSimpleExpr >> simplifySimpleExpr >> ppSimpleExpr) "a*b+b*a", "2*a*b")
+
 
 let doTest() =
   printf "ExprToPoly Test\n"

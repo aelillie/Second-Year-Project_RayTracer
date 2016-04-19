@@ -9,6 +9,7 @@ open Light
 open System.Drawing
 open Point
 open TracerTest
+open 
 
 [<EntryPoint>]
 let main argv = 
@@ -17,6 +18,7 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()
     TracerTest.doTest()  
+    SphereTest.doTest()
 
     System.Console.WriteLine "Press any key to close..."
     System.Console.ReadKey() |> ignore
