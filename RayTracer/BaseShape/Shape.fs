@@ -5,6 +5,7 @@ open Ray
 open ExprParse
 open Material
 open Transformation
+open Sphere
 
 
 ///Entry point for transforming a shape
@@ -66,13 +67,6 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
-
-
-        
-        
-        
-        
-         
 //Sphere
 let mkSphere orego radius material = S (orego, radius, material)
 let getSphereRadius (S(_,radius,_)) = radius
@@ -172,37 +166,7 @@ let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) =
 ///should be rendered
 let rec hit ((R(p,t,d)) as ray) (s:Shape) =
     match s with
-    |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
-    
-                    
-                    let a = (pow((Vector.getX d),2.0) +
-                             pow((Vector.getY d),2.0) +
-                             pow((Vector.getZ d),2.0))
-
-                    let b =  (2.0 * (Point.getX p - Point.getX o) * Vector.getX d) +
-                             (2.0 * (Point.getY p - Point.getY o) * Vector.getY d) +
-                             (2.0 * (Point.getZ p - Point.getZ o) * Vector.getZ d)
-
-                    let c =  pow((Point.getX p - Point.getX o),2.0) +
-                             pow((Point.getY p - Point.getY o),2.0) +
-                             pow((Point.getZ p - Point.getZ o),2.0) -
-                             pow(r,2.0)
-
-                    let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
-
-                    if(disc < 0.0) then None
-                    else
-                        let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
-                        let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
-                        if answer1 < 0.0 && answer2 < 0.0 then None
-                        else
-            
-                            let answer = System.Math.Min(answer1,answer2)
-                            if answer < 0.0 
-                            then 
-                             let answer = System.Math.Max(answer1,answer2)
-                             Some (answer, makeNV answer, mat)
-                            else Some (answer, makeNV answer, mat)
+    |S(o,r,mat) ->  Sphere.hitSphere
 
     |P(pVector,n, mat) -> let denom = Vector.dotProduct d n
                           if(denom > 0.0) then

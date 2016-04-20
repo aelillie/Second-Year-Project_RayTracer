@@ -49,6 +49,7 @@
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
     <Compile Include="Shape.fs" />
+    <Compile Include="Sphere.fs" />
     <Compile Include="Plane.fs" />
     <Compile Include="BoundingBox.fsi" />
     <Compile Include="BoundingBox.fs" />
