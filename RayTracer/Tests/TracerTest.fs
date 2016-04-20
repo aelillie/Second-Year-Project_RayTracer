@@ -18,8 +18,9 @@ open System.Drawing
       let doRender scene toFile =
         match toFile with
         | Some filename -> Scene.renderToFile scene filename
-        | None -> ()
-      let toScreen = false 
+        | None -> Scene.renderToScreen scene
+
+      //let toScreen = false 
       let renderSphere toScreen =
         let light = mkLight (mkPoint 0.0 3.0 5.0) (Colour.fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
@@ -50,7 +51,7 @@ open System.Drawing
         let tsc = transform sc (mergeTransformations [scale 0.7 0.7 0.7;rotateX (System.Math.PI / 4.0);translate -4.0 -2.0 0.0])
         let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let ttr = transform tr (translate -3.0 2.0 0.0)
-        let scene = Scene.mkScene [plane; tsphere; tsphere1; tsphere2 ; tbox; tsc ; ttr] [light] ambientLight camera 2
+        let scene = Scene.mkScene [tbox;] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None
@@ -68,5 +69,5 @@ open System.Drawing
           doRender scene None
         else
           doRender scene (Some ("renderInsideSphere.png"))  
-      renderSphere false
+      renderSphere true
       renderInsideSphere false

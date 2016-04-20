@@ -45,7 +45,7 @@ let toColor xs =
 
 
 // recursively casts rays to determine the color a given ray should register
-let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
+let renderScene (S(shapes, lights, ambi, cam, n)) =
     let rays = mkRays cam  //Create rays from camera
     let maxRefl = n
 
@@ -89,10 +89,31 @@ let renderToFile (S(shapes, lights, ambi, cam, n)) (filename:string) =
     //Mapping the rays to colours for each pixel.
     let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
     //Map from colour to color.
-    let pixelplane' = List.map (fun (x,y,c) -> x,y, sort c |> toColor) pixelplane
+    List.map (fun (x,y,c) -> x,y, sort c |> toColor) pixelplane
 
-    Drawing.mkPicture pixelplane' 500 500 filename 
 
+
+
+
+let renderToFile ((S(shapes, lights, ambi, cam, n)) as scene) (filename:string) = 
+    
+    let res = renderScene scene
+
+    let (px, py) = Camera.getRes cam
+
+    let bitmap = Drawing.mkPicture res px py
+
+    bitmap.Save(filename)
+
+let renderToScreen ((S(shapes, lights, ambi, cam, n)) as scene) =
+    
+    let res = renderScene scene
+
+    let (px, py) = Camera.getRes cam
+
+    let bitmap = Drawing.mkPicture res px py
+
+    Drawing.mkWindow bitmap
 
 
 
