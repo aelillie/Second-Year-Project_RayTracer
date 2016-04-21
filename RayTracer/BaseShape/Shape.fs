@@ -182,7 +182,7 @@ let collectVertices = function
 let mkPointFromIndex p i list =
     let (x,y,z) = List.item i list
     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
-    
+let rnd = System.Random()    
 
 let mkTriangleMesh p (plyList:Ply list) =
     let vertexList = plyList |> List.collect collectVertices
@@ -195,8 +195,10 @@ let mkTriangleMesh p (plyList:Ply list) =
                         let p1 = mkPointFromIndex p (List.item 0 l) vList
                         let p2 = mkPointFromIndex p (List.item 1 l) vList
                         let p3 = mkPointFromIndex p (List.item 2 l) vList
-                        
-                        (mkTriangle p1 p2 p3 (Material.mkMaterial (Colour.mkColour 1.0 1.0 1.0) 0.0))::makeTriangles vList fList'
+                        let ran1 = rnd.NextDouble()
+                        let ran2 = rnd.NextDouble()
+                        let ran3 = rnd.NextDouble()
+                        (mkTriangle p1 p2 p3 (Material.mkMaterial (Colour.mkColour ran1 ran2 ran3 ) 0.0))::makeTriangles vList fList'
     
     let tri = makeTriangles vertexList faceList
 
@@ -306,7 +308,7 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
     |Rec(_) as rect -> hitRec ray rect
     | T(a,b,c,mat) -> 
         let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getZ a)) ((Point.getZ c) - (Point.getZ a))
+        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
 
         //Create the normal of the triangle
         let vectorN u v = Vector.normalise (Vector.crossProduct u v)
@@ -330,7 +332,7 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
 
         //Find the unknowns
         //If D!=0 we have a solution    
-        if (D > 0.0)  then 
+        if (D <> 0.0)  then 
           let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
           let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
           let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z

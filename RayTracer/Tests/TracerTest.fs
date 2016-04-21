@@ -28,9 +28,9 @@ open System.Drawing
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
-        let plyFile = parsePly "C:\Users\SecondBanana\Documents\GitHubVisualStudio\Ray-Tracer-Project\RayTracer\ant.ply"
-        let ant = mkTriangleMesh (mkPoint 0.0 0.0 -40.0) plyFile
-        let scene = Scene.mkScene [ant] [light] ambientLight camera 2 in
+        let plyFile = parsePly @"C:\Users\SecondBanana\Documents\GitHubVisualStudio\Ray-Tracer-Project\RayTracer\ant.ply"
+        let ant = mkTriangleMesh (mkPoint 0.0 0.0 -30.0) plyFile
+        let scene = Scene.mkScene [ant;plane] [light] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else
