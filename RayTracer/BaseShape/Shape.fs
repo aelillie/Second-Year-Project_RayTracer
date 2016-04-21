@@ -39,7 +39,7 @@ let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
 //Plane
 let mkPlane (material : Material) =
       let point = mkPoint 0.0 0.0 0.0
-      let normVector = mkVector 0.0 1.0 0.0
+      let normVector = mkVector 0.0 -1.0 0.0
       PL (material,point,normVector)
 
 //Rectangle
@@ -196,11 +196,12 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                                 Some (answer, makeNV answer, mat)
                             else Some (answer, makeNV answer, mat)
 
-    |PL(mat,pVector,n) -> let denom = Vector.dotProduct d n
-                          if(denom > 0.0) then
+    |PL(mat,pVector,n) -> let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
+                          if(denom > 0.0000001) then
                               let v = Point.distance p pVector
-                              let result = Vector.dotProduct v n
-                              Some (result, n, mat)
+                              let result = (Vector.dotProduct v n) / denom 
+                              if result >= 0.0 then Some (result, n, mat)
+                              else None
                           else None
     | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
                        let d' = transVector (getInv tr) d //transformed direction
