@@ -37,11 +37,26 @@ type Shape =
 let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
-let group s1 s2 = GroS(s1, s2)          //Collect a group of shapes as one union
-let union s1 s2  = UniS(s1, s2)         //Compose two shapes 
-let intersection s1 s2  = IntS(s1, s2)
-let subtraction s1 s2  = SubS(s1, s2)
+let isSolid = function
+    | S(_,_,_)  -> true
+    | B(_)      -> true
+    | SC(_,_,_) -> true
+    | _         -> false
 
+exception NotSolidShapeException
+//Collect a group of shapes as one union
+let group s1 s2 = if isSolid s1 && isSolid s2 then GroS(s1, s2)
+                  else raise NotSolidShapeException      
+                     
+//Union compose two shapes
+let union s1 s2  = if isSolid s1 && isSolid s2 then UniS(s1, s2)      
+                   else raise NotSolidShapeException
+//Keep the difference between two shapes
+let intersection s1 s2  = if isSolid s1 && isSolid s2 then IntS(s1, s2)
+                          else raise NotSolidShapeException
+//Subtract s2 from s1 (s2-s1)
+let subtraction s1 s2  = if isSolid s1 && isSolid s2 then SubS(s1, s2)
+                         else raise NotSolidShapeException
 
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
