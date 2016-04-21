@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
+    <OtherFlags>--sig:C:\Users\Kevin\Source\Repos\Ray-Tracer-Project2\RayTracer\Tests\bin\Debug\Shape.fsi</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,7 +49,6 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
-    <Compile Include="Shape.fsi" />
     <Compile Include="Sphere.fs" />
     <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
