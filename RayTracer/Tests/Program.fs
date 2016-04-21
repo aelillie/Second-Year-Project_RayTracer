@@ -9,11 +9,12 @@ open Camera
 open Drawing
 open Light
 open System.Drawing
+open System
 open Point
 open TracerTest
 open PlyParse
 open System.IO
-
+[<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv = 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
@@ -22,6 +23,7 @@ let main argv =
     
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
+
     TracerTest.doTest()  
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()

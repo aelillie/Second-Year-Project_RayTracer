@@ -105,6 +105,8 @@ let renderToFile ((S(shapes, lights, ambi, cam, n)) as scene) (filename:string) 
 
     bitmap.Save(filename)
 
+
+
 let renderToScreen ((S(shapes, lights, ambi, cam, n)) as scene) =
     
     let res = renderScene scene
@@ -113,7 +115,9 @@ let renderToScreen ((S(shapes, lights, ambi, cam, n)) as scene) =
 
     let bitmap = Drawing.mkPicture res px py
 
-    Drawing.mkWindow bitmap
+    let window = Drawing.mkWindow bitmap
+
+    System.Windows.Forms.Application.Run window 
 
 
 
