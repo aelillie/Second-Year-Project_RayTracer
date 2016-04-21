@@ -55,6 +55,8 @@
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
     <Compile Include="TracerTest.fs" />
+    <Compile Include="BoundingBoxTest.fs" />
+    <Compile Include="TransformationTest.fs" />
     <Compile Include="Program.fs" />
     <Compile Include="NewParseTest.fs" />
   </ItemGroup>
@@ -72,6 +74,11 @@
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
       <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
+      <Name>PlyParser</Name>
+      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">

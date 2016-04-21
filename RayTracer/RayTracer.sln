@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "Tests\Tests.fsproj", "{46A92043-450A-45DD-88B5-DE4E5BB42795}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BaseShape", "BaseShape\BaseShape.fsproj", "{DA3C8A8C-19AB-4FC9-ABDE-BE1E7DF5346E}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Main", "Main\Main.fsproj", "{F8E23745-D937-49E0-A513-A814D23D4BB9}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PlyParser", "PlyParser\PlyParser.fsproj", "{EA58233C-8BAE-4FA2-8A21-D9F34373481C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8E23745-D937-49E0-A513-A814D23D4BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA58233C-8BAE-4FA2-8A21-D9F34373481C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
