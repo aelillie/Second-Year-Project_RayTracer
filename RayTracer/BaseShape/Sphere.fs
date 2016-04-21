@@ -41,12 +41,19 @@ let pow (x, y) = System.Math.Pow(x, y)
 
 let mkImplicit (s : string) : baseShape = Bs (exprToPoly (parseStr s) "t")
 
+let deriveEq expr = match expr with
+                    |
+
 
 
 let hitImplicit (R(p,t,d)) (po:poly) = 
 
+
     //convert poly to string and after, to expression
     let polyExpr = parseStr (ppPoly "p" po)
+
+    //make Norm vector by deriving the equation
+   // let mkNorm 
      
     //replace x,y,z with the ray equations corresponding values
     let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
@@ -121,12 +128,12 @@ let hitImplicit (R(p,t,d)) (po:poly) =
                         if answer < 0.0 
                         then 
                             let answer = System.Math.Max(answer1,answer2)
-                            Some (answer, makeNV answer, mat)
-                        else Some (answer, makeNV answer, mat)
+                            Some (answer, makeNV answer)
+                        else Some (answer, makeNV answer)
 
-        | 3 -> ""
-        | 4 -> ""
-        | _ -> ""
+        | 3 -> failwith ""
+        | 4 -> failwith ""
+        | _ -> failwith ""
 
 
 

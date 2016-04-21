@@ -2,7 +2,7 @@ module ExprToPolyTest
 
 open ExprParse
 open ExprToPoly
-open BaseShape
+open Sphere
 
 
 let chk (name,t,r) =

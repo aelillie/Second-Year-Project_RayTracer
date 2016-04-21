@@ -9,7 +9,7 @@ open Light
 open System.Drawing
 open Point
 open TracerTest
-open 
+
 
 [<EntryPoint>]
 let main argv = 

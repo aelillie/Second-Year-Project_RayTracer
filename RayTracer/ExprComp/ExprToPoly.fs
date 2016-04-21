@@ -11,6 +11,8 @@ let rec ppExpr = function
   | FAdd(e1,e2) -> "(" + (ppExpr e1) + " + " + (ppExpr e2) + ")"
   | FMult(e1,e2) -> (ppExpr e1) + " * " + (ppExpr e2)
   | FExponent(e,n) -> "(" + (ppExpr e) + ")^" + string(n)
+  | FSquareRoot(e) -> "~(" + (ppExpr e) + ")"
+  | FDiv(e1,e2) -> (ppExpr e1) + " / " + (ppExpr e2)
 
 //The expressions is a representation of e.g. a Sphere
 //of the type expr, given from ExprParse
@@ -21,6 +23,15 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FAdd(e1,e2)     -> FAdd(subst e1 (x,ex), subst e2 (x,ex))
   | FMult(e1,e2)    -> FMult(subst e1 (x,ex), subst e2 (x,ex))
   | FExponent(z, n) -> FExponent(subst z (x,ex), n)
+  | FSquareRoot(e) -> FSquareRoot(subst e (x,ex))
+
+let rec deriveEq e =
+    match e with
+    | FNum c -> FNum 0.0
+    | FVar s -> FNum 1.0
+    | FExponent(z,n) -> FExponent(z,n)
+    | FSquareRoot(e) -> FMult((FNum 0.5),FExponent(e,-0.5))
+    
 
 
 
@@ -51,9 +62,9 @@ let rec simplify = function
   | FVar s          -> [[AExponent(s,1)]]
   | FAdd(e1,e2)     -> simplify e1 @ simplify e2
   | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
-  | FExponent(e1,0) -> [[ANum 1.0]]
-  | FExponent(e1,1) -> simplify e1
-  | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
+  | FExponent(e1,0.0) -> [[ANum 1.0]]
+  | FExponent(e1,1.0) -> simplify e1
+  | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1.0)))
 
 //reduces duplication, so x*x becomes x^2
 //implicitly multiplied atoms

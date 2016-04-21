@@ -14,7 +14,7 @@ e is the empty sequence.
 *)
 
 type terminal =
-  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string
+  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Sqrt | Div
 
 let isblank c = System.Char.IsWhiteSpace c
 let isdigit c  = System.Char.IsDigit c
@@ -51,7 +51,9 @@ let scan s =
     | '*' :: cr -> Mul :: sc cr      
     | '^' :: cr -> Pwr :: sc cr
     | '(' :: cr -> Lpar :: sc cr     
-    | ')' :: cr -> Rpar :: sc cr     
+    | ')' :: cr -> Rpar :: sc cr
+    | '/' :: cr -> Div :: sc cr
+    | '~' :: cr -> Sqrt :: sc cr     
     | '-' :: c :: cr when isdigit c -> let (cs1, t) = scnum(cr, -1 * intval c)
                                        t :: sc cs1
     | c :: cr when isdigit c -> let (cs1, t) = scnum(cr, intval c) 
@@ -96,7 +98,9 @@ type expr =
   | FVar of string
   | FAdd of expr * expr
   | FMult of expr * expr
-  | FExponent of expr * int
+  | FExponent of expr * float
+  | FSquareRoot of expr
+  | FDiv of expr * expr
 
 exception Parseerror
 
@@ -115,7 +119,7 @@ and Topt (ts, inval) =
 and F ts = (P >> Fopt) ts
 and Fopt (ts, inval) =
     match ts with
-    | Pwr :: Int i :: tr -> (tr, FExponent(inval, i))
+    | Pwr :: Float i :: tr -> (tr, FExponent(inval, i))
     | _ -> (ts, inval)
 and P ts =
     match ts with
