@@ -23,6 +23,10 @@ type Shape =
   | T of Point * Point * Point * Material
   | SC of Shape * Shape * Shape
   | Rec of Point * float * float * Material
+  | UniS of Shape * Shape
+  | IntS of Shape * Shape
+  | SubS of Shape * Shape
+  | GroS of Shape * Shape
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
@@ -32,6 +36,11 @@ type Shape =
 
 let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
+
+let group s1 s2 = GroS(s1, s2)          //Collect a group of shapes as one union
+let union s1 s2  = UniS(s1, s2)         //Compose two shapes 
+let intersection s1 s2  = IntS(s1, s2)
+let subtraction s1 s2  = SubS(s1, s2)
 
 
 //Rectangle
@@ -143,7 +152,7 @@ let hitDisc (R(p,t,d)) (D(c,r,m)) =
      None
 
 //Calculates if cylinder hit. Cylinder is always centeret on 0,0,0 and is XZ alligned.
-let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) = 
+let hitCylinder (R(p,t,d) as ray) (HC(center,r,h,m)) = 
     let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
     let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
     let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
@@ -269,3 +278,17 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
+    | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
+                       match (hit1, hit2) with
+                       | (None, None) -> None
+                       | (hit1, None) -> hit1
+                       | (None, hit2) -> hit2
+                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
+                                                                   then hit2
+                                                                   else hit1
+                       
+
+                       
+
+                        
+
