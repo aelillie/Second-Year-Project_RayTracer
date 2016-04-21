@@ -17,7 +17,7 @@ let pi = System.Math.PI
 type Shape =
   | S of Point * float * Material
   | TShape of Shape * Transformation
-  | P of Point * Vector * Material
+  | PL of Material * Point * Vector
   | D of Point * float * Material
   | B of Shape list
   | HC of Point * float * float * Material
@@ -27,7 +27,6 @@ type Shape =
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
-      |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
       |T(a,b,c,mat) -> "("+a.ToString()+","+ b.ToString()+","+c.ToString()+","+mat.ToString()+")"
 
 
@@ -36,6 +35,12 @@ let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
 
 let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
+
+//Plane
+let mkPlane (material : Material) =
+      let point = mkPoint 0.0 0.0 0.0
+      let normVector = mkVector 0.0 1.0 0.0
+      PL (material,point,normVector)
 
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
@@ -191,7 +196,7 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                                 Some (answer, makeNV answer, mat)
                             else Some (answer, makeNV answer, mat)
 
-    |P(pVector,n, mat) -> let denom = Vector.dotProduct d n
+    |PL(mat,pVector,n) -> let denom = Vector.dotProduct d n
                           if(denom > 0.0) then
                               let v = Point.distance p pVector
                               let result = Vector.dotProduct v n

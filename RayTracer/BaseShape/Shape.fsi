@@ -8,7 +8,7 @@ open Ray
 type Shape =
   | S of Point * float * Material
   | TShape of Shape * Transformation
-  | P of Point * Vector * Material
+  | PL of Material * Point * Vector
   | D of Point * float * Material
   | B of Shape list
   | HC of Point * float * float * Material
@@ -32,7 +32,7 @@ val mkTriangle : a:Point -> b:Point -> c:Point -> Material -> Shape
 /// Construct a plane with the equation z = 0,
 /// i.e. the x-y plane
 /// texture coordinates: R X R
-                //val mkPlane : Material -> Shape
+val mkPlane : Material -> Shape
 /// Construct an implicit surface.
 /// texture coordinates: {(0,0)}, i.e. has only a single material
 //val mkImplicit : string -> baseShape
