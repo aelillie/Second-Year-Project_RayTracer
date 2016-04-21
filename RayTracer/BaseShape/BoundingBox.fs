@@ -12,6 +12,9 @@ type BoundingBox =
 
 let mkBoundingBox l h = B(l,h)
 
+let getH (B(_,h)) = h
+let getL (B(l,_)) = l
+
 //Epsilon
 let epsilon = 0.00001
 
