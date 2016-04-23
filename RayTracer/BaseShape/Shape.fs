@@ -248,8 +248,10 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
            then 
              let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
   
-         ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
-             Some(t, vectorN v u, mat)
+             //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
+             if t > 0.0 
+             then Some(t, vectorN v u, mat)
+             else None
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
 
