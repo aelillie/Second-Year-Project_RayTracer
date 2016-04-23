@@ -14,6 +14,8 @@ type Scene =
 
 let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, ambientLight, camera, reflection)
 
+let plusTripleFloat (a,b,c) (x,y,z) : (float * float * float) =
+ (a+x,b+y,c+z)
 //Sorts through a list of options returning the value of Some in a list.
 let sort = function
     |None -> [] 
@@ -64,13 +66,16 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
                     let p' = Point.move p (Vector.multScalar nV' 0.0001)
                     let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
+                    //Filter all shadowRays that don't hit out
+                    let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes l (Camera.getPoint cam))) srays
 
-                    //Here we calculate the accumilated intensity from all the lightsource on the point
-                    let i' = List.filter (fun (l, r) -> not (isShaded r shapes l (Camera.getPoint cam))) srays
-                                 |> List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r)))
-                                 |> List.fold (fun acc x -> acc + x) 0.0
-                    //Scale color from the intensity
-                    let c' = (Colour.scaleColour (Material.getColour m) (i+i'))
+                    //Okay here calculate intensity for each colour value. 
+                    let lightColourValue = List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r))) sraysHit //Angles calculated
+                                            |> List.map2 (fun (l,r) (i)  -> Light.getColourI l i) sraysHit //RGB Color value calculated from light Intensity and angle
+                                            |> List.fold (fun acc x ->  plusTripleFloat acc x) (Light.getAmbientI ambi) //Folding colours together
+                    //Scale color from the intensity of each colour
+                    let c' = Colour.scaleColour lightColourValue (Material.getColour m)
+                    //Create the reflection ray with respect to ingoing ray and the normal vector.
                     let x2 = ((Ray.getD ray) * nV') * 2.0
                     let reflectDir = Vector.normalise ((Ray.getD ray) - (x2 * nV'))
                     let reflRay = Ray.mkRay p' 1.0 reflectDir
@@ -102,7 +107,7 @@ let renderToFile ((S(shapes, lights, ambi, cam, n)) as scene) (filename:string) 
     let (px, py) = Camera.getRes cam
 
     let bitmap = Drawing.mkPicture res px py
-
+    //Saves the file
     bitmap.Save(filename)
 
 
@@ -113,8 +118,10 @@ let renderToScreen ((S(shapes, lights, ambi, cam, n)) as scene) =
 
     let (px, py) = Camera.getRes cam
 
+    //Create a bitmap using the values rendered from the scene
     let bitmap = Drawing.mkPicture res px py
 
+    //Make window for showing image
     let window = Drawing.mkWindow bitmap
 
     System.Windows.Forms.Application.Run window 

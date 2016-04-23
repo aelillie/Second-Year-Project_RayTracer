@@ -30,15 +30,8 @@ let toColor (C(r,g,b)) =
 
 let getRGB (C(r,g,b)) = (r,g,b)    
     
-
-let scaleColour (C(r,g,b)) i = 
-    
-    let r' = r * i
-    let g' = g * i
-    let b' = b * i
-
-    C(r',g',b')
-
+let scaleColour (r,g,b) (C(ri,gi,bi)) = 
+    C(r * ri, g * gi, b * bi)
 
 let merge refl (C(r1,g1,b1)) (C(r2,g2,b2)) = 
     C((refl * r1 + (1.0 - refl) * r2, refl * g1 + (1.0 - refl) * g2, refl * b1 + (1.0 - refl) * b2))

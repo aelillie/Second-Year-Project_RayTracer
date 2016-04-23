@@ -14,5 +14,7 @@ val mkAmbientLight : colour : Colour -> intensity : float -> AmbientLight
 val calculateI :  Vector -> Vector -> float
 
 val getPoint : Light -> Point
-val getAmbientI : AmbientLight -> float
+val getAmbientI : AmbientLight -> (float*float*float)
 val getLightI : Light -> float
+val getLightC : Light -> Colour
+val getColourI : Light -> float -> (float * float * float)
