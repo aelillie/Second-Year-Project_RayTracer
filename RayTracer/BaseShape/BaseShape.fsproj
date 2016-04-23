@@ -24,7 +24,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
-    <OtherFlags>--sig:C:\Users\Kevin\Source\Repos\Ray-Tracer-Project2\RayTracer\Tests\bin\Debug\Shape.fsi</OtherFlags>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

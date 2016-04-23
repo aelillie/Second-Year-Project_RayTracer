@@ -5,7 +5,7 @@ open Ray
 open ExprParse
 open Material
 open Transformation
-open Sphere
+
 
 
 ///Entry point for transforming a shape
@@ -34,7 +34,7 @@ let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
 
-let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
+
 
 //Plane
 let mkPlane (material : Material) =
@@ -75,7 +75,7 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
 
         B(rects)
 //Sphere
-
+let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
 
 
 
@@ -98,7 +98,7 @@ let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Ma
 
 
 //Hit function for Rectangle. Rectangle is AXis alligned with XY. Can be moved by transforming.
-let hitRec (R(p,t,d)) (Rec(c,w,h,m)) = 
+let hitRec (R(p,d)) (Rec(c,w,h,m)) = 
     let dz = Vector.getZ d
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
@@ -122,7 +122,7 @@ let getTriangleC (T(_,_,c,_)) = c
 let getTriangleMat (T(_,_,_,mat)) = mat
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
-let hitDisc (R(p,t,d)) (D(c,r,m)) = 
+let hitDisc (R(p,d)) (D(c,r,m)) = 
     let dz = Vector.getZ d
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
@@ -136,7 +136,7 @@ let hitDisc (R(p,t,d)) (D(c,r,m)) =
      None
 
 //Calculates if cylinder hit. Cylinder is always centeret on 0,0,0 and is XZ alligned.
-let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) = 
+let hitCylinder (R(p,d)) (HC(center,r,h,m)) = 
     let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
     let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
     let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
@@ -163,7 +163,7 @@ let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) =
      else None
 
 ///should be rendered
-let rec hit ((R(p,t,d)) as ray) (s:Shape) =
+let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
     |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
        
@@ -205,7 +205,7 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                           else None
     | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
                        let d' = transVector (getInv tr) d //transformed direction
-                       match hit (R(p', t, d')) s with
+                       match hit (R(p', d')) s with
                        | None -> None
                        | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
                                                  Some(dist, dir', mat)
