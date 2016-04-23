@@ -20,7 +20,7 @@ let sort = function
     |Some(x) -> [x]
 
 //Creates a ray with direction towards a specific light.
-let mkShadowRay (p:Point) (rd:Vector) (l:Light)  :Ray = 
+let mkShadowRay (p:Point) (l:Light)  :Ray = 
     let sr = Point.direction p (Light.getPoint l)
     Ray.mkRay p 1.0 sr
 
@@ -63,11 +63,11 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     //Moved point to the surface of the shape hit.
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
                     let p' = Point.move p (Vector.multScalar nV' 0.0001)
-                    let srays = List.map (fun x -> (x, mkShadowRay p' nV' x )) lights //Create rays towards each lightsource from point.
+                    let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
 
                     //Here we calculate the accumilated intensity from all the lightsource on the point
                     let i' = List.filter (fun (l, r) -> not (isShaded r shapes l (Camera.getPoint cam))) srays
-                                 |> List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r) (Light.getLightI l)))
+                                 |> List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r)))
                                  |> List.fold (fun acc x -> acc + x) 0.0
                     //Scale color from the intensity
                     let c' = (Colour.scaleColour (Material.getColour m) (i+i'))

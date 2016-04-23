@@ -110,7 +110,7 @@ let hitRec (R(p,d)) (Rec(c,w,h,m)) =
     let ay = Point.getY c
 
 
-    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h)
+    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h) && distance > 0.0
     then Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else None
 
@@ -129,9 +129,9 @@ let hitDisc (R(p,d)) (D(c,r,m)) =
     let p' = Point.move p (Vector.multScalar d distance)
     let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
 
-    if result <= (pow (r,2.0)) 
+    if result <= (pow (r,2.0)) && result > 0.0
     then 
-     Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
+      Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else 
      None
 
@@ -150,12 +150,12 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
      let pyt1 = Point.getY p + tlittle * Vector.getY d
      let pyt2 = Point.getY p + tbig * Vector.getY d
      
-     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
+     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
      then 
         let px = Point.getX p + tlittle * Vector.getX d
         let pz = Point.getZ p + tlittle * Vector.getZ d
         Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), m)
-     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
+     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig > 0.0
      then
         let px = Point.getX p + tbig * Vector.getX d
         let pz = Point.getZ p + tbig * Vector.getZ d
