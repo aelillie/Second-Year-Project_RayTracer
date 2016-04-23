@@ -24,11 +24,19 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    TracerTest.doTest()  
+    //TracerTest.doTest()  
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //TracerTest.doTest() 
-    
+    let filepath = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
+
+    let k = PlyParse.parsePly filepath
+
+    let writer = new StreamWriter(@"C:\Users\i5-4670K\Documents\test.rtf")
+    writer.AutoFlush <- true
+
+    List.iter (fun x -> PlyParse.print x writer) k
+
 
     stopWatch.Stop()
     printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 

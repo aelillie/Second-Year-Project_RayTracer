@@ -49,7 +49,7 @@ let mkWindow (bmap:Bitmap) =
         pb.SizeMode <- PictureBoxSizeMode.AutoSize
         //Set up menu and save button
         let menu = new MainMenu()
-        let save = new MenuItem("Save")
+        let save = new MenuItem "Save"
         save.Visible <- true
         
         //Set up handler for when save is clicked
