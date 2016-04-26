@@ -14,7 +14,7 @@ open Point
 open TracerTest
 open PlyParse
 open System.IO
-open TestSuite.AffineTransformationsTest
+open TestSuite
 
 
 [<STAThreadAttribute>]
@@ -31,7 +31,7 @@ let main argv =
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //TracerTest.doTest() 
-    render false
+    AffineTransformationsTest.render false
     (*let filepath = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
 
     let k = PlyParse.parsePly filepath

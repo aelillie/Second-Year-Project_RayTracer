@@ -13,7 +13,7 @@ open Material
 open Util
 
 
-module TextureTest =
+module TextureTest = ()
  (* let folder = "texture"
 
   let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
