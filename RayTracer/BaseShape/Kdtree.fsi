@@ -1,15 +1,12 @@
 ﻿module Kdtree
 open BoundingBox
 open Point
+open Shape 
 
 type Kdtree
 type KdNode
-type hyperRect
-type part   
-type nearestNeighbor 
-
-val mkKdtree : Point list -> hyperRect -> Kdtree
-val findNearestNeighbor : KdNode -> Point -> hyperRect
+val mkKdtree : BoundingBox -> KdNode -> KdNode -> Shape list -> Kdtree 
+val findNearestNeighbor : KdNode -> Point -> KdNode
 val insert : Point list -> KdNode -> int -> Kdtree 
    
 
