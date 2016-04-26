@@ -18,10 +18,21 @@ let mkAmbientLight (c : Colour) (i : float) : AmbientLight = AL(c,i)
 let getPoint (L(p,c,i)) = p
 
 
-let calculateI (rd:Vector) (nd:Vector) i = 
-    (Vector.dotProduct rd nd) * i
+let calculateI (rd:Vector) (nd:Vector) = 
+    (Vector.dotProduct rd nd) 
     
 
-let getAmbientI (AL(_,i)) = i
+let getAmbientI (AL(c,i)) = 
+    let (r,g,b) = Colour.getRGB c
+    (r*i, g*i, b*i)
 
 let getLightI (L(p,c,i)) = i
+
+let getColourI (L(p,c,i)) angleI = 
+    let i' = i * angleI
+    let (r,g,b) = Colour.getRGB c
+    (r*i', g*i', b*i')
+                        
+
+
+let getLightC (L(_,c,_)) = c

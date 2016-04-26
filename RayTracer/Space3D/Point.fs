@@ -20,3 +20,4 @@ let direction p q = Vector.normalise(distance p q)
 let round (P(px,py,pz)) (d:int) =
     let r (c:float) = System.Math.Round(c, d)
     P(r px, r py, r pz)
+        

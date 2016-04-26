@@ -24,6 +24,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +50,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
+    <Compile Include="Sphere.fs" />
     <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
     <Compile Include="BoundingBox.fsi" />
