@@ -16,7 +16,7 @@ type Ply =
          override p.ToString() =
           match p with
            Property x -> x
-          |_ -> "Override rest of elements if needed."
+          |_ -> "Override rest of elements if needed"
 
 
 let print p writer = 
