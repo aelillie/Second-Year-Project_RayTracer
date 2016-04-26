@@ -48,10 +48,11 @@ open System.Drawing
         let tsphere = transform sphere (mergeTransformations [sheareYX 1.0;translate 1.0 2.5 -2.0])
         let tsphere1 = transform sphere1 (mergeTransformations [scale 1.5 1.5 1.5;translate -1.0 1.5 -2.0])
         let tsphere2 = transform sphere2 (mergeTransformations [rotateZ System.Math.PI;translate -2.0 1.0 1.0])
-        let tsc = transform sc (mergeTransformations [scale 0.7 0.7 0.7;rotateX (System.Math.PI / 4.0);translate -4.0 -2.0 0.0])
+        let tsc = transform sc (mergeTransformations [scale 0.7 0.7 0.7;rotateX (System.Math.PI / -4.0);])
         let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let ttr = transform tr (translate -3.0 2.0 0.0)
-        let scene = Scene.mkScene [plane; tsphere; tsphere1; tsphere2 ; tbox; tsc ; ttr] [light] ambientLight camera 2
+        let tplane = transform plane (translate 0.0 -1.0 0.0)
+        let scene = Scene.mkScene [tplane; tsc ] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None

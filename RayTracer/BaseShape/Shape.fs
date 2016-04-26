@@ -109,7 +109,7 @@ let mkSolidCylinder (r : float) (h : float) (t : Material) (top : Material) (bot
      let topDisc = mkDisc r top
 
      let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
-     let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX (-(pi/2.0)) ]
+     let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX ((pi/2.0)) ]
      let topDisc' = transform topDisc transTop
      let botDisc' = transform botDisc transBot
 
@@ -149,7 +149,7 @@ let hitDisc (R(p,d)) (D(c,r,m)) =
     let p' = Point.move p (Vector.multScalar d distance)
     let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
 
-    if result <= (pow (r,2.0)) && result > 0.0
+    if result <= (pow (r,2.0)) && distance > 0.0
     then 
      Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else 
@@ -170,6 +170,7 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
      let pyt1 = Point.getY p + tlittle * Vector.getY d
      let pyt2 = Point.getY p + tbig * Vector.getY d
      
+
      if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
      then 
         let px = Point.getX p + tlittle * Vector.getX d
@@ -275,10 +276,12 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
 
-    |SC(c,top,bot) -> let min = List.map(fun x -> hit ray x) [c;top;bot] |> List.choose id
+    |SC(c,top,bot) -> let hits = List.map(fun x -> hit ray x) [c;top;bot]
+                      let min = hits |> List.choose id
                       match min with
                       |[] -> None
-                      |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+                      |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
+
     |B(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
                  match min with
                  |[] -> None
