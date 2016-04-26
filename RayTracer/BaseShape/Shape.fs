@@ -45,8 +45,7 @@ let isSolid = function
 
 exception NotSolidShapeException
 //Collect a group of shapes as one union
-let group s1 s2 = if isSolid s1 && isSolid s2 then GroS(s1, s2)
-                  else raise NotSolidShapeException      
+let group s1 s2 = GroS(s1, s2)      
                      
 //Union compose two shapes
 let union s1 s2  = if isSolid s1 && isSolid s2 then UniS(s1, s2)      
@@ -70,28 +69,25 @@ let mkPlane (material : Material) =
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
     = Rec(corner, width, height, t)
 //Box
-let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
-      = let width = System.Math.Abs(Point.getX high - Point.getX low)
-        let height = System.Math.Abs(Point.getY high - Point.getY low)
-        let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
-        let az = System.Math.Min(Point.getZ high, Point.getZ low)
+let mkBox (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
+      = let width, height, depth = 2.0, 2.0, 2.0
 
-
-        let frontT = translate (Point.getX low) (Point.getY low) az 
-        let backT = mergeTransformations [translate 0.0 0.0 depth; frontT;]
+        let frontT = translate -1.0 -1.0 -1.0 
+        let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
         let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
-        let topT = mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
-        let leftT = mergeTransformations [frontT; rotateY (-(pi/2.0))]
-        let rightT = mergeTransformations [translate width 0.0 0.0; leftT;]
+        let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
+        let leftT =   mergeTransformations [frontT; rotateY (-(pi/2.0))]
+        let rightT =  mergeTransformations [translate width 0.0 0.0; leftT;]
 
         let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
 
-        let frontR = mkRectangle (mkPoint 0.0 0.0 0.0) width height front
-        let backR =  mkRectangle (mkPoint 0.0 0.0 0.0) width height back
-        let bottomR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth bottom
-        let topR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth top
-        let leftR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height left
-        let rightR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height right
+        let p = mkPoint 0.0 0.0 0.0
+        let frontR =  mkRectangle p width height front
+        let backR =   mkRectangle p width height back
+        let bottomR = mkRectangle p width depth bottom
+        let topR =    mkRectangle p width depth top
+        let leftR =   mkRectangle p depth height left
+        let rightR =  mkRectangle p depth height right
 
         let rectangles = [frontR;backR;bottomR;topR;leftR;rightR] 
 
@@ -99,18 +95,18 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
 
         B(rects)
 //Sphere
-let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
+let mkSphere (r : float) (m : Material) : Shape = S(mkPoint 0.0 0.0 0.0,r,m)
 
 
 
 //Cylinders and Discs
-let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
-let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
-let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
+let mkHollowCylinder (r : float) (h : float) (t : Material) : Shape = HC(mkPoint 0.0 0.0 0.0,r,h,t)
+let mkDisc (r : float) (t : Material) : Shape = D((mkPoint 0.0 0.0 0.0),r,t)
+let mkSolidCylinder (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
      = 
-     let cyl = mkHollowCylinder c r h t 
-     let botDisc = mkDisc c r bottom
-     let topDisc = mkDisc c r top
+     let cyl = mkHollowCylinder r h t 
+     let botDisc = mkDisc r bottom
+     let topDisc = mkDisc r top
 
      let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
      let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX (-(pi/2.0)) ]
