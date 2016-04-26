@@ -16,7 +16,7 @@ let getPoint (P(point,_,_)) = point
 let getNormVector (P(_,normVector,_)) = normVector
 let getMaterial (P(_, _, mat)) = mat
 
-let planeHit (R(p,t,d)) (P(pVector,n, mat)) =
+let planeHit (R(p,d)) (P(pVector,n, mat)) =
     let denom = Vector.dotProduct d n
 
     if(denom > 0.0) then

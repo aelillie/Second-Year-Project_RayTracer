@@ -20,8 +20,9 @@ open System.Drawing
       let doRender scene toFile =
         match toFile with
         | Some filename -> Scene.renderToFile scene filename
-        | None -> ()
-      let toScreen = false 
+        | None -> Scene.renderToScreen scene
+
+      //let toScreen = false 
       let renderSphere toScreen =
         let light = mkLight (mkPoint 0.0 3.0 0.0) (Colour.fromColor Color.White) 1.0 in
         //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
@@ -47,5 +48,5 @@ open System.Drawing
           doRender scene None
         else
           doRender scene (Some ("renderInsideSphere.png"))  
-      renderSphere false
+      renderSphere true
       renderInsideSphere false

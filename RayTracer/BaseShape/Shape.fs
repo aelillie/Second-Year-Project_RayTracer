@@ -8,6 +8,7 @@ open Transformation
 open PlyParse
 
 
+
 ///Entry point for transforming a shape
 //Should call transHit or contain the logic itself
 
@@ -17,24 +18,54 @@ let pi = System.Math.PI
 type Shape =
   | S of Point * float * Material
   | TShape of Shape * Transformation
-  | P of Point * Vector * Material
+  | PL of Material * Point * Vector
   | D of Point * float * Material
   | B of Shape list
   | HC of Point * float * float * Material
   | T of Point * Point * Point * Material
   | SC of Shape * Shape * Shape
   | Rec of Point * float * float * Material
-  | TM of Shape list
+  | UniS of Shape * Shape
+  | IntS of Shape * Shape
+  | SubS of Shape * Shape
+  | GroS of Shape * Shape
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
-      |P(point,normVector, mat) -> "("+point.ToString()+","+normVector.ToString()+"," + mat.ToString() + ")"
       |T(a,b,c,mat) -> "("+a.ToString()+","+ b.ToString()+","+c.ToString()+","+mat.ToString()+")"
 
 
 let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
+let isSolid = function
+    | S(_,_,_)  -> true
+    | B(_)      -> true
+    | SC(_,_,_) -> true
+    | _         -> false
+
+exception NotSolidShapeException
+//Collect a group of shapes as one union
+let group s1 s2 = if isSolid s1 && isSolid s2 then GroS(s1, s2)
+                  else raise NotSolidShapeException      
+                     
+//Union compose two shapes
+let union s1 s2  = if isSolid s1 && isSolid s2 then UniS(s1, s2)      
+                   else raise NotSolidShapeException
+//Keep the difference between two shapes
+let intersection s1 s2  = if isSolid s1 && isSolid s2 then IntS(s1, s2)
+                          else raise NotSolidShapeException
+//Subtract s2 from s1 (s2-s1)
+let subtraction s1 s2  = if isSolid s1 && isSolid s2 then SubS(s1, s2)
+                         else raise NotSolidShapeException
+
+
+
+//Plane
+let mkPlane (material : Material) =
+      let point = mkPoint 0.0 0.0 0.0
+      let normVector = mkVector 0.0 -1.0 0.0
+      PL (material,point,normVector)
 
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
@@ -68,23 +99,8 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
-
-
-        
-        
-        
-        
-         
 //Sphere
-let mkSphere orego radius material = S (orego, radius, material)
-let getSphereRadius (S(_,radius,_)) = radius
-let getSphereMaterial (S(_, _, mat)) = mat
-
-//Planes
-let mkPlane point normVector material = P (point, normVector, material)
-let getPlanePoint (P(point,_,_)) = point
-let getPlaneNormVector (P(_,normVector,_)) = normVector
-let getPlaneMaterial (P(_, _, mat)) = mat
+let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
 
 
 
@@ -107,7 +123,7 @@ let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Ma
 
 
 //Hit function for Rectangle. Rectangle is AXis alligned with XY. Can be moved by transforming.
-let hitRec (R(p,t,d)) (Rec(c,w,h,m)) = 
+let hitRec (R(p,d)) (Rec(c,w,h,m)) = 
     let dz = Vector.getZ d
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
@@ -119,7 +135,7 @@ let hitRec (R(p,t,d)) (Rec(c,w,h,m)) =
     let ay = Point.getY c
 
 
-    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h)
+    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h) && distance > 0.0
     then Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else None
 
@@ -131,21 +147,21 @@ let getTriangleC (T(_,_,c,_)) = c
 let getTriangleMat (T(_,_,_,mat)) = mat
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
-let hitDisc (R(p,t,d)) (D(c,r,m)) = 
+let hitDisc (R(p,d)) (D(c,r,m)) = 
     let dz = Vector.getZ d
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
     let p' = Point.move p (Vector.multScalar d distance)
     let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
 
-    if result <= (pow (r,2.0)) 
+    if result <= (pow (r,2.0)) && result > 0.0
     then 
      Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else 
      None
 
 //Calculates if cylinder hit. Cylinder is always centeret on 0,0,0 and is XZ alligned.
-let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) = 
+let hitCylinder (R(p,d)) (HC(center,r,h,m)) = 
     let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
     let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
     let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
@@ -159,12 +175,12 @@ let hitCylinder (R(p,t,d)) (HC(center,r,h,m)) =
      let pyt1 = Point.getY p + tlittle * Vector.getY d
      let pyt2 = Point.getY p + tbig * Vector.getY d
      
-     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
+     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
      then 
         let px = Point.getX p + tlittle * Vector.getX d
         let pz = Point.getZ p + tlittle * Vector.getZ d
         Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), m)
-     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
+     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig > 0.0
      then
         let px = Point.getX p + tbig * Vector.getX d
         let pz = Point.getZ p + tbig * Vector.getZ d
@@ -207,22 +223,21 @@ let mkTriangleMesh p (plyList:Ply list) =
 ///Given a ray, computes the hit point for a sphere,
 //and returns information on how the point
 ///should be rendered
-let rec hit ((R(p,t,d)) as ray) (s:Shape) =
+let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
     |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
     
-                    
                     let a = (pow((Vector.getX d),2.0) +
                              pow((Vector.getY d),2.0) +
                              pow((Vector.getZ d),2.0))
 
-                    let b =  (2.0 * (Point.getX p - Point.getX o) * Vector.getX d) +
-                             (2.0 * (Point.getY p - Point.getY o) * Vector.getY d) +
-                             (2.0 * (Point.getZ p - Point.getZ o) * Vector.getZ d)
+                    let b =  (2.0 * Point.getX p * Vector.getX d) +
+                                (2.0 * Point.getY p * Vector.getY d) +
+                                (2.0 * Point.getZ p * Vector.getZ d)
 
-                    let c =  pow((Point.getX p - Point.getX o),2.0) +
-                             pow((Point.getY p - Point.getY o),2.0) +
-                             pow((Point.getZ p - Point.getZ o),2.0) -
+                    let c =  pow(Point.getX p,2.0) +
+                                pow(Point.getY p,2.0) +
+                                pow(Point.getZ p,2.0) -
                              pow(r,2.0)
 
                     let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
@@ -241,15 +256,16 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                              Some (answer, makeNV answer, mat)
                             else Some (answer, makeNV answer, mat)
 
-    |P(pVector,n, mat) -> let denom = Vector.dotProduct d n
-                          if(denom > 0.0) then
+    |PL(mat,pVector,n) -> let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
+                          if(denom > 0.0000001) then
                               let v = Point.distance p pVector
-                              let result = Vector.dotProduct v n
-                              Some (result, n, mat)
+                              let result = (Vector.dotProduct v n) / denom 
+                              if result >= 0.0 then Some (result, n, mat)
+                              else None
                           else None
     | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
                        let d' = transVector (getInv tr) d //transformed direction
-                       match hit (R(p', t, d')) s with
+                       match hit (R(p', d')) s with
                        | None -> None
                        | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
                                                  Some(dist, dir', mat)
@@ -292,8 +308,10 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
            then 
              let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
   
-         ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
-             Some(t, vectorN v u, mat)
+             //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
+             if t > 0.0 
+             then Some(t, vectorN v u, mat)
+             else None
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
 
@@ -306,50 +324,17 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
-    | T(a,b,c,mat) -> 
-        let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
+    | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
+                       match (hit1, hit2) with
+                       | (None, None) -> None
+                       | (hit1, None) -> hit1
+                       | (None, hit2) -> hit2
+                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
+                                                                   then hit2
+                                                                   else hit1
+                       
 
-        //Create the normal of the triangle
-        let vectorN u v = Vector.normalise (Vector.crossProduct u v)
+                       
 
-        let a1 = (Point.getX a) - (Point.getX b)
-        let b1 = (Point.getX a) - (Point.getX c)
-        let c1 = Vector.getX d
-        let d1 = (Point.getX a) - (Point.getX p)
+                        
 
-        let e = (Point.getY a) - (Point.getY b)
-        let f = (Point.getY a) - (Point.getY c)
-        let g = Vector.getY d
-        let h = (Point.getY a) - (Point.getY p)
-    
-        let i = (Point.getZ a) - (Point.getZ b)
-        let j = (Point.getZ a) - (Point.getZ c)
-        let k = Vector.getZ d
-        let l = (Point.getZ a) - (Point.getZ p)
-
-        let D = a1*(f*k - g*j) + b1*(g*i-e*k) + c1*(e*j-f*i) 
-
-        //Find the unknowns
-        //If D!=0 we have a solution    
-        if (D <> 0.0)  then 
-          let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
-          let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
-          let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
-          
-          if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
-           then 
-             let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
-       
-          ///Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
-             Some(t, vectorN v u, mat)
-          else None //gamma + beta is less than 0 or greater than 1
-        else None // Can't divide with zero
-    | TM(list) ->
-        let newlist = list |> List.map (fun e -> hit (R(p,t,d)) e)
-        let sortedList = newlist |> List.choose id
-        if List.isEmpty sortedList then None else
-        let minDist = List.minBy (fun (dis,nv,mat) -> dis) sortedList
-        Some minDist
-     
-         
