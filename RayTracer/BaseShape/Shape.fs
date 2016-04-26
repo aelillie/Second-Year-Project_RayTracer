@@ -37,10 +37,11 @@ type Shape =
 let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
-let isSolid = function
+let rec isSolid = function
     | S(_,_,_)  -> true
     | B(_)      -> true
     | SC(_,_,_) -> true
+    | TShape(s,_) -> isSolid s
     | _         -> false
 
 exception NotSolidShapeException
