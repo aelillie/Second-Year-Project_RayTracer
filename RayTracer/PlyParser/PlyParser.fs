@@ -7,8 +7,6 @@ open System.IO
 type UserState = unit
 type Ply = 
          | Vertex of float list
-      (* | Vertex2 of float * float * float * float * float
-         | Vertex3 of float * float * float * float * float * float * float * float *)
          | Property of string
          | Face of int list
          | Comment of string
@@ -18,15 +16,13 @@ type Ply =
          override p.ToString() =
           match p with
            Property x -> x
-          |_ -> "lol"
+          |_ -> "Override rest of elements if needed."
 
 
 let print p writer = 
       match p with
          | Vertex x -> fprintf writer "Vertex %O \n" x
-      (* | Vertex2 (x,y,z,u,v) -> fprintf writer "Vertex %f %f %f %f %f \n" x y z u v
-         | Vertex3 (x,y,z,nx,ny,nz,u,v) -> fprintf writer "Vertex %f %f %f %f %f %f %f %f \n" x y z nx ny nz u v *)
-         | Face (x) ->       fprintf writer "Face %O \n" x
+         | Face (x) -> fprintf writer "Face %O \n" x
          | Comment x -> fprintf writer "Comment %s \n" x
          | DummyData x -> fprintf writer "DummyData %s \n" x
          | Element (e, n, pr) -> fprintf writer "Element %s %d %O \n" e n pr
@@ -43,13 +39,7 @@ let readLines (filePath:string) = seq {
         yield sr.ReadLine ()
 }
 
-(*let mkVertex n (xs:float list) =
-    match n with
-    |3 -> Vertex((xs.Item 0),xs.Item 1,xs.Item 2)  
-    |5 -> Vertex2((xs.Item 0),xs.Item 1,xs.Item 2,(xs.Item 3),xs.Item 4)  
-    |8 -> Vertex3((xs.Item 0),xs.Item 1,xs.Item 2,(xs.Item 3),xs.Item 4,(xs.Item 5),xs.Item 6,xs.Item 7)  
-    |_ -> failwith "Encounted an errornous number of values when creating a vertex of %d, %O" n xs*)
-    
+
 //Helper parsers
 let pNameString: Parser<_> = satisfy (fun c ->  System.Char.IsLetterOrDigit c)
 let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else failFatally "lol"
@@ -72,13 +62,14 @@ let pPly2: Parser<_> = choice [pComment
                                attempt pFace 
                                pVertex 
                                pDummyData]
+
 // Helper method returning the result (ply type) or DummyData if failure
 let parse p str = 
     match run p str with
      |Success(result,_,_) -> result
      |Failure(er,_,_) -> DummyData er
 
-
+//Parse header of PlyFile
 let rec parseHeader xs = 
     let rec parseProperties xs = 
      match xs with
@@ -91,12 +82,12 @@ let rec parseHeader xs =
     match parse pPly2 top with
          | Comment x as c-> c::parseHeader (List.tail xs)
          | DummyData x as d-> d::parseHeader (List.tail xs)
-         | Element (el, n, pr) -> Element(el, n, parseProperties (List.tail xs))::parseHeader (List.tail xs)
+         | Element (el, n, pr) -> Element(el, n, parseProperties (List.tail xs))::parseHeader (List.tail xs) //Create property list.
          | Property s as p-> parseHeader (List.tail xs)
-         | Endheader as eh -> [eh]
+         | Endheader as eh -> [eh]          //Return header
          | _ -> failwith "Shouldn't reach this"
          
-
+//To filter out header elements.
 let isHeader ply = 
     match ply with
     | Comment x as c-> true
@@ -112,7 +103,7 @@ let parsePly filePath =
     let lines = Seq.toList (readLines filePath) // read lines
     let header = parseHeader lines
     let body = List.filter (fun x -> not (isHeader x)) (List.map (fun x -> parse pPly2 x) lines)
-    List.append header body
+    List.append header body  //Return complete list.
 
     
     

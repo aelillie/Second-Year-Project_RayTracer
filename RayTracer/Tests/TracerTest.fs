@@ -22,7 +22,7 @@ open System.Drawing
 
       //let toScreen = false 
       let renderSphere toScreen =
-        let light = mkLight (mkPoint 0.0 1.0 4.0) (Colour.fromColor Color.Red) 0.8
+        let light = mkLight (mkPoint -1.0 1.0 4.0) (Colour.fromColor Color.Red) 1.0
         let light2 = mkLight (mkPoint 3.0 5.0 2.0) (Colour.fromColor Color.White) 0.3
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
         let camera = mkCamera (mkPoint 0.0 3.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
