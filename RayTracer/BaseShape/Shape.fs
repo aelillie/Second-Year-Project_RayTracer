@@ -69,11 +69,15 @@ let mkPlane (material : Material) =
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
     = Rec(corner, width, height, t)
-//Box
-let mkBox (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
-      = let width, height, depth = 2.0, 2.0, 2.0
 
-        let frontT = translate -1.0 -1.0 -1.0 
+//Box
+let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
+      = let width = System.Math.Abs(Point.getX high - Point.getX low)
+        let height = System.Math.Abs(Point.getY high - Point.getY low)
+        let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
+        let az = System.Math.Min(Point.getZ high, Point.getZ low)
+
+        let frontT = translate (Point.getX low) (Point.getY low) az 
         let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
         let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
         let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
@@ -95,19 +99,25 @@ let mkBox (front : Material) (back : Material) (top : Material) (bottom : Materi
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
+let mkBoxCenter front back top bottom left right = 
+        mkBox (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) front back top bottom left right
+
 //Sphere
-let mkSphere (r : float) (m : Material) : Shape = S(mkPoint 0.0 0.0 0.0,r,m)
+let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
+let mkSphereCenter (r : float) (m : Material) : Shape = mkSphere (mkPoint 0.0 0.0 0.0) r m
 
 
 
 //Cylinders and Discs
-let mkHollowCylinder (r : float) (h : float) (t : Material) : Shape = HC(mkPoint 0.0 0.0 0.0,r,h,t)
-let mkDisc (r : float) (t : Material) : Shape = D((mkPoint 0.0 0.0 0.0),r,t)
-let mkSolidCylinder (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
+let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
+let mkHollowCylinderCenter r h t = mkHollowCylinder (mkPoint 0.0 0.0 0.0) r h t
+let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
+let mkDiscCenter r t = mkDisc (mkPoint 0.0 0.0 0.0) r t
+let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
      = 
-     let cyl = mkHollowCylinder r h t 
-     let botDisc = mkDisc r bottom
-     let topDisc = mkDisc r top
+     let cyl = mkHollowCylinder c r h t 
+     let botDisc = mkDisc c r bottom
+     let topDisc = mkDisc c r top
 
      let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
      let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX ((pi/2.0)) ]
@@ -115,6 +125,8 @@ let mkSolidCylinder (r : float) (h : float) (t : Material) (top : Material) (bot
      let botDisc' = transform botDisc transBot
 
      SC(cyl,topDisc',botDisc')
+///Construct solid cylinder in 0.0 0.0 0.0
+let mkSolidCylinderCenter r h t top bottom = mkSolidCylinder (mkPoint 0.0 0.0 0.0) r h t top bottom
 
 
 
