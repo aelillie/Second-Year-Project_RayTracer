@@ -20,7 +20,7 @@ open TestSuite
 [<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv = 
-    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     (*PointTest.doTest()
     VectorTest.doTest()
     
@@ -42,9 +42,9 @@ let main argv =
     List.iter (fun x -> PlyParse.print x writer) k *)
 
 
-    //stopWatch.Stop()
-    //printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
+    stopWatch.Stop()
+    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
 
-    //System.Console.WriteLine "Press any key to close..."
-    //System.Console.ReadKey() |> ignore
+    System.Console.WriteLine "Press any key to close..."
+    System.Console.ReadKey() |> ignore
     0 // return an integer exit code

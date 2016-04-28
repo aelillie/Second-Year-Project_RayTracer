@@ -83,7 +83,6 @@ module mkBasicShapes =
 
     let mkDiscCenter r t = mkDisc (mkPoint 0.0 0.0 0.0) r t
 
-
     let mkRectangle (c : Point) (w : float) (h : float) (m : Material) =
         let hit (R(p,d)) =  let dz = Vector.getZ d
                             let pz = Point.getZ p

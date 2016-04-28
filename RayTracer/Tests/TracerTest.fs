@@ -76,5 +76,5 @@ open mkShape.mkAdvancedShapes
           doRender scene None
         else
           doRender scene (Some ("renderInsideSphere.png"))  
-      renderSphere true
+      renderSphere false
       renderInsideSphere false

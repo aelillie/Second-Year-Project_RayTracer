@@ -16,7 +16,7 @@ module EditShape =
 
     type shape2 = mkBasicShapes.shape2
 
-    let transform s tr  :shape2 = 
+    let transform s tr :shape2 = 
         let hit (R(p,d)) =  let p' = transPoint (getInv tr) p //transformed Ray origin
                             let d' = transVector (getInv tr) d //transformed direction
                             match s (R(p', d')) with
