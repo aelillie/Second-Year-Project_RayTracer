@@ -5,6 +5,7 @@ open Ray
 open ExprParse
 open Material
 open Transformation
+open PlyParse
 
 
 
@@ -28,6 +29,7 @@ type Shape =
   | IntS of Shape * Shape
   | SubS of Shape * Shape
   | GroS of Shape * Shape
+  | TM of Shape list
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
@@ -196,6 +198,40 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
         Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
      else None
 
+let collectFaces = function
+ |Face(x) -> [x]
+ |_ -> []
+
+let collectVertices = function
+ |Vertex(floatList) -> [floatList]
+ |_ -> []
+
+let mkPointFromIndex p i list =
+    let x = List.item 0 (List.item i list)
+    let y = List.item 1 (List.item i list)
+    let z = List.item 2 (List.item i list)
+    Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
+let rnd = System.Random()    
+
+let mkTriangleMesh p (plyList:Ply list) =
+    let vertexList = plyList |> List.collect collectVertices
+    let faceList = plyList |> List.collect collectFaces
+    
+    let rec makeTriangles vList fList = 
+        match fList with
+         |[] -> []
+         |l::fList' ->  
+                        let p1 = mkPointFromIndex p (List.item 0 l) vList
+                        let p2 = mkPointFromIndex p (List.item 1 l) vList
+                        let p3 = mkPointFromIndex p (List.item 2 l) vList
+                        (mkTriangle p1 p2 p3 (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
+    
+    let tri = makeTriangles vertexList faceList
+
+    TM(tri)
+
+///Given a ray, computes the hit point for a sphere,
+//and returns information on how the point
 ///should be rendered
 let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
@@ -299,6 +335,10 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                  match min with
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+    |TM(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
+                  match min with
+                  |[] -> None
+                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
     | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with

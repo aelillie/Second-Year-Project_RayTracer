@@ -4,7 +4,7 @@ open Ray
 open Shape
 open Material
 open Colour
-open BoundingBox 
+//open BoundingBox 
 open Camera
 open Drawing
 open Light
@@ -27,11 +27,11 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    //TracerTest.doTest()  
+    TracerTest.doTest()  
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //TracerTest.doTest() 
-    AffineTransformationsTest.render false
+    //AffineTransformationsTest.render false
     (*let filepath = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
 
     let k = PlyParse.parsePly filepath
