@@ -1,7 +1,5 @@
 ﻿module TracerTest
 open Transformation
-
-open PlyParse
 open Camera
 open Shape
 open Light
@@ -24,20 +22,42 @@ open Scene
 
       //let toScreen = false 
       let renderSphere toScreen =
-        //let light = mkLight (mkPoint 10.0 30.0 0.0) (Colour.fromColor Color.White) 1.0 in
-        //let light1 = mkLight (mkPoint -10.0 30.0 0.0) (Colour.fromColor Color.White) 1.0 in
-        let light2 = mkLight (mkPoint 5.0 5.0 0.0) (Colour.fromColor Color.White) 1.0 in
-        //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
-        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
-        let camera = mkCamera (mkPoint 5.0 3.0 0.0) (mkPoint 4.9 2.9 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-        let plane = mkPlane (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
-        let plyFile = parsePly @"C:\Users\SecondBanana\Documents\GitHubVisualStudio\Ray-Tracer-Project\RayTracer\ant.ply"
-        //let ant = mkTriangleMesh (mkPoint 0.0 0.0 0.0) plyFile
-        let plane = mkPlane(Material.mkMaterial(Colour.fromColor Color.Blue) 0.0)
-        let sphere = mkSphereCenter 1.0 (Material.mkMaterial(Colour.fromColor Color.Red) 0.0)
-        let sphere1 = Shape.transform sphere (translate 4.0 2.0 0.0)
-        //let ant2 = Shape.transform ant (translate 0.0 10.0 0.0)
-        let scene = Scene.mkScene [sphere1;plane] [light2] ambientLight camera 2 in
+        let light = mkLight (mkPoint -2.0 3.0 5.0) (Colour.fromColor Color.White) 1.0
+        let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
+
+        let plane = mkPlane (Material.mkMaterial (Colour.mkColour 0.35 0.24 0.67) 0.0)
+        let sphere = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
+        let sphere1 = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.5)
+        let sphere2 = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Purple) 0.2)
+        let hc = mkHollowCylinderCenter 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+        let sc = mkSolidCylinderCenter 1.0 2.0 
+                    (Material.mkMaterial (Colour.fromColor Color.Orange) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Red) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Red) 0.2)
+        let box = mkBoxCenter
+                    (Material.mkMaterial (Colour.fromColor Color.Red) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Green) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.White) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Yellow) 0.2)
+                    (Material.mkMaterial (Colour.fromColor Color.Purple) 0.2)
+        let tr = mkTriangle (mkPoint 1.0 0.0 0.0) (mkPoint 0.0 1.0 0.0) (mkPoint 0.0 0.0 1.0)
+                    (Material.mkMaterial (Colour.fromColor Color.White) 0.2)
+
+
+        let spherebox = union (transform sphere (scale 1.4 1.4 1.4)) box
+        let spheresc = union sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
+
+        let tspherebox = transform spherebox (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
+        let tsphere1 = transform sphere1 (mergeTransformations [scale 0.5 0.5 0.5;translate -2.5 2.5 2.0])
+        let tsphere2 = transform sphere2 (mergeTransformations [scale 1.2 1.2 1.2;translate 2.5 1.5 1.0])
+        let tsc = transform sc (mergeTransformations [translate -4.0 2.0 0.0;scale 0.7 0.7 0.7;rotateX (System.Math.PI / 4.0)])
+        let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
+        let ttr = transform tr (mergeTransformations [translate -3.0 2.0 0.0;rotateX -(System.Math.PI / 8.0)])
+
+        let scene = mkScene [spheresc] [light] ambientLight camera 2
+
         if toScreen then
           doRender scene None
         else
