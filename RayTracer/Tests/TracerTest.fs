@@ -11,7 +11,7 @@ open Point
 open Vector
 open System
 open System.Drawing
-
+open Scene
  
   let doTest() =
   (* Input the path (local or absolute) where you want your files to be stored *)
@@ -45,7 +45,7 @@ open System.Drawing
         let light = mkLight (mkPoint 0.0 0.0 0.0) (Colour.fromColor Color.White) 3.0 in
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
         let camera = mkCamera (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 4.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
+        let sphere = mkSphereCenter 2.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
  //     let triangle = mkTriangle (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0) in
         let scene = Scene.mkScene [sphere] [light] ambientLight camera 0 in
         if toScreen then

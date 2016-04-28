@@ -24,7 +24,7 @@ let sort = function
 //Creates a ray with direction towards a specific light.
 let mkShadowRay (p:Point) (l:Light)  :Ray = 
     let sr = Point.direction p (Light.getPoint l)
-    Ray.mkRay p 1.0 sr
+    Ray.mkRay p sr
 
 //Returns true if a point is shaded from light for a given lightsource or not
 let rec isShaded (r:Ray) (xs:Shape list) (l:Light) (p:Point) =
@@ -78,7 +78,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     //Create the reflection ray with respect to ingoing ray and the normal vector.
                     let x2 = ((Ray.getD ray) * nV') * 2.0
                     let reflectDir = Vector.normalise ((Ray.getD ray) - (x2 * nV'))
-                    let reflRay = Ray.mkRay p' 1.0 reflectDir
+                    let reflRay = Ray.mkRay p' reflectDir
                     if Material.getReflection m > 0.0 
                     then    //If reflective material then fire out rays recursively and check with color is returned.
                         match reflNumber with

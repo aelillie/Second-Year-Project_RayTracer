@@ -39,16 +39,16 @@ type Shape =
 let pow (x, y) = System.Math.Pow(x, y)
 let transform (s : Shape) (t : Transformation) = TShape(s, t)
 
-let isSolid = function
+let rec isSolid = function
     | S(_,_,_)  -> true
     | B(_)      -> true
     | SC(_,_,_) -> true
+    | TShape(s,_) -> isSolid s
     | _         -> false
 
 exception NotSolidShapeException
 //Collect a group of shapes as one union
-let group s1 s2 = if isSolid s1 && isSolid s2 then GroS(s1, s2)
-                  else raise NotSolidShapeException      
+let group s1 s2 = GroS(s1, s2)      
                      
 //Union compose two shapes
 let union s1 s2  = if isSolid s1 && isSolid s2 then UniS(s1, s2)      
@@ -71,6 +71,7 @@ let mkPlane (material : Material) =
 //Rectangle
 let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
     = Rec(corner, width, height, t)
+
 //Box
 let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
       = let width = System.Math.Abs(Point.getX high - Point.getX low)
@@ -78,36 +79,42 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
         let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
         let az = System.Math.Min(Point.getZ high, Point.getZ low)
 
-
         let frontT = translate (Point.getX low) (Point.getY low) az 
-        let backT = mergeTransformations [translate 0.0 0.0 depth; frontT;]
+        let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
         let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
-        let topT = mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
-        let leftT = mergeTransformations [frontT; rotateY (-(pi/2.0))]
-        let rightT = mergeTransformations [translate width 0.0 0.0; leftT;]
+        let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
+        let leftT =   mergeTransformations [frontT; rotateY (-(pi/2.0))]
+        let rightT =  mergeTransformations [translate width 0.0 0.0; leftT;]
 
         let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
 
-        let frontR = mkRectangle (mkPoint 0.0 0.0 0.0) width height front
-        let backR =  mkRectangle (mkPoint 0.0 0.0 0.0) width height back
-        let bottomR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth bottom
-        let topR = mkRectangle (mkPoint 0.0 0.0 0.0) width depth top
-        let leftR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height left
-        let rightR = mkRectangle (mkPoint 0.0 0.0 0.0) depth height right
+        let p = mkPoint 0.0 0.0 0.0
+        let frontR =  mkRectangle p width height front
+        let backR =   mkRectangle p width height back
+        let bottomR = mkRectangle p width depth bottom
+        let topR =    mkRectangle p width depth top
+        let leftR =   mkRectangle p depth height left
+        let rightR =  mkRectangle p depth height right
 
         let rectangles = [frontR;backR;bottomR;topR;leftR;rightR] 
 
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
+let mkBoxCenter front back top bottom left right = 
+        mkBox (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) front back top bottom left right
+
 //Sphere
 let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
+let mkSphereCenter (r : float) (m : Material) : Shape = mkSphere (mkPoint 0.0 0.0 0.0) r m
 
 
 
 //Cylinders and Discs
 let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
+let mkHollowCylinderCenter r h t = mkHollowCylinder (mkPoint 0.0 0.0 0.0) r h t
 let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
+let mkDiscCenter r t = mkDisc (mkPoint 0.0 0.0 0.0) r t
 let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
      = 
      let cyl = mkHollowCylinder c r h t 
@@ -115,11 +122,13 @@ let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Ma
      let topDisc = mkDisc c r top
 
      let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
-     let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX (-(pi/2.0)) ]
+     let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX ((pi/2.0)) ]
      let topDisc' = transform topDisc transTop
      let botDisc' = transform botDisc transBot
 
      SC(cyl,topDisc',botDisc')
+///Construct solid cylinder in 0.0 0.0 0.0
+let mkSolidCylinderCenter r h t top bottom = mkSolidCylinder (mkPoint 0.0 0.0 0.0) r h t top bottom
 
 
 
@@ -155,7 +164,7 @@ let hitDisc (R(p,d)) (D(c,r,m)) =
     let p' = Point.move p (Vector.multScalar d distance)
     let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
 
-    if result <= (pow (r,2.0)) && result > 0.0
+    if result <= (pow (r,2.0)) && distance > 0.0
     then 
      Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
     else 
@@ -176,6 +185,7 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
      let pyt1 = Point.getY p + tlittle * Vector.getY d
      let pyt2 = Point.getY p + tbig * Vector.getY d
      
+
      if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
      then 
         let px = Point.getX p + tlittle * Vector.getX d
@@ -315,10 +325,12 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
 
-    |SC(c,top,bot) -> let min = List.map(fun x -> hit ray x) [c;top;bot] |> List.choose id
+    |SC(c,top,bot) -> let hits = List.map(fun x -> hit ray x) [c;top;bot]
+                      let min = hits |> List.choose id
                       match min with
                       |[] -> None
-                      |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+                      |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
+
     |B(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
                  match min with
                  |[] -> None
@@ -335,9 +347,12 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (None, hit2) -> hit2
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
                                                                    then hit2
-                                                                   else hit1                       
-
-                       
-
-                        
-
+                                                                   else hit1
+    | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
+                       match (hit1, hit2) with
+                       | (None, None) -> None
+                       | (hit1, None) -> hit1
+                       | (None, hit2) -> hit2
+                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
+                                                                   then hit2
+                                                                   else hit1

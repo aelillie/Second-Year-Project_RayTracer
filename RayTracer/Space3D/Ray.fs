@@ -12,7 +12,7 @@ type Ray =
     override R.ToString() =
         match R with
         R(p,d) -> "("+p.ToString()+","+ d.ToString() + ")"
-let mkRay p t d = R(p,d)
+let mkRay p d = R(p,d)
 
 let getP (R(p,_)) = p
 let getD (R(_,d)) = d
