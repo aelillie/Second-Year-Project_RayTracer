@@ -53,7 +53,6 @@
     <Compile Include="Sphere.fs" />
     <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
-    <Compile Include="TriangleMesh.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">

@@ -24,14 +24,18 @@ open System.Drawing
 
       //let toScreen = false 
       let renderSphere toScreen =
-        let light = mkLight (mkPoint 0.0 3.0 0.0) (Colour.fromColor Color.White) 1.0 in
+        let light = mkLight (mkPoint 10.0 30.0 0.0) (Colour.fromColor Color.White) 1.0 in
+        let light1 = mkLight (mkPoint -10.0 30.0 0.0) (Colour.fromColor Color.White) 1.0 in
+        let light2 = mkLight (mkPoint 0.0 30.0 0.0) (Colour.fromColor Color.White) 1.0 in
         //let light2 = mkLight (mkPoint 0.0 0.0 4.0) (Colour.fromColor Color.White) 0.7 in
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1 in
-        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
-        let plane = mkPlane(mkPoint 0.0 -10.0 0.0) (mkVector 0.0 -1.0 -0.5) (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
+        let camera = mkCamera (mkPoint 15.0 8.0 0.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let plane = mkPlane (Material.mkMaterial (Colour.fromColor Color.Red) 0.0)
         let plyFile = parsePly @"C:\Users\SecondBanana\Documents\GitHubVisualStudio\Ray-Tracer-Project\RayTracer\ant.ply"
-        let ant = mkTriangleMesh (mkPoint 0.0 0.0 -30.0) plyFile
-        let scene = Scene.mkScene [ant;plane] [light] ambientLight camera 2 in
+        let ant = mkTriangleMesh (mkPoint 0.0 0.0 0.0) plyFile
+        let plane = mkPlane(Material.mkMaterial(Colour.fromColor Color.Blue) 0.0)
+        let ant2 = Shape.transform ant (translate 0.0 10.0 0.0)
+        let scene = Scene.mkScene [ant2;plane] [light;light1;light2] ambientLight camera 2 in
         if toScreen then
           doRender scene None
         else

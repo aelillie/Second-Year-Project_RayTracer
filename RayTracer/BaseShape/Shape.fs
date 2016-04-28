@@ -29,6 +29,7 @@ type Shape =
   | IntS of Shape * Shape
   | SubS of Shape * Shape
   | GroS of Shape * Shape
+  | TM of Shape list
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
@@ -192,11 +193,13 @@ let collectFaces = function
  |_ -> []
 
 let collectVertices = function
- |Vertex(x,y,z) -> [x,y,z]
+ |Vertex(floatList) -> [floatList]
  |_ -> []
 
 let mkPointFromIndex p i list =
-    let (x,y,z) = List.item i list
+    let x = List.item 0 (List.item i list)
+    let y = List.item 1 (List.item i list)
+    let z = List.item 2 (List.item i list)
     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
 let rnd = System.Random()    
 
@@ -211,10 +214,7 @@ let mkTriangleMesh p (plyList:Ply list) =
                         let p1 = mkPointFromIndex p (List.item 0 l) vList
                         let p2 = mkPointFromIndex p (List.item 1 l) vList
                         let p3 = mkPointFromIndex p (List.item 2 l) vList
-                        let ran1 = rnd.NextDouble()
-                        let ran2 = rnd.NextDouble()
-                        let ran3 = rnd.NextDouble()
-                        (mkTriangle p1 p2 p3 (Material.mkMaterial (Colour.mkColour ran1 ran2 ran3 ) 0.0))::makeTriangles vList fList'
+                        (mkTriangle p1 p2 p3 (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
     
     let tri = makeTriangles vertexList faceList
 
@@ -323,6 +323,10 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                  match min with
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+    |TM(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
+                  match min with
+                  |[] -> None
+                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
     | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with
@@ -331,8 +335,7 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (None, hit2) -> hit2
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
                                                                    then hit2
-                                                                   else hit1
-                       
+                                                                   else hit1                       
 
                        
 
