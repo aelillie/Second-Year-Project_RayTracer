@@ -308,9 +308,11 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
                                                                    then hit2
                                                                    else hit1
-                       
-
-                       
-
-                        
-
+    | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
+                       match (hit1, hit2) with
+                       | (None, None) -> None
+                       | (hit1, None) -> hit1
+                       | (None, hit2) -> hit2
+                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
+                                                                   then hit2
+                                                                   else hit1
