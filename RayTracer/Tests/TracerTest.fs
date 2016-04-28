@@ -1,7 +1,6 @@
 ﻿module TracerTest
 open Transformation
 open Camera
-open Shape
 open Light
 open Tracer
 open Ray
@@ -10,6 +9,9 @@ open Vector
 open System
 open System.Drawing
 open Scene
+open mkShape.EditShape
+open mkShape.mkBasicShapes
+open mkShape.mkAdvancedShapes
  
   let doTest() =
   (* Input the path (local or absolute) where you want your files to be stored *)

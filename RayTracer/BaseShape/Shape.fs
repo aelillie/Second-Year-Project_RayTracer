@@ -248,7 +248,7 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                     let c =  pow(Point.getX p,2.0) +
                                 pow(Point.getY p,2.0) +
                                 pow(Point.getZ p,2.0) -
-                             pow(r,2.0)
+                            pow(r,2.0)
 
                     let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
 

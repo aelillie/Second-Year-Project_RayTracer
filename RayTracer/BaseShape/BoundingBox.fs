@@ -29,7 +29,7 @@ let calc s =
         let hz = (Point.getZ p) + f + epsilon 
         let h = mkPoint hx hy hz
         mkBoundingBox l h
-    | PL(_,_,_) -> failwith "Can't make boundingbox for that sphere"
+    | PL(_,_,_) -> failwith "Can't make boundingbox for that shape"
     //Triangle bounding box
     | T(a,b,c,m) -> 
         let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]

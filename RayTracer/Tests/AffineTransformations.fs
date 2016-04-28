@@ -3,7 +3,6 @@ open System
 open System.Drawing
 open Light
 open Transformation
-open Shape
 open Point
 open Colour
 open Scene
@@ -11,6 +10,9 @@ open Camera
 open Vector
 open Material
 open Util
+open mkShape.EditShape
+open mkShape.mkAdvancedShapes
+open mkShape.mkBasicShapes
 
 module AffineTransformationsTest =
   let folder = "affineTransformations"
