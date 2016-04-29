@@ -44,6 +44,14 @@ let rec isSolid = function
     | TShape(s,_) -> isSolid s
     | _         -> false
 
+//let rec isInside p =
+//    let (x, y, z) = Point.getCoord p //The hit point
+//    function
+//    |  S(o, r, _) -> let (ox, oy, oz) = Point.getCoord o //Sphere origo
+//                     let r = r + 0.00001 //floating point precision
+//                     (ox+r) < x && (oy+r) < y && (oz+r) < z //Inside if all true
+   
+
 exception NotSolidShapeException
 //Collect a group of shapes as one union
 let group s1 s2 = GroS(s1, s2)      
@@ -54,7 +62,7 @@ let union s1 s2  = if isSolid s1 && isSolid s2 then UniS(s1, s2)
 //Keep the difference between two shapes
 let intersection s1 s2  = if isSolid s1 && isSolid s2 then IntS(s1, s2)
                           else raise NotSolidShapeException
-//Subtract s2 from s1 (s2-s1)
+//Subtract s2 from s1 (s1-s2)
 let subtraction s1 s2  = if isSolid s1 && isSolid s2 then SubS(s1, s2)
                          else raise NotSolidShapeException
 
@@ -300,7 +308,7 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
-    | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
+    | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2 //Remove internal edges
                        match (hit1, hit2) with
                        | (None, None) -> None
                        | (hit1, None) -> hit1
@@ -308,6 +316,17 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
                                                                    then hit2
                                                                    else hit1
+    | IntS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
+                      match (hit1, hit2) with
+                      | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
+                                                                  then hit1
+                                                                  else hit2
+                      | _ -> None
+    | SubS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
+                      match (hit1, hit2) with
+                      | (hit1, None) -> hit1
+                      | _ -> None
+
     | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with
                        | (None, None) -> None
@@ -316,3 +335,5 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
                                                                    then hit2
                                                                    else hit1
+    //If an unimplemented shape does not have a hit function
+    | s -> failwith ((string) s + "not implemented") 
