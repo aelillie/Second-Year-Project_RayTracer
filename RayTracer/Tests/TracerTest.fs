@@ -59,7 +59,7 @@ open Scene
         let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let ttr = transform tr (mergeTransformations [translate -3.0 2.0 0.0;rotateX -(System.Math.PI / 8.0)])
 
-        let scene = mkScene [sphere2x] [light] ambientLight camera 2
+        let scene = mkScene [spheresc] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None

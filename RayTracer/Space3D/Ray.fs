@@ -16,3 +16,4 @@ let mkRay p d = R(p,d)
 
 let getP (R(p,_)) = p
 let getD (R(_,d)) = d
+let getValues (R(p,d)) = (p,d)
