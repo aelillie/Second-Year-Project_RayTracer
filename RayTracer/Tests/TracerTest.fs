@@ -47,7 +47,8 @@ open Scene
 
 
         let spherebox = union (transform sphere (scale 1.4 1.4 1.4)) box
-        let spheresc = union sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
+        let spheresc = union sc sphere
+        let spheresc' = union sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc1 = intersection sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc2 = subtraction (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2])) sc
         let sphere2x = union (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))

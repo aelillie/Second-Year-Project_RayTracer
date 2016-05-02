@@ -206,7 +206,7 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
             match h with
             | None -> c //Out of shape, return count
             | Some(dist, v,_) -> 
-                let o = move p ((dist+0.0001) * d) //Move on other side of surface
+                let o = move p ((dist+0.1) * d) //Move on other side of surface
                 let newRay = mkRay o d //Ray from new origin
                 countSurfaces ((hit newRay s), (c + 1))
         function
@@ -330,21 +330,32 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                          Some(dist2, v2, _) -> 
                              let dist = if dist1 < dist2 then dist1 else dist2
                              if (not (isInside ray s1)) && (not (isInside ray s2))
-                             then if dist1 < dist2 then hit1 else hit2 //Outside of both shapes
-                             else let newPoint = move p ((dist+0.0001) * d)
+                             then if dist1 < dist2 then hit1 else hit2 
+                             else let newPoint = move p ((dist+0.1) * d)
                                   let newRay = mkRay newPoint d
                                   hit newRay (UniS(s1, s2)) //Inside a shape, find outer surface
     | IntS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
-                      | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
-                                                                  then hit1
-                                                                  else hit2
+                      | Some(dist1, v1, _), 
+                        Some(dist2, v2, _) -> 
+                            let dist = if dist1 < dist2 then dist1 else dist2
+                            if (isInside ray s1) && (isInside ray s2)
+                            then if dist1 < dist2 then hit1 else hit2 
+                            else let newPoint = move p ((dist+0.0001) * d)
+                                 let newRay = mkRay newPoint d
+                                 hit newRay (UniS(s1, s2)) 
                       | _ -> None
     | SubS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
-                      | (hit1, None) -> hit1
+                      | Some(dist1, v1, _), 
+                        Some(dist2, v2, _) -> 
+                            let dist = if dist1 < dist2 then dist1 else dist2
+                            if (isInside ray s1) && (not (isInside ray s2))
+                            then if dist1 < dist2 then hit1 else hit2 
+                            else let newPoint = move p ((dist+0.0001) * d)
+                                 let newRay = mkRay newPoint d
+                                 hit newRay (UniS(s1, s2)) 
                       | _ -> None
-
     | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with
                        | (None, None) -> None
