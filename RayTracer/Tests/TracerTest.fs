@@ -22,7 +22,7 @@ open Scene
 
       //let toScreen = false 
       let renderSphere toScreen =
-        let light = mkLight (mkPoint -2.0 3.0 5.0) (Colour.fromColor Color.White) 1.0
+        let light = mkLight (mkPoint -1.5 0.0 3.0) (Colour.fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
 
@@ -47,11 +47,13 @@ open Scene
 
 
         let spherebox = union (transform sphere (scale 1.4 1.4 1.4)) box
+        let spheresphere = union sphere1 sphere2
         let spheresc = union sc sphere
         let spheresc' = union sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc1 = intersection sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc2 = subtraction (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2])) sc
-        let sphere2x = union (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
+        let sphere2x = subtraction (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
+        let tsphere2x = transform sphere2x (rotateY (System.Math.PI / 4.0))
 
         let tspherebox = transform spherebox (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let tsphere1 = transform sphere1 (mergeTransformations [scale 0.5 0.5 0.5;translate -2.5 2.5 2.0])
@@ -59,8 +61,8 @@ open Scene
         let tsc = transform sc (mergeTransformations [translate -4.0 2.0 0.0;scale 0.7 0.7 0.7;rotateX (System.Math.PI / 4.0)])
         let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let ttr = transform tr (mergeTransformations [translate -3.0 2.0 0.0;rotateX -(System.Math.PI / 8.0)])
-
-        let scene = mkScene [spheresc] [light] ambientLight camera 2
+        let tplane = transform plane (translate 0.0 -1.0 0.0)
+        let scene = mkScene [tplane;tsphere2x] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None

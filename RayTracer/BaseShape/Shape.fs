@@ -198,27 +198,23 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
         Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
      else None
 
-///should be rendered
-let rec hit ((R(p,d)) as ray) (s:Shape) =
-    let rec isInside r = 
-        let (p,d) = getValues r //ray values
-        let rec countSurfaces (h, c) = //Count surface hits of any shape
-            match h with
-            | None -> c //Out of shape, return count
-            | Some(dist, v,_) -> 
-                let o = move p ((dist+0.1) * d) //Move on other side of surface
-                let newRay = mkRay o d //Ray from new origin
-                countSurfaces ((hit newRay s), (c + 1))
+let rec isInside hp = 
+        let (x, y, z) = Point.getCoord hp
         function
-        | S(_,_,_) as s -> (countSurfaces ((hit r s), 0)) = 1
-        | B(_) as b -> (countSurfaces ((hit r b), 0)) = 1
-        | SC(_,_,_) as sc -> (countSurfaces ((hit r sc), 0)) = 1
-        | TShape (s,_) -> isInside r s
+        | S(o,r,_) -> (x**2.0+y**2.0+z**2.0) < r**2.0
+        | B(_) as b -> false
+        | SC(_,_,_) as sc -> false
+        | TShape (s,tr) -> isInside (transPoint (getInv tr) hp) s
 //        | UniS(s1,s2) -> (isInside r s1) || (isInside r s2)
 //        | IntS(s1,s2) -> (isInside r s1) && (isInside r s2)
 //        | SubS(s1,s2) -> (isInside r s1) && !(isInside r s2)
         //Rest of solid shapes
         | _ -> raise NotSolidShapeException
+       
+let epsilon = 0.00001
+
+///should be rendered
+let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
     |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
     
@@ -328,34 +324,43 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (None, hit2) -> hit2
                        | Some(dist1, v1, _), 
                          Some(dist2, v2, _) -> 
-                             let dist = if dist1 < dist2 then dist1 else dist2
-                             if (not (isInside ray s1)) && (not (isInside ray s2))
+                             //let hp1, hp2 = move p ((dist1+epsilon) * d), move p ((dist2-epsilon) * d)
+                             if (not (isInside p s1)) && (not (isInside p s2))
                              then if dist1 < dist2 then hit1 else hit2 
-                             else let newPoint = move p ((dist+0.1) * d)
-                                  let newRay = mkRay newPoint d
-                                  hit newRay (UniS(s1, s2)) //Inside a shape, find outer surface
+                             else let dist = if dist1 < dist2 then dist1 else dist2
+                                  let newPoint = move p ((dist+epsilon) * d) //Inside a shape
+                                  let newRay = mkRay newPoint d //Origin on the other side of surface
+                                  hit newRay (UniS(s1, s2))
     | IntS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
-                      | Some(dist1, v1, _), 
-                        Some(dist2, v2, _) -> 
-                            let dist = if dist1 < dist2 then dist1 else dist2
-                            if (isInside ray s1) && (isInside ray s2)
-                            then if dist1 < dist2 then hit1 else hit2 
-                            else let newPoint = move p ((dist+0.0001) * d)
-                                 let newRay = mkRay newPoint d
-                                 hit newRay (UniS(s1, s2)) 
+                      | Some(dist1, _, _), 
+                        Some(dist2, _, _) -> 
+                            match ((isInside p s1), (isInside p s2)) with
+                            | (true, true) -> if dist1 < dist2 then hit1 else hit2
+                            | (true, false) -> if (isInside (move p (dist2 * d)) s1)
+                                               then hit2 else None 
+                            | (false, true) -> if (isInside (move p (dist1 * d)) s2)
+                                               then hit1 else None
+                            | (false, false) -> let dist = if dist1 < dist2 then dist1 else dist2
+                                                let newPoint = move p ((dist+epsilon) * d)
+                                                let newRay = mkRay newPoint d
+                                                hit newRay (IntS(s1, s2))
                       | _ -> None
     | SubS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
-                      | Some(dist1, v1, _), 
-                        Some(dist2, v2, _) -> 
-                            let dist = if dist1 < dist2 then dist1 else dist2
-                            if (isInside ray s1) && (not (isInside ray s2))
-                            then if dist1 < dist2 then hit1 else hit2 
-                            else let newPoint = move p ((dist+0.0001) * d)
+                      | (hit1, None) -> hit1 //Only hit s1
+                      | (Some(dist1, _, _), //Hit both shapes
+                         Some(dist2, _, _)) -> 
+                            let hp1, hp2 = move p (dist1 * d), move p (dist2 * d)
+                            if (isInside hp2 s1) then if dist1 < dist2 then hit1 else hit2
+                            else if (not (isInside hp1 s2)) then hit1
+                                 else
+                                 let newPoint = move p ((dist1+epsilon) * d)
                                  let newRay = mkRay newPoint d
-                                 hit newRay (UniS(s1, s2)) 
-                      | _ -> None
+                                 match hit newRay (SubS(s1, s2)) with
+                                 | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
+                                 | _ -> None
+                      | _ -> None //No hit, or only s2
     | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with
                        | (None, None) -> None
