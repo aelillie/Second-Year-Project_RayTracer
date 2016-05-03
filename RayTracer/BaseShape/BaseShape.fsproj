@@ -50,11 +50,10 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
-    <Compile Include="Sphere.fs" />
+    <Compile Include="BasicShape.fs" />
+    <Compile Include="TransformedShape.fs" />
+    <Compile Include="AdvancedShape.fs" />
     <Compile Include="Shape.fs" />
-    <Compile Include="Plane.fs" />
-    <Compile Include="BoundingBox.fsi" />
-    <Compile Include="BoundingBox.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
