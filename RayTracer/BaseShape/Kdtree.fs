@@ -20,9 +20,29 @@ let mkKdtree left right shapes =
     //kdbbox
 
     let maxDimensions =  
-        let xdim = (Point.getX max) - (Point.getX min)
-        let ydim = (Point.getY max) - (Point.getY min)
-        let zdim = (Point.getZ max) - (Point.getZ min) 
-        List.maxBy ([xdim;ydim;zdim])
+        let xdim = ((Point.getX max) - (Point.getX min), "x")
+        let ydim = ((Point.getY max) - (Point.getY min), "y")
+        let zdim = ((Point.getZ max) - (Point.getZ min), "z") 
+        List.item 0 ( List.maxBy((fun (x,y) -> x) <| ([xdim;ydim;zdim]))
 
-    let rec divide =
+    let root = 
+
+    
+
+    let mutable midpoint = Point.mkPoint 0 0 0
+    let rec mkmidpoint lshape =
+        match lshape with   
+        | S(o,r,mat) -> 
+            let midpoint = Point.mkPoint (Point.getX o) (Point.getY o) (Point.getZ o)
+            midpoint  
+        | PL(mat,pVector,n) -> Point.mkPoint 0 0 0 
+        | T(a,b,c,mat) -> 
+            let midpoint = 
+                let x = ((Point.getX a) + (Point.getX b) + (Point.getX c))/3
+                let y = ((Point.getY a) + (Point.getY b) + (Point.getY c))/3
+                let z = ((Point.getZ a) + (Point.getZ b) + (Point.getZ c))/3
+                Point.mkPoint x y z
+            midpoint 
+        | TShape (s, tr) -> 
+            mkmidpoint s 
+        | 
