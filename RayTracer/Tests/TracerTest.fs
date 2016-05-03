@@ -9,8 +9,7 @@ open Vector
 open System
 open System.Drawing
 open Scene
-open Shapes.BasicShape
-open Shapes.AdvancedShape
+open Shape
  
   let doTest() =
   (* Input the path (local or absolute) where you want your files to be stored *)
@@ -26,7 +25,7 @@ open Shapes.AdvancedShape
         let light = mkLight (mkPoint -2.0 3.0 5.0) (Colour.fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
-        let sphere = new Sphere(mkPoint 0.0 0.0 0.0, 1.0, Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
         let scene = mkScene [sphere] [light] ambientLight camera 2
 
         if toScreen then

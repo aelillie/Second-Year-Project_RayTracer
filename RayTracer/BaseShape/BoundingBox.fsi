@@ -5,6 +5,6 @@ open Shape
 type BoundingBox 
 
 val mkBoundingBox : Point -> Point -> BoundingBox 
-val calc : Shape -> BoundingBox
+//val calc : Shape -> BoundingBox
 
  

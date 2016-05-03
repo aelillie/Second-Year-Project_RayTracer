@@ -16,7 +16,7 @@ let mkBoundingBox l h = B(l,h)
 let epsilon = 0.00001
 
 //Match on shape to calculate max and min values for boundingbox 
-let calc s =
+(*let calc s =
     match s with
     | S(p,f,m) -> 
         let lx = (Point.getX p) - f - epsilon
@@ -38,4 +38,4 @@ let calc s =
 
         let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
         let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
-        B(l,h) 
+        B(l,h) *)

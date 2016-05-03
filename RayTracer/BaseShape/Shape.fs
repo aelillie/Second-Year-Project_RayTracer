@@ -11,7 +11,7 @@ open Shapes.BasicShape
 open Shapes.TransformedShape
 
 
-
+type Shape = Shapes.BasicShape.Shape
 
 //Collect a group of shapes as one union
 let group s1 s2 = new GroupShape(s1, s2)      
