@@ -2,8 +2,14 @@ module ExprToPolyTest
 
 open ExprParse
 open ExprToPoly
-open Sphere
-
+open Implicit
+open Shape
+open Colour
+open Material
+open System.Drawing
+open Vector
+open Point
+open Ray
 
 let chk (name,t,r) =
   printf "%s %s\n" name (if t = r then "OK" else "FAILED[t="+(string)t+",r="+(string)r+"]")
@@ -12,25 +18,60 @@ let chk' (name,t,r) =
   printf "%s %s\n" name (if t = r then "OK" else "FAILED")
 
 let test01() = 
-  let ex01 =
-    FAdd(FAdd(FAdd(FExponent(FVar "x",2),
-                   FExponent(FVar "y",2)),
-              FExponent(FVar "z",2)),
-         FMult(FNum -1.0,FNum 1.0))
-  let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
-  let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
-  let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
-  let ex01Subst = List.fold subst ex01 [("x",ex);("y",ey);("z",ez)]
-  let p_d = exprToPoly ex01Subst "t"
-  ("TestPoly01",ppPoly "t" p_d,"(pz^2+py^2+px^2+-1)+t(2*dz*pz+2*dy*py+2*dx*px)+t^2(dz^2+dy^2+dx^2)")
+    
+    let bs = mkImplicit "2*x+2*y+2*z+d" ("d",1.0)
+    let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+    let p = mkPoint 1.0 2.0 3.0
+    let v = mkVector 3.0 2.0 1.0
+    let t = 2.0
+    let ray = mkRay  p t v
+    let is = IS (bs, mat )
+    let letSee = hit ray is
+
+
+
+    (*let ex01 =
+      FAdd(FAdd(FAdd(FExponent(FVar "x",2),
+                     FExponent(FVar "y",2)),
+                FExponent(FVar "z",2)),
+           FMult(FNum -1.0,FNum 1.0))
+    let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
+    let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
+    let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
+    let ex01Subst = List.fold subst ex01 [("x",ex);("y",ey);("z",ez)]
+    let p_d = exprToPoly ex01Subst "t"
+    ("TestPoly01",ppPoly "t" p_d,"(pz^2+py^2+px^2+-1)+t(2*dz*pz+2*dy*py+2*dx*px)+t^2(dz^2+dy^2+dx^2)")*)
+    let expr = parseStr "1+2"
+    let deri = Derivative expr
+    let poly = exprToPoly deri ""
+    ("testPoly02",ppPoly "" poly, "2x+2y+2z")
 
 let test02() =
-  let e = FAdd(FAdd(FAdd(FExponent(FVar "x",2),
-                         FExponent(FVar "y",2)),
-                    FExponent(FVar "z",2)),
-               FAdd(FNum -1.0,FNum 1.0))
-  let p_x = exprToPoly e "x"
-  ("TestPoly02",ppPoly "x" p_x,"(z^2+y^2)+x^2")
+    
+    let bs = mkImplicit "x^2+y^2+z^2+-1r^2" ("r",2.0)
+   
+  
+    let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+    let p = mkPoint 1.0 2.0 3.0
+    let v = mkVector 3.0 2.0 1.0
+    let t = 2.0
+    let ray = mkRay  p t v
+    let is = IS (bs, mat )
+
+    let letSee = hit ray is
+    
+
+    let expr = parseStr "1+2"
+    let deri = Derivative expr
+    let poly = exprToPoly deri ""
+    ("testPoly02",ppPoly "" poly, "2x+2y+2z")
+
+//  let e = FAdd(FAdd(FAdd(FExponent(FVar "x",2),
+//                         FExponent(FVar "y",2)),
+//                    FExponent(FVar "z",2)),
+//               FAdd(FNum -1.0,FNum 1.0))
+//  let p_x = exprToPoly e "x"
+//  ("TestPoly02",ppPoly "x" p_x,"(z^2+y^2)+x^2")
 
 let test03() =
   let plane = FAdd (FMult (FVar "a", FVar "x"), FAdd (FMult (FVar "b", FVar "y"), FAdd (FMult (FVar "c", FVar "z"), FVar "d")))
@@ -56,38 +97,6 @@ let test03() =
    ("TestPoly04",ppPoly "t" planeStr_d,"(d+c*oz+b*oy+a*ox)+t(c*dz+b*dy+a*dx)");
    ("TestPoly05",ppPoly "t" circle_d,"(oz^2+oy^2+ox^2+-1*r^2)+t(2*dz*oz+2*dy*oy+2*dx*ox)+t^2(dz^2+dy^2+dx^2)");
    ("TestPoly06",ppPoly "t" circleStr_d,"(oz^2+oy^2+ox^2+-1*r^2)+t(2*dz*oz+2*dy*oy+2*dx*ox)+t^2(dz^2+dy^2+dx^2)")]
-
-
-let test003() =
-    let polyExpr = parseStr "x^2+y^2+z^2+-1r^2"
-    let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
-    let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
-    let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
-    let polX = subst polyExpr ("x", ex)
-    let polY = subst polX ("y", ey)
-    let polyExprSubbed = subst polY ("z", ez)
-    let simpPoly = exprToPoly polyExprSubbed "t" 
-    let polyToMap p : Map<int,simpleExpr> =
-        match p with
-        |Po (x) -> x
-    let polyMap = polyToMap simpPoly
-    let expr = polyMap.Item 2
-    let rec substSE (SE ags) = List.map (fun x -> match x with
-                                                    | AExponent (s,i) -> let sub s = 
-                                                                            match s with
-                                                                            | "px" -> Point.getX p
-                                                                            | "py" -> Point.getY p
-                                                                            | "pz" -> Point.getZ p
-                                                                            | "dx" -> Vector.getX d
-                                                                            | "dy" -> Vector.getY d
-                                                                            | "dz" -> Vector.getZ d
-                                                                            | _ -> failwith ""
-                                                                         pow (sub s,(float i))
-                                                    | ANum c -> c
-                                                    | _ -> failwith"nonexistant Atom")
-    let subbed = substSE expr
-    [("testbllabla",subbed,"something")]
-
 
     
 

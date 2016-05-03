@@ -58,7 +58,6 @@
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="TransformationTest.fs" />
     <Compile Include="Program.fs" />
-    <Compile Include="NewParseTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BaseShape\BaseShape.fsproj">

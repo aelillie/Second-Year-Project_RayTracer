@@ -14,7 +14,7 @@ e is the empty sequence.
 *)
 
 type terminal =
-  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Sqrt | Div
+  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Root | Div
 
 let isblank c = System.Char.IsWhiteSpace c
 let isdigit c  = System.Char.IsDigit c
@@ -53,7 +53,7 @@ let scan s =
     | '(' :: cr -> Lpar :: sc cr     
     | ')' :: cr -> Rpar :: sc cr
     | '/' :: cr -> Div :: sc cr
-    | '~' :: cr -> Sqrt :: sc cr     
+    | '_' :: cr -> Root :: sc cr     
     | '-' :: c :: cr when isdigit c -> let (cs1, t) = scnum(cr, -1 * intval c)
                                        t :: sc cs1
     | c :: cr when isdigit c -> let (cs1, t) = scnum(cr, intval c) 
@@ -77,6 +77,8 @@ let rec insertMult = function
 | Float r :: Lpar :: ts      -> Float r::Mul::Lpar::insertMult ts
 | Var x :: Lpar :: ts        -> Var x::Mul::Lpar::insertMult ts
 | Int i :: Lpar :: ts        -> Int i::Mul::Lpar::insertMult ts
+| Var x :: Root :: ts        -> Var x::Mul::insertMult (Root::ts)
+| Int i :: Root :: ts        -> Int i::Mul::insertMult (Root::ts)
 | t :: ts                    -> t :: insertMult ts
 | []                         -> []
 
@@ -98,8 +100,8 @@ type expr =
   | FVar of string
   | FAdd of expr * expr
   | FMult of expr * expr
-  | FExponent of expr * float
-  | FSquareRoot of expr
+  | FExponent of expr * int
+  | FRoot of expr*int
   | FDiv of expr * expr
 
 exception Parseerror
@@ -115,11 +117,14 @@ and Topt (ts, inval) =
     match ts with
     | Mul :: tr -> let (ts1, fv) = F tr
                    Topt (ts1, FMult(inval, fv))
+    | Div :: tr -> let (ts1, fv) = F tr
+                   Topt (ts1, FDiv(inval, fv))
     | _ -> (ts, inval)
 and F ts = (P >> Fopt) ts
 and Fopt (ts, inval) =
     match ts with
-    | Pwr :: Float i :: tr -> (tr, FExponent(inval, i))
+    | Pwr :: Int i :: tr -> (tr, FExponent(inval, i))
+    | Root :: Int i :: tr -> (tr,FRoot(inval,i))
     | _ -> (ts, inval)
 and P ts =
     match ts with
