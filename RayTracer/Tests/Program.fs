@@ -4,7 +4,7 @@ open Ray
 open Shape
 open Material
 open Colour
-open BoundingBox 
+//open BoundingBox 
 open Camera
 open Drawing
 open Light
@@ -27,10 +27,9 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    //TracerTest.doTest()  
+    TracerTest.doTest()  
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
-    TracerTest.doTest() 
     //AffineTransformationsTest.render false
     (*let filepath = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
 
@@ -42,9 +41,6 @@ let main argv =
     List.iter (fun x -> PlyParse.print x writer) k *)
 
 
-    //stopWatch.Stop()
-    //printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
-
-    //System.Console.WriteLine "Press any key to close..."
-    //System.Console.ReadKey() |> ignore
+//    stopWatch.Stop()
+//    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
     0 // return an integer exit code

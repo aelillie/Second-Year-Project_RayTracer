@@ -3,7 +3,6 @@ open System
 open System.Drawing
 open Light
 open Transformation
-open Shape
 open Point
 open Colour
 open Scene
@@ -11,9 +10,10 @@ open Camera
 open Vector
 open Material
 open Util
+open Shapes
 
-module AffineTransformationsTest =
-  let folder = "affineTransformations"
+module AffineTransformationsTest = ()
+ (* let folder = "affineTransformations"
   let degrees_to_radians (d : int) = (float d) * Math.PI / 180.0
 
   let mkCube t = mkBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) t t t t t t
@@ -214,4 +214,4 @@ module AffineTransformationsTest =
     testSheareZY 1.0 toScreen
     testTranslateX 1.0 toScreen
     testTranslateY 1.0 toScreen
-    testTranslateZ 1.0 toScreen
+    testTranslateZ 1.0 toScreen*)
