@@ -7,7 +7,7 @@ open Ray
 open Point
 open Vector
 type Scene
-type Shape = mkShape.mkBasicShapes.shape2
+type Shape = Shapes.BasicShape.Shape
 
 //Creates a scene containing all the elements.
 val mkScene : shapes : Shape list -> lights : Light list -> AmbientLight -> Camera -> max_reflect : int -> Scene
