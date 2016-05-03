@@ -330,7 +330,9 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                              else let dist = if dist1 < dist2 then dist1 else dist2
                                   let newPoint = move p ((dist+epsilon) * d) //Inside a shape
                                   let newRay = mkRay newPoint d //Origin on the other side of surface
-                                  hit newRay (UniS(s1, s2))
+                                  match hit newRay (UniS(s1, s2)) with
+                                  | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
+                                  | _ -> None
     | IntS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
                       | Some(dist1, _, _), 
@@ -344,7 +346,9 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                             | (false, false) -> let dist = if dist1 < dist2 then dist1 else dist2
                                                 let newPoint = move p ((dist+epsilon) * d)
                                                 let newRay = mkRay newPoint d
-                                                hit newRay (IntS(s1, s2))
+                                                match hit newRay (IntS(s1, s2)) with
+                                                | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
+                                                | _ -> None
                       | _ -> None
     | SubS(s1, s2) -> let hit1, hit2 = hit ray s1, hit ray s2
                       match (hit1, hit2) with
@@ -366,8 +370,8 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (None, None) -> None
                        | (hit1, None) -> hit1
                        | (None, hit2) -> hit2
-                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
-                                                                   then hit2
-                                                                   else hit1
+                       | (Some(dist1, _, _), 
+                            Some(dist2, _, _)) -> if dist1 > dist2
+                                                  then hit2 else hit1
     //If an unimplemented shape does not have a hit function
     | s -> failwith ((string) s + "not implemented") 

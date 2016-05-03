@@ -27,8 +27,8 @@ open Scene
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
 
         let plane = mkPlane (Material.mkMaterial (Colour.mkColour 0.35 0.24 0.67) 0.0)
-        let sphere = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
-        let sphere1 = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.2)
+        let sphere = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.1)
+        let sphere1 = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.1)
         let sphere2 = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Purple) 0.2)
         let hc = mkHollowCylinderCenter 1.0 2.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
         let sc = mkSolidCylinderCenter 1.0 2.0 
@@ -52,8 +52,12 @@ open Scene
         let spheresc' = union sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc1 = intersection sc (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2]))
         let spheresc2 = subtraction (transform sphere (mergeTransformations [translate 0.5 0.2 -0.2;scale 1.2 1.2 1.2])) sc
-        let sphere2x = subtraction (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
-        let tsphere2x = transform sphere2x (rotateY (System.Math.PI / 4.0))
+        let sphere2xU = union (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
+        let sphere2xI = intersection (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
+        let sphere2xS = subtraction (transform sphere (translate 0.0 0.0 -0.5)) (transform sphere1 (translate 0.0 0.0 0.5))
+        let tsphere2xU = transform sphere2xU (mergeTransformations [translate -2.0 1.5 0.0;rotateY (System.Math.PI / 2.0)])
+        let tsphere2xI = transform sphere2xI (mergeTransformations [translate 0.5 1.0 0.0;rotateY (System.Math.PI / 2.0)])
+        let tsphere2xS = transform sphere2xS (mergeTransformations [translate 3.0 0.5 0.0;rotateY (System.Math.PI / 4.0)])
 
         let tspherebox = transform spherebox (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let tsphere1 = transform sphere1 (mergeTransformations [scale 0.5 0.5 0.5;translate -2.5 2.5 2.0])
@@ -62,7 +66,7 @@ open Scene
         let tbox = transform box (mergeTransformations [scale 0.7 0.7 0.7;translate 0.5 2.5 0.0;rotateY (System.Math.PI / 0.07543532);rotateX (System.Math.PI / 0.07543532)])
         let ttr = transform tr (mergeTransformations [translate -3.0 2.0 0.0;rotateX -(System.Math.PI / 8.0)])
         let tplane = transform plane (translate 0.0 -1.0 0.0)
-        let scene = mkScene [tplane;tsphere2x] [light] ambientLight camera 2
+        let scene = mkScene [tplane;tsphere2xU;tsphere2xI;tsphere2xS] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None
