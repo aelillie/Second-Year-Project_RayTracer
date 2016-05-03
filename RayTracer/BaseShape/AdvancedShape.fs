@@ -46,7 +46,10 @@ module AdvancedShape =
                         |[] -> None
                         |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
         interface Shape with
-            member this.isInside p = failwith "Not Done"
+            member this.isInside p = let (x,y,z) = Point.getCoord p
+                                     let (lx,ly,lz) = Point.getCoord low
+                                     let (hx,hy,hz) = Point.getCoord high
+                                     lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = this.hit ray 
 

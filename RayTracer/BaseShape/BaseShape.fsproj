@@ -50,9 +50,6 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
-    <Compile Include="mkBasicShapes.fs" />
-    <Compile Include="EditShape.fs" />
-    <Compile Include="mkAdvancedShapes.fs" />
     <Compile Include="BasicShape.fs" />
     <Compile Include="TransformedShape.fs" />
     <Compile Include="AdvancedShape.fs" />
