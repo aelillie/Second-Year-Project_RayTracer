@@ -14,3 +14,5 @@ val mkScene : shapes : Shape list -> lights : Light list -> AmbientLight -> Came
 
 //Takes a scene and renders it to a file using the string value given.
 val renderToFile : Scene -> string -> unit
+
+val renderToScreen : Scene -> unit

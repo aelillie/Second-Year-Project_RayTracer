@@ -22,6 +22,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +49,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
+    <Compile Include="Sphere.fs" />
     <Compile Include="Shape.fs" />
     <Compile Include="Plane.fs" />
     <Compile Include="BoundingBox.fsi" />
@@ -62,6 +65,28 @@
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
       <Project>{43CDD2B1-D3D2-469E-93C4-4B536ABB3FBE}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
+      <Name>PlyParser</Name>
+      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Name>Space3D</Name>
+      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Name>DrawAttributes</Name>
+      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
+      <Name>ExprComp</Name>
+      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
