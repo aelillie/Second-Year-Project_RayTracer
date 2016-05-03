@@ -8,18 +8,34 @@ open Transformation
 
 
 module BasicShape = 
+    let epsilon = 0.00001
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
+    
+    type BoundingBox = Point * Point
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option
          abstract member isInside : Point -> bool
          abstract member isSolid : unit -> bool
+         abstract member getBounding : unit -> BoundingBox
     
 
     type Sphere(o:Point, r:float, m:Material) = 
         interface Shape with
             member this.isInside p = failwith "Not implemented yet"
+            member this.getBounding () = 
+                                        let lx = (Point.getX o) - r - epsilon
+                                        let ly = (Point.getY o) - r - epsilon
+                                        let lz = (Point.getZ o) - r - epsilon
+                                        let l = mkPoint lx ly lz
+
+                                        let hx = (Point.getX o) + r + epsilon
+                                        let hy = (Point.getY o) + r + epsilon
+                                        let hz = (Point.getZ o) + r + epsilon 
+                                        let h = mkPoint hx hy hz
+                                        (l,h)
+
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction p
@@ -56,6 +72,7 @@ module BasicShape =
     type Plane(mat:Material) = 
         interface Shape with
             member this.isInside p = failwith "Not implemented"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0
@@ -70,6 +87,7 @@ module BasicShape =
     type Disc(c:Point, r:float, m:Material) =
         interface Shape with
             member this.isInside p = failwith "Not implemented"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -87,6 +105,15 @@ module BasicShape =
     type Triangle(a,b,c,mat) = 
         interface Shape with
             member this.isInside p = failwith "Not implemented"
+            member this.getBounding () = 
+                            let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
+                            let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
+                            let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
+
+                            let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
+                            let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
+                            (l,h)
+
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
@@ -133,6 +160,7 @@ module BasicShape =
     type Rectangle(c,w,h,m) = 
         interface Shape with
             member this.isInside p = failwith "Not implemented"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -153,6 +181,7 @@ module BasicShape =
     type HollowCylinder (center,r,h,m) = 
         interface Shape with
             member this.isInside p = failwith "Not implemented"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)

@@ -50,6 +50,7 @@ module AdvancedShape =
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = this.hit ray 
 
@@ -69,6 +70,7 @@ module AdvancedShape =
 
         interface Shape with
             member this.isInside p = failwith "Not Done"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                             let hits = List.map(fun (x:Shape) -> x.hit ray) cyl
@@ -110,6 +112,7 @@ module AdvancedShape =
 
         interface Shape with 
             member this.isInside p = failwith "NOT FUCKING DONE"
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                                     let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
