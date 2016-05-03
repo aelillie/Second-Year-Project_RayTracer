@@ -63,6 +63,8 @@
     <Compile Include="Meshes.fs" />
     <Compile Include="Shapes.fs" />
     <Compile Include="Texture.fs" />
+    <Compile Include="CSG.fs" />
+    <Compile Include="Light.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
