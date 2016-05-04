@@ -32,30 +32,19 @@ let rec mkTmKdtree shapes =
     let largerThanSplit shapes =
         for triangle in shapes do
             match axis with
-<<<<<<< HEAD
-            |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
-            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
-            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= axisLength then triangle
-=======
-           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= Point.getX axisMidPoint then triangle 
-           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= Point.getY axisMidPoint then triangle 
-           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= Point.getZ axisMidPoint then triangle
->>>>>>> 4c0a64572a9794c2a9c0bd28ba5ad1647f553172
-    let mutable right = List.map(fun c -> largerThanSplit c) shapes
-
+               |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= Point.getX axisMidPoint then triangle 
+               |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= Point.getY axisMidPoint then triangle 
+               |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= Point.getZ axisMidPoint then triangle
 
     let lessThanSplit shapes =
         for triangle in shapes do
             match axis with
-<<<<<<< HEAD
-            |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
-            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
-            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= axisLength then triangle
-=======
-           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <=  then triangle 
-           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
-           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= axisLength then triangle
->>>>>>> 4c0a64572a9794c2a9c0bd28ba5ad1647f553172
+               |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <= Point.getX axisMidPoint then triangle 
+               |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= Point.getY axisMidPoint then triangle 
+               |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= Point.getZ axisMidPoint then triangle
+
+
+    let mutable right = List.map(fun c -> largerThanSplit c) shapes
     let mutable left = List.map(fun c -> lessThanSplit c) shapes
 
     let check = 
