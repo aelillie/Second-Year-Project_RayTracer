@@ -41,7 +41,7 @@ module Shape =
 
     //Sphere
     let mkSphere (p : Point) (r : float) (m : Material) = new Sphere ((mkPoint 0.0 0.0 0.0),r,m) |> moveShape p
-
+    let mkSphereCenter r m = new Sphere (mkPoint 0.0 0.0 0.0,r,m)
     //Cylinders and Discs
     let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) = 
         new HollowCylinder((mkPoint 0.0 0.0 0.0),r,h,t) |> moveShape c
