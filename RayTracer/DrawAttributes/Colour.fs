@@ -28,6 +28,12 @@ let toColor (C(r,g,b)) =
 
     Color.FromArgb(255, r',g', b')
 
+//Takes a colour list and returns a color.
+let toColorFromList xs =
+    match xs with
+    |[] -> System.Drawing.Color.Black
+    |v::xs -> toColor v
+
 let getRGB (C(r,g,b)) = (r,g,b)    
     
 let scaleColour (r,g,b) (C(ri,gi,bi)) = 

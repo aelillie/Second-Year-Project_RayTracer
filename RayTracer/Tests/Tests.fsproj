@@ -88,14 +88,14 @@
       <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SceneConstruction\SceneConstruction.fsproj">
+      <Name>SceneConstruction</Name>
+      <Project>{cb0d89de-1378-405c-94d3-fffa04e2e114}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
       <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
-      <Name>Tracer</Name>
-      <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

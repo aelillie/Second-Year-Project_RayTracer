@@ -2,7 +2,6 @@
 open Transformation
 open Camera
 open Light
-open Tracer
 open Ray
 open Point
 open Vector
