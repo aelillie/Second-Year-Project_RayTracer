@@ -69,7 +69,7 @@
     </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
-      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
+      <Project>{23b2bd0e-c5f4-4dda-b3f9-07e06899aa0c}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
