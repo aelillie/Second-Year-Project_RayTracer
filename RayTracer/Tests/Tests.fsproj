@@ -55,7 +55,6 @@
     <Compile Include="VectorTest.fs" />
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
-    <Compile Include="TracerTest.fs" />
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="TransformationTest.fs" />
     <Compile Include="AffineTransformations.fs" />

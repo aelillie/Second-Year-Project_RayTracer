@@ -5,9 +5,6 @@ open Scene
 open System
 
 module Util =
-
-    let degrees_to_radians (d : float) = d * Math.PI / 180.0
-    
     
     let private source_path = "../../.."
     let private ply_path = source_path + "/ply"
