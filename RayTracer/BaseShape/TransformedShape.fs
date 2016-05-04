@@ -28,7 +28,7 @@ module TransformedShape =
 
     type GroupShape(s1:Shape,s2:Shape) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = s1.isInside p || s2.isInside p
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = s1.isSolid() && s2.isSolid()
             member this.hit (R(p,d) as ray) =  let hit1, hit2 = s1.hit ray, s2.hit ray
@@ -41,9 +41,9 @@ module TransformedShape =
                                                                                            else hit1
 
     type UnionShape(s1:Shape, s2:Shape) = 
-        member this.hit (R(p,d) as ray) = this.hit ray
+        let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = s1.isInside p || s2.isInside p
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
@@ -59,15 +59,15 @@ module TransformedShape =
                              else let dist = if dist1 < dist2 then dist1 else dist2
                                   let newPoint = move p ((dist+epsilon) * d) //Inside a shape
                                   let newRay = mkRay newPoint d //Origin on the other side of surface
-                                  match this.hit newRay with
+                                  match hit newRay this with
                                   | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
                                   | _ -> None
 
 
     type IntersectionShape(s1:Shape, s2:Shape) = 
-        member this.hit (R(p,d) as ray) = this.hit ray
+        let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = s1.isInside p && s2.isInside p
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
@@ -84,16 +84,16 @@ module TransformedShape =
                             | (false, false) -> let dist = if dist1 < dist2 then dist1 else dist2
                                                 let newPoint = move p ((dist+epsilon) * d)
                                                 let newRay = mkRay newPoint d
-                                                match this.hit newRay with
+                                                match hit newRay this with
                                                 | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
                                                 | _ -> None
                       | _ -> None
 
 
     type SubtractionShape(s1:Shape, s2:Shape) =
-        member this.hit (R(p,d) as ray) = this.hit ray
+        let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = s1.isInside p && (not (s2.isInside p))
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
@@ -108,7 +108,7 @@ module TransformedShape =
                                  else
                                  let newPoint = move p ((dist1+epsilon) * d)
                                  let newRay = mkRay newPoint d
-                                 match this.hit newRay with
+                                 match hit newRay this with
                                  | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
                                  | _ -> None
                       | _ -> None //No hit, or only s2

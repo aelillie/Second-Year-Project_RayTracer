@@ -21,9 +21,9 @@ module AdvancedShape =
 
                 let frontT = translate (Point.getX low) (Point.getY low) az 
                 let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
-                let bottomT = mergeTransformations [frontT; rotateX1 90.0]
+                let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
                 let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
-                let leftT =   mergeTransformations [frontT; rotateY1 -90.0]
+                let leftT =   mergeTransformations [frontT; rotateY (-(pi/2.0))]
                 let rightT =  mergeTransformations [translate width 0.0 0.0; leftT;]
 
                 let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
@@ -70,7 +70,12 @@ module AdvancedShape =
             [cyl';bot';top']
 
         interface Shape with
-            member this.isInside p = failwith "Not Done"
+            member this.isInside p = let (x,y,z) = Point.getCoord p
+                                     let (cx, cy, cz) = Point.getCoord c
+                                     let lowR, highR = cx-r, cx+r
+                                     let lowH, highH = cy-(h/2.0), cy+(h/2.0)
+                                     lowR < x && x < highR && lowR < z && z < highR
+                                     && lowH < y && y < highH
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 

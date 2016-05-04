@@ -1,7 +1,6 @@
 ﻿module Program
 open Vector
 open Ray
-open Shape
 open Material
 open Colour
 //open BoundingBox 
@@ -27,8 +26,9 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    TracerTest.doTest()  
-    //CSG.render false
+//    TracerTest.doTest()  
+//    CSG.render false
+    Light.render false
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //AffineTransformationsTest.render false

@@ -78,7 +78,7 @@ module CSG =
     if toScreen then
       Util.render scene None
     else
-      Util.render scene (Some (folder, "intersection2"))
+      Util.render scene (Some (folder, "intersection2.png"))
 
 
   let renderLantern toScreen =
@@ -86,7 +86,7 @@ module CSG =
     if toScreen then
       Util.render scene None
     else
-      Util.render scene (Some (folder, "lantern"))
+      Util.render scene (Some (folder, "lantern.png"))
 
   let render toScreen =
     renderUnion toScreen;
