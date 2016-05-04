@@ -23,7 +23,8 @@ module BasicShape =
 
     type Sphere(o:Point, r:float, m:Material) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented yet"
+            member this.isInside p = let (x, y, z) = Point.getCoord p
+                                     (x**2.0+y**2.0+z**2.0) < r**2.0
             member this.getBounding () = 
                                         let lx = (Point.getX o) - r - epsilon
                                         let ly = (Point.getY o) - r - epsilon
@@ -71,7 +72,7 @@ module BasicShape =
 
     type Plane(mat:Material) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) =
@@ -86,7 +87,7 @@ module BasicShape =
                             else None
     type Disc(c:Point, r:float, m:Material) =
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
@@ -104,7 +105,7 @@ module BasicShape =
 
     type Triangle(a,b,c,mat) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
                             let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
@@ -159,7 +160,7 @@ module BasicShape =
 
     type Rectangle(c,w,h,m) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
@@ -180,7 +181,7 @@ module BasicShape =
 
     type HollowCylinder (center,r,h,m) = 
         interface Shape with
-            member this.isInside p = failwith "Not implemented"
+            member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) = 

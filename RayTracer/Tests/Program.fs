@@ -1,7 +1,6 @@
 ﻿module Program
 open Vector
 open Ray
-open Shape
 open Material
 open Colour
 //open BoundingBox 
@@ -20,17 +19,18 @@ open TestSuite
 [<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv = 
-    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     (*PointTest.doTest()
     VectorTest.doTest()
     
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    TracerTest.doTest()  
+//    TracerTest.doTest()  
+//    CSG.render false
+    Light.render false
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
-    //TracerTest.doTest() 
     //AffineTransformationsTest.render false
     (*let filepath = @"C:\Users\i5-4670K\Documents\ant.ply.txt"
 
@@ -42,9 +42,6 @@ let main argv =
     List.iter (fun x -> PlyParse.print x writer) k *)
 
 
-    stopWatch.Stop()
-    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
-
-    System.Console.WriteLine "Press any key to close..."
-    System.Console.ReadKey() |> ignore
+//    stopWatch.Stop()
+//    printfn "Elapsed time (ms): %f" stopWatch.Elapsed.TotalMilliseconds 
     0 // return an integer exit code

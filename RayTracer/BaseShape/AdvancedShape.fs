@@ -46,7 +46,8 @@ module AdvancedShape =
                         |[] -> None
                         |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
         interface Shape with
-            member this.isInside p = let (x,y,z) = Point.getCoord p
+            member this.isInside p = 
+                                     let (x,y,z) = Point.getCoord p
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
@@ -69,7 +70,12 @@ module AdvancedShape =
             [cyl';bot';top']
 
         interface Shape with
-            member this.isInside p = failwith "Not Done"
+            member this.isInside p = let (x,y,z) = Point.getCoord p
+                                     let (cx, cy, cz) = Point.getCoord c
+                                     let lowR, highR = cx-r, cx+r
+                                     let lowH, highH = cy-(h/2.0), cy+(h/2.0)
+                                     lowR < x && x < highR && lowR < z && z < highR
+                                     && lowH < y && y < highH
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
@@ -111,7 +117,7 @@ module AdvancedShape =
                 makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
 
         interface Shape with 
-            member this.isInside p = failwith "NOT FUCKING DONE"
+            member this.isInside p = failwith "Not implemented"
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
