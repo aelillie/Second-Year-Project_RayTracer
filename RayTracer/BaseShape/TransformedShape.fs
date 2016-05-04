@@ -29,7 +29,16 @@ module TransformedShape =
     type GroupShape(s1:Shape,s2:Shape) = 
         interface Shape with
             member this.isInside p = s1.isInside p || s2.isInside p
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let b1, b2 = s1.getBounding, s2.getBounding
+                                         let (lx1,ly1,lz1) = (Point.getCoord (getBBLow b1))
+                                         let (lx2,ly2,lz2) = (Point.getCoord (getBBLow b2))
+                                         let (hx1,hy1,hz1) = (Point.getCoord (getBBHigh b1))
+                                         let (hx2,hy2,hz2) = (Point.getCoord (getBBHigh b2))
+                                         let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
+                                                        then getBBLow b1 else getBBLow b2
+                                         let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
+                                                         then getBBHigh b2 else getBBHigh b1
+                                         mkBoundingBox(lowPoint,highPoint)
             member this.isSolid () = s1.isSolid() && s2.isSolid()
             member this.hit (R(p,d) as ray) =  let hit1, hit2 = s1.hit ray, s2.hit ray
                                                match (hit1, hit2) with
