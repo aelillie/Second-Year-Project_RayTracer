@@ -19,9 +19,9 @@ let rec mkTmKdtree shapes =
         mkBoundingBox min max  
 
     let findMidPoint (shapeList:Shape List) = 
-        let mutable midPoint = mkPoint(0.0 0.0 0.0)
+        let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
         for triangle in shapeList do
-            midPoint <- midPoint + (Shape.getTriangleMidPoint triangle * (1.0 / shapeList.Length))
+            midPoint <- midPoint + (Shape.getTriangleMidPoint triangle * (1.0 / (shapeList.Length |> float))
         midPoint
 
     let axis = snd (BoundingBox.getLongestAxis kdbbox)
@@ -30,7 +30,7 @@ let rec mkTmKdtree shapes =
 
     let largerThanSplit shapes =
         for triangle in shapes do
-            match longestAxis with
+            match axis with
            |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= axisLength then triangle
@@ -39,7 +39,7 @@ let rec mkTmKdtree shapes =
 
     let lessThanSplit shapes =
         for triangle in shapes do
-            match longestAxis with
+            match axis with
            |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= axisLength then triangle
