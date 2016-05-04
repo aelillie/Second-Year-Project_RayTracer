@@ -52,11 +52,6 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
-      <Name>BaseShape</Name>
-      <Project>{da3c8a8c-19ab-4fc9-abde-be1e7df5346e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
       <Name>ExprComp</Name>
       <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>

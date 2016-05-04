@@ -1,4 +1,4 @@
-﻿namespace BaseShape.AssemblyInfo
+﻿namespace ShapeConstruction.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("BaseShape")>]
+[<assembly: AssemblyTitle("ShapeConstruction")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("BaseShape")>]
+[<assembly: AssemblyProduct("ShapeConstruction")>]
 [<assembly: AssemblyCopyright("Copyright ©  2016")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("da3c8a8c-19ab-4fc9-abde-be1e7df5346e")>]
+[<assembly: Guid("c897a112-f268-4564-9743-9def1f15fe2e")>]
 
 // Version information for an assembly consists of the following four values:
 // 
