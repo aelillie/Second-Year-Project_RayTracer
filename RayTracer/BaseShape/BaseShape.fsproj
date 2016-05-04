@@ -56,6 +56,7 @@
     <Compile Include="BoundingBox.fs" />
     <Compile Include="Kdtree.fs" />
     <Compile Include="Kdtree.fsi" />
+    <Compile Include="TmKdtree.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">

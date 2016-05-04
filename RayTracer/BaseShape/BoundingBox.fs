@@ -14,6 +14,12 @@ let mkBoundingBox l h = B(l,h)
 
 let getH (B(_,h)) = h
 let getL (B(l,_)) = l
+let getLongestAxis (B(l,h)) =  
+    let xdim = ((Point.getX h) - (Point.getX l), "x")
+    let ydim = ((Point.getY h) - (Point.getY l), "y")
+    let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+    List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
+    
 
 //Epsilon
 let epsilon = 0.00001

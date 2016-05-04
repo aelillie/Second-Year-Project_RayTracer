@@ -155,6 +155,8 @@ let getTriangleA (T(a,_,_,_)) = a
 let getTriangleB (T(_,b,_,_)) = b
 let getTriangleC (T(_,_,c,_)) = c
 let getTriangleMat (T(_,_,_,mat)) = mat
+let getTriangleMidPoint (T(a,b,c,_)) = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
 let hitDisc (R(p,d)) (D(c,r,m)) = 
@@ -227,7 +229,6 @@ let mkTriangleMesh p (plyList:Ply list) =
                         (mkTriangle p1 p2 p3 (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
     
     let tri = makeTriangles vertexList faceList
-
     TM(tri)
 
 ///Given a ray, computes the hit point for a sphere,

@@ -8,5 +8,4 @@ val mkBoundingBox : Point -> Point -> BoundingBox
 val calc : Shape -> BoundingBox
 val getH : BoundingBox -> Point
 val getL : BoundingBox -> Point
-
- 
+val getLongestAxis : BoundingBox -> float*string
