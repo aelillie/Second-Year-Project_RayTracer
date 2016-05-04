@@ -26,23 +26,25 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FRoot(e,n) -> FRoot(subst e (x,ex), n)
   | FDiv(e1,e2) -> FDiv(subst e1 (x,ex), subst e2 (x,ex))
 
-//let rec deriveEq e =
-//    match e with
+
+ 
+//let rec Derivative x : expr =
+//    match x with
 //    | FNum c -> FNum 0.0
 //    | FVar s -> FNum 1.0
-//    | FAdd(e1,e2) -> FAdd(deriveEq e1, deriveEq e2)
-//    | FMult(e1,e2) -> FAdd(FMult(deriveEq e1, e2), FMult(e1,deriveEq e2))
-//    | FExponent(e,n) -> FMult(FNum (float(n)), FExponent(e, n-1))
+//    | FAdd(e1, e2) -> FAdd(Derivative(e1), Derivative(e2))
+//    | FExponent(FNum c, n) -> FNum 0.0
+//    | FMult(e1, e2) -> FAdd(FMult(Derivative(e1), e2), FMult(e1, Derivative(e2))) 
+//    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
  
-let rec Derivative x : expr =
-    match x with
-    | FNum c -> FNum 0.0
-    | FVar s -> FNum 1.0
-    | FAdd(e1, e2) -> FAdd(Derivative(e1), Derivative(e2))
-    | FExponent(FNum c, n) -> FNum 0.0
-    | FMult(e1, e2) -> FAdd(FMult(Derivative(e1), e2), FMult(e1, Derivative(e2))) 
-    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
     
+//let rec exprsToDivs = function
+//    | FNum c -> FNum c
+//    | FVar s -> FVar s
+//    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+//    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+ 
+
 
 
     
@@ -52,6 +54,7 @@ type atom = ANum of float | AExponent of string * int
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
+
 
 
 

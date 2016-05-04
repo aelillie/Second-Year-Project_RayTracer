@@ -41,9 +41,8 @@ let test01() =
     let ex01Subst = List.fold subst ex01 [("x",ex);("y",ey);("z",ez)]
     let p_d = exprToPoly ex01Subst "t"
     ("TestPoly01",ppPoly "t" p_d,"(pz^2+py^2+px^2+-1)+t(2*dz*pz+2*dy*py+2*dx*px)+t^2(dz^2+dy^2+dx^2)")*)
-    let expr = parseStr "1+2"
-    let deri = Derivative expr
-    let poly = exprToPoly deri ""
+    let expr = parseStr "1+2"   
+    let poly = exprToPoly expr ""
     ("testPoly02",ppPoly "" poly, "2x+2y+2z")
 
 let test02() =
@@ -61,9 +60,8 @@ let test02() =
     let letSee = hit ray is
     
 
-    let expr = parseStr "1+2"
-    let deri = Derivative expr
-    let poly = exprToPoly deri ""
+    let expr = parseStr "1+2"   
+    let poly = exprToPoly expr ""
     ("testPoly02",ppPoly "" poly, "2x+2y+2z")
 
 //  let e = FAdd(FAdd(FAdd(FExponent(FVar "x",2),

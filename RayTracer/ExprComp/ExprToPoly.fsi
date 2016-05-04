@@ -10,7 +10,8 @@ val ppSimpleExpr: simpleExpr -> string
 val exprToSimpleExpr: expr -> simpleExpr
 val simplifyAtomGroup: atomGroup -> atomGroup
 val simplifySimpleExpr: simpleExpr -> simpleExpr
-val Derivative: expr -> expr
+//val Derivative: expr -> expr
+
 
 type poly =  Po of Map<int,simpleExpr>
 val ppPoly: string -> poly -> string

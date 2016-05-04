@@ -280,10 +280,9 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
 
                   
                     let pol = getPoly bs
-                    let nvExpr = getnvExpr bs
+                    let expr = getExpr bs
 
                     
-
                     // map of SE to map of atomGroupList (atom list list)
                     let mapToAtomList m = Map.map (fun x y -> getSEList y) m
  
@@ -324,10 +323,16 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                         | 1 -> failwith "0 degree polynomial doesn't exist"
                         | 2 -> let a = floatMap.Item 1
 
-                               let b = floatMap.Item 0  
-                               failwith ""
+                               let b = floatMap.Item 0                               
                                
-//                               let denom = (-b)/a
+                               let res = (-b)/a
+                               
+                               let hitPoint = Point.move p (res * d)
+                               let dir = Point.direction p hitPoint
+                               if res < 0.0 then None
+                               else                                  
+                                   Some (res, Vector.normalise(mkNorm hitPoint expr), m)
+
 //                               if(denom < 0.0) then none
 //                               else
 //                                    let v = Point.distance p       
@@ -335,8 +340,8 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
 
 //                               let denom = Vector.dotProduct d n
 //                               if(denom > 0.0) then
-//                                    let v = Point.distance p pVector
-//                                    let result = Vector.dotProduct v n
+      //                              let v = Point.distance p pVector
+        //                            let result = Vector.dotProduct v n
 //                                    Some (result, n, mat)
 //                               else None
                         | 3 ->  let a = floatMap.Item 2
@@ -362,9 +367,9 @@ let rec hit ((R(p,t,d)) as ray) (s:Shape) =
                                             let answer = System.Math.Max(answer1,answer2)
                                             //normal vector point with maximum answer value
                                             let nvPointMax = Point.move p (answer * d)
-                                            Some (answer, (mkNorm nvPointMax nvExpr),m) 
+                                            Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
                                         //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                        else Some (answer, Vector.normalise(mkNorm nvPointMin nvExpr),m) 
+                                        else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
                         | 4 -> failwith "3rd degree"
                         | 5 -> failwith "4th degree"
                         | _ -> failwith "degree over 9000"
