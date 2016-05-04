@@ -25,22 +25,22 @@ let rec mkTmKdtree shapes =
         midPoint
 
     let axis = snd (BoundingBox.getLongestAxis kdbbox)
-    let axisLength = fst (BoundingBox.getLongestAxis kdbbox)
+    let axisMidPoint = findMidPoint shapes
 
 
     let largerThanSplit shapes =
         for triangle in shapes do
             match axis with
-           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
-           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= axisLength then triangle 
-           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= axisLength then triangle
+           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= Point.getX axisMidPoint then triangle 
+           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= Point.getY axisMidPoint then triangle 
+           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= Point.getZ axisMidPoint then triangle
     let mutable right = List.map(fun c -> largerThanSplit c) shapes
 
 
     let lessThanSplit shapes =
         for triangle in shapes do
             match axis with
-           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
+           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <=  then triangle 
            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= axisLength then triangle
     let mutable left = List.map(fun c -> lessThanSplit c) shapes
