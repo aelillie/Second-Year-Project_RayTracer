@@ -28,6 +28,7 @@ let main argv =
     ExprToPolyTest.doTest()*)
 
     TracerTest.doTest()  
+    //CSG.render false
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //AffineTransformationsTest.render false

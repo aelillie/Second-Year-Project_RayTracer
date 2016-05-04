@@ -10,6 +10,8 @@ open System
 open System.Drawing
 open Scene
 open Shape
+open Material
+open Colour
 open Shapes
 open TransformedShape
 
@@ -31,10 +33,15 @@ open TransformedShape
         let plane = transform (mkPlane (Material.mkMaterial (Colour.mkColour 0.35 0.24 0.67) 0.0)) (translate 0.0 -1.0 0.0)
         let blueSphere = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Blue) 0.2)
         let redSphere = mkSphereCenter 1.0 (Material.mkMaterial (Colour.fromColor Color.Red) 0.2)
+        let mkUnitBox t = mkBoxCenter t t t t t t
+        let redBox = mkUnitBox (mkMaterial (fromColor Color.Red) 0.0)
+        let blueBox = mkUnitBox (mkMaterial (fromColor Color.Blue) 0.0)
+        
+        let blueRedBox = union (transform redBox (translate -0.5 0.0 0.0)) (transform blueBox (translate 0.5 0.0 0.0))
 
         let blueRedSphere = union (transform blueSphere (translate -0.5 0.0 0.0)) (transform redSphere (translate 0.5 0.0 0.0))                    
 
-        let scene = mkScene [plane;blueRedSphere] [light] ambientLight camera 2
+        let scene = mkScene [redBox] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None

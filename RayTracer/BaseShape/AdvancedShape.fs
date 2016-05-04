@@ -21,9 +21,9 @@ module AdvancedShape =
 
                 let frontT = translate (Point.getX low) (Point.getY low) az 
                 let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
-                let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
+                let bottomT = mergeTransformations [frontT; rotateX1 90.0]
                 let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
-                let leftT =   mergeTransformations [frontT; rotateY (-(pi/2.0))]
+                let leftT =   mergeTransformations [frontT; rotateY1 -90.0]
                 let rightT =  mergeTransformations [translate width 0.0 0.0; leftT;]
 
                 let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
@@ -46,7 +46,8 @@ module AdvancedShape =
                         |[] -> None
                         |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
         interface Shape with
-            member this.isInside p = let (x,y,z) = Point.getCoord p
+            member this.isInside p = 
+                                     let (x,y,z) = Point.getCoord p
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
