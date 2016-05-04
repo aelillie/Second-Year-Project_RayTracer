@@ -143,11 +143,17 @@ let hitRec (R(p,d)) (Rec(c,w,h,tex)) =
     else None
 
 //Triangle
-let mkTriangle a b c mat = T(a,b,c,mat)
+let mkTriangle a b c tex = T(a,b,c,tex)
 let getTriangleA (T(a,_,_,_)) = a
 let getTriangleB (T(_,b,_,_)) = b
 let getTriangleC (T(_,_,c,_)) = c
-let getTriangleMat (T(_,_,_,mat)) = mat
+let getTriangleMat (T(_,_,_,tex)) = tex
+
+
+
+
+
+
 
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
 let hitDisc (R(p,d)) (D(c,r,tex)) = 
@@ -176,6 +182,16 @@ let hitCylinder (R(p,d)) (HC(center,r,h,tex)) =
     let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
     let dis = pow(b, 2.0) - (4.0 * a * c)
 
+    //calculate material
+    let calculateMaterial x y z h r tex =  
+        let n = mkVector (x/r) (0.0) (z/r) 
+        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+        let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
+        let u = phi/(2.0*pi)
+        let v = (y/h) + 0.5
+        let material = Texture.getMaterialAtPoint tex u v
+        material
+
     let px = Point.getX p 
     let py = Point.getY p
     let pz = Point.getZ p
@@ -192,29 +208,18 @@ let hitCylinder (R(p,d)) (HC(center,r,h,tex)) =
 
      if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
      then 
-     //Calculating texture
-        let n = mkVector (px/r) (0.0) (pz/r) 
-        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
-        let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
-        let u = phi/(2.0*pi)
-        let v = (py/h) + 0.5
-        let material = Texture.getMaterialAtPoint tex u v
-
         let px = Point.getX p + tlittle * Vector.getX d
         let pz = Point.getZ p + tlittle * Vector.getZ d
+
+        let material = calculateMaterial px py pz h r tex
+
         Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), material)
      elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
      then
-     //Calculating texture
-        let n = mkVector (px/r) (0.0) (pz/r) 
-        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
-        let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
-        let u = phi/(2.0*pi)
-        let v = (py/h) + 0.5
-
-        let material = Texture.getMaterialAtPoint tex u v
         let px = Point.getX p + tbig * Vector.getX d
         let pz = Point.getZ p + tbig * Vector.getZ d
+       
+        let material = calculateMaterial px py pz h r tex
         Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), material)
      else None
 
@@ -222,6 +227,20 @@ let hitCylinder (R(p,d)) (HC(center,r,h,tex)) =
 let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
     |S(o,r,tex) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
+                    //calculate material
+                    let calculateMaterial p v f r tex = 
+                        let p1 = Point.move p (Vector.multScalar v f)
+                        let vector = Point.distance p p1
+                        let n = Vector.multScalar vector (1.0/r)
+
+                        let theta = System.Math.Acos(Vector.getY n)
+                        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+                        let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
+
+                        let u = theta/2.0*pi
+                        let v = (1.0 - phi)/pi 
+                        let material = Texture.getMaterialAtPoint tex u v
+                        material
     
                     let a = (pow((Vector.getX d),2.0) +
                              pow((Vector.getY d),2.0) +
@@ -249,35 +268,12 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
 
                             if answer < 0.0 
                             then 
-                             let answer = System.Math.Max(answer1,answer2)
-                             //Calculation for texture 
-                             let p1 = Point.move o (Vector.multScalar d answer)
-                             let vector = Point.distance o p1
-                             let n = Vector.multScalar vector (1.0/r)
-
-                             let theta = System.Math.Acos(Vector.getY n)
-                             let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
-                             let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
-
-                             let u = theta/2.0*pi
-                             let v = (1.0 - phi)/pi 
-
-                             let material = Texture.getMaterialAtPoint tex u v
+                             let answer = System.Math.Max(answer1,answer2) 
+                             let material = calculateMaterial o d answer r tex
 
                              Some (answer, makeNV answer, material)
-                             else 
-                                 let p1 = Point.move o (Vector.multScalar d answer)
-                                 let vector = Point.distance o p1
-                                 let n = Vector.multScalar vector (1.0/r)
-
-                                 let theta = System.Math.Acos(Vector.getY n)
-                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
-                                 let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
-
-                                 let u = theta/2.0*pi
-                                 let v = (1.0 - phi)/pi 
-
-                                 let material = Texture.getMaterialAtPoint tex u v 
+                             else
+                                 let material = calculateMaterial o d answer r tex
                                  Some (answer, makeNV answer, material)
 
 
@@ -285,9 +281,13 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                           if(denom > 0.0000001) then
                               let v = Point.distance p pVector
                               let result = (Vector.dotProduct v n) / denom 
-                              let u = Point.getX p 
-                              let vu = Point.getY p
-                              let material = Texture.getMaterialAtPoint tex u vu
+
+                             //Calculating for texture
+                              let u' = abs(Point.getX p)
+                              let v' = abs(Point.getY p)
+                              let u'' = if u' > 0.0 then u' else 1.0 - u'
+                              let v'' = if v' > 0.0 then v' else 1.0 - v'
+                              let material = Texture.getMaterialAtPoint tex u'' v''
                               Some (result, n, material)
                               if result >= 0.0 then Some (result, n, material)
                               else None

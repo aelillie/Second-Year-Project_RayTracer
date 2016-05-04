@@ -1,5 +1,7 @@
 ﻿module Texture
 open Material
+open System.Drawing
+
 type Texture =
     | T of (float -> float -> Material)
 
@@ -10,14 +12,38 @@ type Texture =
 
  let getMaterialAtPoint (T(f)) x y = f x y
 
+ //chekcerboard texture
  let checkerBoard (mat1:Material) (mat2:Material) (factor:float) = 
     let texture (u:float) (v:float) = 
-        let factor = 0.5
-        let xMod = u % factor
-        let yMod = v % factor
-        if abs(xMod) > (factor/2.0) then
-            if abs(yMod) < (factor/2.0) then mat1 else mat2
-        else
-            if abs(yMod) < (factor/2.0) then mat2 else mat1
+   //let factor = 1.0
+        let xMod = u % factor > (factor/2.0)
+        let yMod = v % factor > (factor/2.0)
+        if (xMod && not yMod) || (not xMod && yMod) then mat1 else mat2
     T(texture)
+
+
+//nice test texture
+let testTexture = 
+    let texture (u:float) (v:float) : Material = mkMaterial(Colour.mkColour u v 0.0) 0.0
+    T(texture)
+
+
+
+
+
+
+ //stribes as texture that magically happend when I tried to fix checkerboard
+let stribes (mat1:Material) (mat2:Material) (factor:float) = 
+    let texture (u:float) (v:float) = 
+        let xMod = u % factor > factor/2.0
+        let yMod = v % factor > factor/2.0
+        if (xMod && not yMod) || (not xMod && not yMod) then mat1 else mat2
+    T(texture)
+
+
+
+
+
+ 
+
 
