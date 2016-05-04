@@ -26,9 +26,9 @@ let main argv =
     ExprParseTest.doTest()
     ExprToPolyTest.doTest()*)
 
-    TracerTest.doTest()  
+   // TracerTest.doTest()  
 //    CSG.render false
-  //  Light.render false
+    Light.render false
     //TransformationTest.doTest()
     //BoundingBoxTest.doTest()
     //AffineTransformationsTest.render false
