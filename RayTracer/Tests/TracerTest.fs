@@ -26,15 +26,16 @@ open System.Drawing
         let light = mkLight (mkPoint 0.0 3.0 5.0) (Colour.fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (Colour.fromColor Color.White) 0.1
         let camera = mkCamera (mkPoint 0.0 5.0 8.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500
-        let plane2 = mkPlane (Texture.testTexture)
-        let plane = mkPlane (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Black) 0.0) (Material.mkMaterial (Colour.fromColor Color.White) 0.0) 0.0)
-        let sphere = mkSphere (3.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0)
+    //    let plane2 = mkPlane (Texture.testTexture)
+        let sphere1 = mkSphere (5.0) (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
+        let plane = mkPlane (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Black) 0.2) (Material.mkMaterial (Colour.fromColor Color.White) 0.2) 0.0)
+        let sphere = mkSphere (3.0) (Texture.stribes(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0)
         let triangle = mkTriangle (Point.mkPoint 0.0 0.0 0.0) (Point.mkPoint 2.0 0.0 0.0) (Point.mkPoint 1.0 2.0 0.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0)
       //  let box = mkBox (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.1) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 1.0)
         let HC = mkHollowCylinder 2.0 3.0 (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.25)
         let disc = mkDisc 5.0 (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.1)
         let solid = mkSolidCylinder 1.0 2.0 (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.1) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.1) (Texture.checkerBoard(Material.mkMaterial (Colour.fromColor Color.Red) 0.0) (Material.mkMaterial (Colour.fromColor Color.Green) 0.0) 0.1)
-        let scene = Scene.mkScene [plane2;solid] [light] ambientLight camera 2
+        let scene = Scene.mkScene [plane;sphere] [light] ambientLight camera 2
 
         if toScreen then
           doRender scene None
