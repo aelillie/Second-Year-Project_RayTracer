@@ -34,15 +34,16 @@ let rec mkTmKdtree shapes =
            |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) >= Point.getX axisMidPoint then triangle 
            |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) >= Point.getY axisMidPoint then triangle 
            |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) >= Point.getZ axisMidPoint then triangle
-    let mutable right = List.map(fun c -> largerThanSplit c) shapes
-
 
     let lessThanSplit shapes =
         for triangle in shapes do
             match axis with
-           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <=  then triangle 
-           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= axisLength then triangle 
-           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= axisLength then triangle
+           |"x" -> if Point.getX (Shape.getTriangleMidPoint triangle) <= Point.getX axisMidPoint then triangle 
+           |"y" -> if Point.getY (Shape.getTriangleMidPoint triangle) <= Point.getY axisMidPoint then triangle 
+           |"z" -> if Point.getZ (Shape.getTriangleMidPoint triangle) <= Point.getZ axisMidPoint then triangle
+
+
+    let mutable right = List.map(fun c -> largerThanSplit c) shapes
     let mutable left = List.map(fun c -> lessThanSplit c) shapes
 
     let check = if(left.IsEmpty && right.Length > 0) then left <- right
