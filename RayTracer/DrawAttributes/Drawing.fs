@@ -1,6 +1,5 @@
 ﻿
 module Drawing
-open Tracer
 open System
 open System.Drawing
 open Colour

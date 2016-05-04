@@ -9,6 +9,7 @@ open Shape
 open Point
 open Vector
 open Light
+open Scene
 open Camera
 open TransformedShape
 open Transformation
