@@ -39,7 +39,7 @@ module BasicShape =
 
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
-                            let makeNV a = Point.move p (a * d) |> Point.direction p
+                            let makeNV a = Point.move p (a * d) |> Point.direction o
     
                             let a = (pow((Vector.getX d),2.0) +
                                         pow((Vector.getY d),2.0) +
@@ -54,7 +54,7 @@ module BasicShape =
                                         pow(Point.getZ p,2.0) -
                                         pow(r,2.0)
 
-                            let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
+                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)
 
                             if(disc < 0.0) then None
                             else
