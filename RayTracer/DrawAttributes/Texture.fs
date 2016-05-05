@@ -25,27 +25,9 @@ let loadTexture (file : string) =
  let texture (u : float) (v : float) = 
    //when parallel: lock img (fun _ -> 
             let imgColor = img.GetPixel (int (widthf * u) % 1, int (heightf * (1.0 - v)) % 1)
-        //let colour = Colour.mkColour ((float) imgColor.R/255.0) ((float) imgColor.G/255.0) ((float) imgColor.B/255.0)
             mkMaterial (Colour.fromColor imgColor) 0.0
  T(texture)
 
-    //(int (widthf * (u%1.0)), int (heightf * (1.0 - (v%1.0))))
- 
-    // (
-    //(int (u * (v - 1.0)), int ((1.0 - v) * (heightf - 1.0)))
-
- (*let loadTexture (file : string) =
- let img = new Bitmap(file) 
- let widthf = float (img.Width - 1)
- let heightf = float (img.Height - 1)
- let texture (u : float) (v : float) = 
-     let imgColor = img.GetPixel (int (widthf * (u%1.0)), int (heightf * (1.0 - (v%1.0))))
-  //   let c1 = Colour.mkColour ((float) imgColor.R) ((float) imgColor.G) ((float) imgColor.B)
-//     let color = Colour.fromColor imgColor
-    // let c = Colour.mkColour (Colour.toColor (((float) imgColor.R) ((float) imgColor.G) ((float) imgColor.B)))
-     mkMaterial (Colour.fromColor imgColor) 0.0
- T(texture)
-*)
 
  //checkerboard
 let checkerBoard (mat1:Material) (mat2:Material) (factor:float) = 

@@ -29,9 +29,9 @@ let main argv =
         (*******Camera******)
         let camera = mkCamera (mkPoint 0.0 2.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
-        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Texture.loadTexture "C:\Users\Amalie\Documents\earth.jpg")
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
         let sphere' = transform sphere (rotateY (System.Math.PI / 2.0))
-        let plane = mkPlane (Texture.loadTexture "C:\Users\Amalie\Documents\earth.jpg")
+        let plane = mkPlane (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
         let plane' = transform plane (translate 0.0 3.0 2.0)
 
         let unitBox p1 p2 t = mkBox p1 p2 t t t t t t
@@ -42,7 +42,7 @@ let main argv =
         let SC' = transform SC (rotateY (System.Math.PI))
 
         (*******Scene******)
-        let scene = mkScene [sphere] [light] ambientLight camera 0 in
+        let scene = mkScene [plane';sphere'] [light] ambientLight camera 0 in
         if toScreen then
           Util.render scene None
         else
