@@ -5,21 +5,19 @@ open BoundingBox
 open Shape
 
 type TmKdtree =
-    | Leaf 
+    | Leaf of Shape list  * BoundingBox
     | Node of Shape list * TmKdtree * TmKdtree * BoundingBox  
 
+//Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
+let kdbbox shapes =
+    let sbbox = List.map (fun c -> calc c) shapes
+    //Making boundingboxes for all triangles in the Shapes-list  
+    let max = List.maxBy (fun x -> (Point.getX x,Point.getY x, Point.getZ x)) (List.map (fun b -> getH b) sbbox)
+    let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun b -> getL b) sbbox) 
+    mkBoundingBox min max 
 
 let rec mkTmKdtree shapes = 
-    //Making boundingboxes for all triangles in the Shapes-list
-    let sbbox = List.map (fun c -> calc c) shapes
-
-    //Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
-    let kdbbox = 
-        let max = List.maxBy (fun x -> (Point.getX x,Point.getY x, Point.getZ x)) (List.map (fun b -> getH b) sbbox)
-        let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun b -> getL b) sbbox) 
-        mkBoundingBox min max  
-
-    //Finding the midpoint in the triangles in Shapes-list
+     //Finding the midpoint in the triangles in Shapes-list
     let findMidPoint (shapeList:Shape List) = 
         let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
         for triangle in shapeList do
@@ -53,8 +51,8 @@ let rec mkTmKdtree shapes =
     let hashleft = List.map (fun c -> Map.add c 1 hashleft) left 
     let countUp = List.map(fun c -> if((Map.containsKey c)) then counter <- counter + 1) right
     if((counter/left.Length < 0.5) && counter/right.Length < 0.5) then 
-        let leftTree = (Node(left, Leaf, (mkTmKdtree left),kdbbox)) 
-        let rightTree = (Node(right, (mkTmKdtree right),Leaf,kdbbox))
+        let leftTree = (Node(left, Leaf, (mkTmKdtree left),(kdbbox left)) 
+        let rightTree = (Node(right, (mkTmKdtree right),Leaf,(kdbbox right)))
         Node(shapes,leftTree, rightTree, kdbbox)
-    else Leaf 
+    else Leaf(shapes, kdbbox)
 
