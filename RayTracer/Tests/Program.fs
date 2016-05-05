@@ -15,12 +15,12 @@ open System.IO
 open TestSuite
 
 let testAll =
-    PointTest.doTest ()
-    VectorTest.doTest ()
-    ExprParseTest.doTest ()
-    ExprToPolyTest.doTest ()
-//    BoundingBoxTest.doTest ()
-    TransformationTest.doTest ()
+//    PointTest.doTest ()
+//    VectorTest.doTest ()
+//    ExprParseTest.doTest ()
+//    ExprToPolyTest.doTest ()
+    BoundingBoxTest.doTest ()
+//    TransformationTest.doTest ()
 
 let renderAll toScreen =
 
@@ -42,6 +42,7 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
-//    testAll
-    renderAll false
+    testAll
+//    renderAll false
+    Console.ReadKey() |> ignore
     0 // return an integer exit code

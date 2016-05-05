@@ -12,11 +12,15 @@ module BasicShape =
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
     
-    type BoundingBox = Point * Point
-//    let getBBLow (B(p1, p2)) = p1
-//    let getBBHigh (B(p1, p2)) = p2
-//    let getBBPoints (B(p1, p2)) = (p1, p2)
-//    let mkBoundingBox (p1, p2) = B(p1,p2)
+    type BoundingBox = 
+        {p1 : Point; p2 : Point}
+        override b.ToString() = b.p1.ToString() + " " + b.p2.ToString()
+        member b.isInside p = 
+                        let (x,y,z) = Point.getCoord p
+                        let (lx,ly,lz) = Point.getCoord b.p1
+                        let (hx,hy,hz) = Point.getCoord b.p2
+                        lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option
@@ -39,7 +43,7 @@ module BasicShape =
                                         let hy = (Point.getY o) + r + epsilon
                                         let hz = (Point.getZ o) + r + epsilon 
                                         let h = mkPoint hx hy hz
-                                        (l,h)
+                                        {p1 = l; p2 = h}
 
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
@@ -117,7 +121,7 @@ module BasicShape =
 
                             let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
-                            (l,h)
+                            {p1 = l; p2 = h}
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
