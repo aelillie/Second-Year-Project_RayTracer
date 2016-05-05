@@ -51,19 +51,20 @@ module BasicShape =
                             let makeNV a = Point.move p (a * d) |> Point.direction o
                        
                             let calculateMaterial p v f r tex = 
-                                let p1 = Point.move p (Vector.multScalar v f)
-                                let vector = Point.distance p p1
-                                let n' = Vector.multScalar vector (1.0/r)
-                                let n = Vector.normalise (Point.distance p1 o)
+                                let p1 = Point.move p (f * v)
+                                let n = p1/r
+                                //let vector = Point.distance p p1
+                                //let n' = Vector.multScalar vector (1.0/r)
+                                //let n = Vector.normalise (Point.distance p1 o)
 
-                                let theta = System.Math.Acos(Vector.getY n)
-                                let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+                                let theta = System.Math.Acos(Point.getY n)
+                                let phi' = System.Math.Atan2(Point.getX n, Point.getZ n)
                                 let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
 
-                              //  let u = (theta/(2.0*pi))
-                                //let v = (1.0 - phi)/pi
-                                let u = 1.0 - (phi/(pi*2.0))
-                                let v = 1.0 - (theta/pi)
+                                let u = theta/(2.0*pi)
+                                let v = (1.0 - phi)/pi
+                                //let u = 1.0 - (phi/(pi*2.0))
+                                //let v = 1.0 - (theta/pi)
                                 let material = Texture.getMaterialAtPoint tex u v
                                 material
     
