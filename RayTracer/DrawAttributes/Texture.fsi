@@ -8,5 +8,3 @@ val getMaterialAtPoint : tex:Texture -> x:float -> y:float -> Material
 val checkerBoard : mat1:Material -> mat2:Material -> factor:float -> Texture
 val testTexture : Texture
 val loadTexture : file:string -> Texture
-val stribes : mat1:Material -> mat2:Material -> factor:float -> Texture
-

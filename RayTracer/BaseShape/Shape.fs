@@ -72,7 +72,7 @@ let mkRectangle (corner : Point) (width : float) (height : float) (tex : Texture
     = Rec(corner, width, height, tex)
 //Box
 let mkBox (front : Texture) (back : Texture) (top : Texture) (bottom : Texture) (left : Texture) (right : Texture) : Shape
-      = let width, height, depth = 2.0, 2.0, 2.0
+      = let width, height, depth = 3.0, 2.0, 2.0
 
         let frontT = translate -1.0 -1.0 -1.0 
         let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
@@ -239,7 +239,7 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                         let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
 
                       //  let u = (theta/(2.0*pi))
-                       // let v = (1.0 - phi)/pi
+                        //let v = (1.0 - phi)/pi
                         let u = 1.0 - (phi/(pi*2.0))
                         let v = 1.0 - (theta/pi)
                         let material = Texture.getMaterialAtPoint tex u v
