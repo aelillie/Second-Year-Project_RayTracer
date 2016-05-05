@@ -22,6 +22,8 @@ type Camera =
 let mkCamera pos look up zoom width height pwidth pheight = 
     C(pos, look, up, zoom, UR(width, height), Res(pwidth, pheight))
 
+let getRes (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) = (pw,ph)
+
 let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
     let l = Point.direction p q //normalised direction vector
     let r = Vector.crossProduct l up //right direction vector
@@ -41,7 +43,7 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
         let p2 = //move p' to pixel row
             Point.move p2 (((float yy + 0.5) * H) * d)
         let v = Point.direction p1 p2 //ray direction
-        Ray.mkRay p2 1.0 v
+        Ray.mkRay p2 v
        
     [for x in 0..pw do
          for y in 0..ph do           

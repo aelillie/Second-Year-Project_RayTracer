@@ -24,6 +24,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BaseShape.XML</DocumentationFile>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,15 +37,12 @@
     <DocumentationFile>bin\Release\BaseShape.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Data.TypeProviders" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
@@ -51,11 +50,27 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Transformation.fsi" />
     <Compile Include="Transformation.fs" />
-    <Compile Include="Implicit.fs" />
+    <Compile Include="BasicShape.fs" />
+    <Compile Include="TransformedShape.fs" />
+    <Compile Include="AdvancedShape.fs" />
     <Compile Include="Shape.fs" />
-    <Compile Include="Plane.fs" />
-    <Compile Include="BoundingBox.fsi" />
-    <Compile Include="BoundingBox.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
+      <Name>ExprComp</Name>
+      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
+      <Name>PlyParser</Name>
+      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Name>Space3D</Name>
+      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">

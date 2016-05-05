@@ -1,4 +1,4 @@
-﻿namespace Tracer.AssemblyInfo
+﻿namespace SceneConstruction.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("Tracer")>]
+[<assembly: AssemblyTitle("SceneConstruction")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("Tracer")>]
+[<assembly: AssemblyProduct("SceneConstruction")>]
 [<assembly: AssemblyCopyright("Copyright ©  2016")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("2ed1f7ee-ed05-4f03-bd9e-0a531146bfae")>]
+[<assembly: Guid("cb0d89de-1378-405c-94d3-fffa04e2e114")>]
 
 // Version information for an assembly consists of the following four values:
 // 

@@ -8,12 +8,12 @@ open Vector
     d = normalized direction vector
  *)
 type Ray =
-    | R of Point * double * Vector
+    | R of Point *  Vector
     override R.ToString() =
         match R with
-        R(p,t,d) -> "("+p.ToString()+","+t.ToString()+","+ d.ToString() + ")"
-let mkRay p t d = R(p,t,d)
+        R(p,d) -> "("+p.ToString()+","+ d.ToString() + ")"
+let mkRay p d = R(p,d)
 
-let getP (R(p,_,_)) = p
-let getT (R(_,t,_)) = t
-let getD (R(_,_,d)) = d
+let getP (R(p,_)) = p
+let getD (R(_,d)) = d
+let getValues (R(p,d)) = (p,d)
