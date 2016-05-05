@@ -46,8 +46,8 @@ let loadTexture (file : string) =
  let texture (u : float) (v : float) = 
    //  evt lock? lock img (fun _ -> 
             let imgColor = img.GetPixel (int (widthf * u), int (heightf * (1.0 - v)))
-            let colour = Colour.mkColour ((float) imgColor.R/255.0) ((float) imgColor.G/255.0) ((float) imgColor.B/255.0)
-            mkMaterial colour 0.0
+        //    let colour = Colour.mkColour ((float) imgColor.R/255.0) ((float) imgColor.G/255.0) ((float) imgColor.B/255.0)
+            mkMaterial (Colour.fromColor imgColor) 0.0
  T(texture)
 
     //(int (widthf * (u%1.0)), int (heightf * (1.0 - (v%1.0))))
