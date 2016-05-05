@@ -6,11 +6,11 @@ type Texture =
     | T of (float -> float -> Material)
 
 
- let mkTexture (f : float -> float -> Material) : Texture = T(f)
+let mkTexture (f : float -> float -> Material) : Texture = T(f)
 
- let mkMatTexture (m : Material) : Texture = mkTexture (fun x y -> m)
+let mkMatTexture (m : Material) : Texture = mkTexture (fun x y -> m)
 
- let getMaterialAtPoint (T(f)) x y = f x y
+let getMaterialAtPoint (T(f)) x y = f x y
 
  //chekcerboard texture 
  (*

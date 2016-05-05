@@ -3,7 +3,6 @@ open System
 open System.Drawing
 open Light
 open Transformation
-open Shape
 open Point
 open Colour
 open Scene

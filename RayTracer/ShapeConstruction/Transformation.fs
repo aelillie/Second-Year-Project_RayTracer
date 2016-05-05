@@ -65,6 +65,8 @@ let mirrorZ =
                      [0.0; 0.0; -1.0; 0.0]
                      [0.0; 0.0;  0.0; 1.0]]
     T(m, m)
+
+let degrees_to_radians (d : float) = d * System.Math.PI / 180.0
  
 let rotateX angle =
     let cos = System.Math.Cos angle
@@ -78,6 +80,8 @@ let rotateX angle =
                       [0.0;-sin; cos; 0.0]
                       [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
+
+let rotateX1 angle = rotateX (degrees_to_radians angle)
 
 
 let rotateY angle =
@@ -93,6 +97,8 @@ let rotateY angle =
                       [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
+let rotateY1 angle = rotateX (degrees_to_radians angle)
+
 let rotateZ angle =
     let cos = System.Math.Cos angle
     let sin = System.Math.Sin angle
@@ -106,18 +112,20 @@ let rotateZ angle =
                       [ 0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
+let rotateZ1 angle = rotateX (degrees_to_radians angle)
+
 let inverseShear (m : float [,]) = 
     let m' = Array2D.copy m
-    let d = 1.0 - m.[1,0]*m.[0,1]-m.[2,0]*m.[0,3]-m.[2,1]*m.[1,3]
-                + m.[1,0]*m.[2,1]*m.[0,3]+m.[2,0]*m.[0,1]*m.[1,2] 
+    let d = 1.0 - m.[1,0]*m.[0,1]-m.[2,0]*m.[0,2]-m.[2,1]*m.[1,2]
+                + m.[1,0]*m.[2,1]*m.[0,2]+m.[2,0]*m.[0,1]*m.[1,2] 
     m'.[0,0] <-  1.0-m.[2,1]*m.[1,2]
-    m'.[1,0] <- -1.0*m.[1,0]+m.[2,0]*m.[1,2]
-    m'.[2,0] <- -1.0*m.[2,0]+m.[1,0]*m.[2,1]
-    m'.[0,1] <- -1.0*m.[0,1]+m.[2,1]*m.[0,2]
-    m'.[1,1] <-  1.0-m.[0,2]*m.[0,2]
-    m'.[2,1] <- -1.0*m.[2,1]+m.[2,0]*m.[0,1]
-    m'.[0,2] <- -1.0*m.[0,2]+m.[0,1]*m.[1,2]
-    m'.[1,2] <- -1.0*m.[1,2]+m.[1,0]*m.[0,3]
+    m'.[1,0] <- -m.[1,0]+m.[2,0]*m.[1,2]
+    m'.[2,0] <- -m.[2,0]+m.[1,0]*m.[2,1]
+    m'.[0,1] <- -m.[0,1]+m.[2,1]*m.[0,2]
+    m'.[1,1] <-  1.0-m.[2,0]*m.[0,2]
+    m'.[2,1] <- -m.[2,1]+m.[2,0]*m.[0,1]
+    m'.[0,2] <- -m.[0,2]+m.[0,1]*m.[1,2]
+    m'.[1,2] <- -m.[1,2]+m.[1,0]*m.[0,2]
     m'.[2,2] <-  1.0-m.[1,0]*m.[0,1]
     m'.[3,3] <- d
     Array2D.map (fun elem -> elem/d) m'

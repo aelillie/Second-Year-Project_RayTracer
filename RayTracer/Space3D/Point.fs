@@ -20,4 +20,8 @@ let direction p q = Vector.normalise(distance p q)
 let round (P(px,py,pz)) (d:int) =
     let r (c:float) = System.Math.Round(c, d)
     P(r px, r py, r pz)
+
+type Point with
+  static member ( + ) ((P(x,y,z)), f) = (P(x+f,y+f,z+f))
+  static member ( - ) ((P(x,y,z)), f) = (P(x-f,y-f,z-f))
         
