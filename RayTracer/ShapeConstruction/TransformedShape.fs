@@ -15,7 +15,10 @@ module TransformedShape =
     type TransformedShape(s:Shape, tr) = 
         interface Shape with
             member this.isInside p = s.isInside (transPoint (getInv tr) p)
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let (p1, p2) = s.getBounding ()
+                                         let p1' = transPoint (getT tr) p1
+                                         let p2' = transPoint (getT tr) p2
+                                         (p1', p2')
             member this.isSolid () = s.isSolid()
             member this.hit (R(p,d)) = 
                                         let p' = transPoint (getInv tr) p //transformed Ray origin
@@ -80,7 +83,21 @@ module TransformedShape =
         let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
             member this.isInside p = s1.isInside p && s2.isInside p
-            member this.getBounding () = makeBounding s1 s2
+            member this.getBounding () = 
+                let (b1p1,b1p2), (b2p1, b2p2) = s1.getBounding (), s2.getBounding ()
+                if not (s1.isInside b2p1) && not (s1.isInside b2p2) && //Check for intersection
+                   not (s2.isInside b1p1) && not (s2.isInside b1p2)
+                then makeBounding s1 s2 
+                else 
+                let (lx1,ly1,lz1) = (Point.getCoord b1p1) //Low point of s1
+                let (lx2,ly2,lz2) = (Point.getCoord b2p1) //Low point of s2
+                let (hx1,hy1,hz1) = (Point.getCoord b1p2) //High point of s2
+                let (hx2,hy2,hz2) = (Point.getCoord b2p2) //High point of s2
+                let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
+                               then b2p1 else b1p1 //Choose the highest low point
+                let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
+                                then b1p2 else b2p2 //Choose the lowest high point
+                (lowPoint, highPoint)
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                       let hit1, hit2 = s1.hit ray, s2.hit ray
@@ -106,7 +123,7 @@ module TransformedShape =
         let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
             member this.isInside p = s1.isInside p && (not (s2.isInside p))
-            member this.getBounding () = makeBounding s1 s2
+            member this.getBounding () = s1.getBounding ()
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                       let hit1, hit2 = s1.hit ray, s2.hit ray
