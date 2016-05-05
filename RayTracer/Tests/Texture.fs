@@ -7,13 +7,16 @@ open Point
 open Colour
 open Scene
 open Camera
+open Texture
+open Shapes.Shape
+open Shapes.TransformedShape
 open Vector
 open Material
 open Util
 
 
-module TextureTest = ()
- (* let folder = "texture"
+module TextureTest = 
+  let folder = "texture"
 
   let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
     let img = new Bitmap(file)
@@ -29,7 +32,7 @@ module TextureTest = ()
     mkTexture texture
 
   let renderEarth toScreen =
-    let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg"
+    let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "C:\Users\Amalie\Documents\earth.jpg"
     let light = mkLight (mkPoint 0.0 1.0 4.0) (fromColor Color.White) 1.0 in
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
     let camera = mkCamera (mkPoint 0.0 1.0 30.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 20.0 2.0 2.0 1000 1000 in
@@ -76,7 +79,7 @@ module TextureTest = ()
   let mkColor c = mkMatTexture (mkMaterial (fromColor c) 0.0)
 
   let renderBox toScreen =
-    let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg"
+ //   let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "C:\Users\Amalie\Documents\earth.jpg"
     let light = mkLight (mkPoint 0.0 1.0 4.0) (fromColor Color.White) 1.0 in
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
     let camera = mkCamera (mkPoint 0.0 1.0 30.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 20.0 2.0 2.0 1000 1000 in
@@ -87,8 +90,7 @@ module TextureTest = ()
     let scene = mkScene [box] [light] ambientLight camera 3 in
     Util.render' scene (folder, "box.png") toScreen
 
-
-  let renderBunny toScreen =
+(*  let renderBunny toScreen =
     let baseBunny = mkPLY "../../../ply/bunny_textured.ply" true
     let t = mergeTransformations
               [rotateY (Math.PI / 4.0);
@@ -108,7 +110,7 @@ module TextureTest = ()
     let ambientLight = mkAmbientLight (fromColor Color.Green) 0.1
     let scene = mkScene [p; affineBunny] [l1; l2; l3] ambientLight c 2
     Util.render' scene (folder, "bunny.png") toScreen
-
+    *)
 
   let renderPlane toScreen =
     let white = mkMaterial (fromColor Color.Red) 0.5
@@ -140,8 +142,8 @@ module TextureTest = ()
 
   let render toScreen =
     renderBox toScreen
-    renderBunny toScreen
+  //  renderBunny toScreen
     renderCylinder toScreen
     renderEarth toScreen
     renderPlane toScreen
-    renderSphere toScreen *)
+    renderSphere toScreen 

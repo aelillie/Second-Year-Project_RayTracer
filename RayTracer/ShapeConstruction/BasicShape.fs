@@ -50,21 +50,16 @@ module BasicShape =
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction o
                        
-                            let calculateMaterial r tex = 
-                                //let p1 = Point.move p (f * v)
-                                let n = p/r
-                                //let vector = Point.distance p p1
-                                //let n' = Vector.multScalar vector (1.0/r)
-                                //let n = Vector.normalise (Point.distance p1 o)
-
-                                let theta = System.Math.Acos(Point.getY n)
-                                let phi' = System.Math.Atan2(Point.getX n, Point.getZ n)
+                            let calculateMaterial answer = 
+                                let n = makeNV answer
+                                
+                                let theta = System.Math.Acos(Vector.getY n)
+                                let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
                                 let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
 
-                                let u = phi/(2.0*pi)
-                                let v = 1.0 - theta/pi
-                                //let u = 1.0 - (phi/(pi*2.0))
-                                //let v = 1.0 - (theta/pi)
+                                let u = 0.5 + (System.Math.Atan2(Vector.getX n, Vector.getZ n)/(2.0*pi))
+                                let v = 0.5 - (System.Math.Asin(Vector.getY n)/pi)
+                               
                                 let material = Texture.getMaterialAtPoint tex u v
                                 material
     
@@ -91,11 +86,11 @@ module BasicShape =
                                 else
             
                                     let answer = System.Math.Min(answer1,answer2)
-                                    let material = calculateMaterial r tex
+                                    let material = calculateMaterial answer
                                     if answer < 0.0 
                                     then 
                                         let answer = System.Math.Max(answer1,answer2)
-                                        let material = calculateMaterial r tex
+                                        let material = calculateMaterial answer
                                         Some (answer, makeNV answer, material)
                                     else Some (answer, makeNV answer, material)
 
