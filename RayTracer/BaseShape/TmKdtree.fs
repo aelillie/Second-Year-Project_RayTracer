@@ -18,38 +18,35 @@ let mkKdBbox shapes =
     mkBoundingBox min max 
 
 
-    (* EMIL?? *)
+(* EMIL?? *)
 //Finding the midpoint in the triangles in Shapes-list
-let findMidPoint shapeList = 
-    let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
-    for triangle in shapeList do
-        midPoint <- midPoint + (Shape.getTriangleMidPoint triangle * (1.0 / float(shapeList.Length)))
-    midPoint
-
-let rec mkTmKdtree shapes = 
-    //Finding biggest dimension in the shapes list
-
+let rec mkTmKdtree shapes =         
+       
+     //Finding biggest dimension in the shapes list
     let axis = snd (BoundingBox.getLongestAxis (mkKdBbox shapes))
-    let axisMidPoint = findMidPoint shapes
+    let axisMidPoint = 
+        let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
+        for triangle in shapes do
+            midPoint <- midPoint + (Shape.getTriangleMidPoint triangle * (1.0 / float(shapeList.Length)))
+        midPoint  
 
     //Splitting the shape list in right & left 
-
     let rec largerThanSplit (xs:Shape list) = 
         match xs with
         |[] -> []
         |x::xs' -> match axis with
-                   |"x" -> if Point.getX (Shape.getTriangleMidPoint x) >= Point.getX axisMidPoint then x :: lg xs' else lg xs'
-                   |"y" -> if Point.getY (Shape.getTriangleMidPoint x) >= Point.getY axisMidPoint then x :: lg xs' else lg xs' 
-                   |"z" -> if Point.getZ (Shape.getTriangleMidPoint x) >= Point.getZ axisMidPoint then x :: lg xs' else lg xs' 
+                   |"x" -> if Point.getX (Shape.getTriangleMidPoint x) >= Point.getX axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs'
+                   |"y" -> if Point.getY (Shape.getTriangleMidPoint x) >= Point.getY axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs' 
+                   |"z" -> if Point.getZ (Shape.getTriangleMidPoint x) >= Point.getZ axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs' 
         
     
     let rec lessThanSplit (xs:Shape list) = 
         match xs with
         |[] -> []
         |x::xs' -> match axis with
-                   |"x" -> if Point.getX (Shape.getTriangleMidPoint x) <= Point.getX axisMidPoint then x :: lg xs' else lg xs'
-                   |"y" -> if Point.getY (Shape.getTriangleMidPoint x) <= Point.getY axisMidPoint then x :: lg xs' else lg xs' 
-                   |"z" -> if Point.getZ (Shape.getTriangleMidPoint x) <= Point.getZ axisMidPoint then x :: lg xs' else lg xs' 
+                   |"x" -> if Point.getX (Shape.getTriangleMidPoint x) <= Point.getX axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs'
+                   |"y" -> if Point.getY (Shape.getTriangleMidPoint x) <= Point.getY axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' 
+                   |"z" -> if Point.getZ (Shape.getTriangleMidPoint x) <= Point.getZ axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' 
          
     //Creating the left and right list from the above 
     let mutable right = largerThanSplit shapes
@@ -62,10 +59,10 @@ let rec mkTmKdtree shapes =
         match right with
         | [] -> 0
         | x::xs' when (leftMap.ContainsKey x) -> 1 + countUp xs' 
-         
+
     if((countUp/left.Length < 0.5) && countUp/right.Length < 0.5) then 
-        let leftTree = (Node(left, Leaf, (mkTmKdtree left),(kdbbox left)) 
-        let rightTree = (Node(right, (mkTmKdtree right),Leaf,(kdbbox right)))
-        Node(shapes,leftTree, rightTree, kdbbox)
+      let leftTree = (Node(left, Leaf, (mkTmKdtree left),(kdbbox left)) 
+      let rightTree = (Node(right, (mkTmKdtree right),Leaf,(kdbbox right)))
+      Node(shapes,leftTree, rightTree, kdbbox)
     else Leaf(shapes, kdbbox)
 
