@@ -6,9 +6,11 @@ open ExprParse
 open Material
 open Transformation
 open PlyParse
+open Implicit
 open Shapes.AdvancedShape
 open Shapes.BasicShape
 open Shapes.TransformedShape
+open Shapes.ImplicitShape
 
 module Shape = 
     type Shape = Shapes.BasicShape.Shape
@@ -51,3 +53,7 @@ module Shape =
 
     //Triangle
     let mkTriangle a b c mat = new Triangle(a,b,c,mat)
+
+
+    //Implicit
+    let mkShape (bs:baseShape) (m:Material)  = ImplicitShape(bs,m)

@@ -3,7 +3,7 @@ module ExprToPolyTest
 open ExprParse
 open ExprToPoly
 open Implicit
-open Shape
+open Shapes.Shape
 open Colour
 open Material
 open System.Drawing
@@ -24,9 +24,10 @@ let test01() =
     let p = mkPoint 1.0 2.0 3.0
     let v = mkVector 3.0 2.0 1.0
     let t = 2.0
-    let ray = mkRay  p t v
-    let is = IS (bs, mat )
-    let letSee = hit ray is
+    let ray = mkRay  p v
+    let is = mkShape bs mat :> Shape
+   
+    let letSee = is.hit ray
 
 
 
@@ -54,10 +55,10 @@ let test02() =
     let p = mkPoint 1.0 2.0 3.0
     let v = mkVector 3.0 2.0 1.0
     let t = 2.0
-    let ray = mkRay  p t v
-    let is = IS (bs, mat )
+    let ray = mkRay p v
+    let is = mkShape bs mat :> Shape
 
-    let letSee = hit ray is
+    let letSee = is.hit ray
     
 
     let expr = parseStr "1+2"   
