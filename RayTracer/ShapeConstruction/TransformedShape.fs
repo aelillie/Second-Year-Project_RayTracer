@@ -114,7 +114,7 @@ module TransformedShape =
                                                 let newPoint = move p ((dist+epsilon) * d)
                                                 let newRay = mkRay newPoint d
                                                 match hit newRay this with
-                                                | Some(d,v,m) -> Some(dist+d,v,m)
+                                                | Some(d,v,m) -> Some(dist+epsilon+d,v,m)
                                                 | _ -> None
                       | _ -> None
 
