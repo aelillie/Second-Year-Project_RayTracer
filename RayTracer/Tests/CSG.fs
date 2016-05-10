@@ -83,7 +83,7 @@ module CSG =
 
 
   let renderLantern toScreen =
-    let scene = mkScene [subtraction (intersection sphere cube) cross] [l3] ambientLight camera 0 in
+    let scene = mkScene [subtraction (intersection sphere cube) cross] [l1;l2;l3] ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else
