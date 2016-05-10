@@ -56,18 +56,23 @@ let rec mkTmKdtree shapes =
     if(left.IsEmpty && right.Length > 0) then left <- right
     if(right.IsEmpty && left.Length > 0) then right <- left
 
-    let leftMap = left |> List.map(fun c -> (c,1)) |> Map.add 
+    let mutable count = 0 
+    let leftMap = 
+        for t in left do
+            for k in right do 
+                if(t = k) then count <- count + 1 
 
+                (*
     let leftList = List.map (fun c -> (c,1)) left 
 
     let countUp =
         match right with
         | [] -> 0
-        | x::xs' when (leftMap.ContainsKey x) -> 1 + countUp xs' 
+        | x::xs' when (leftMap.ContainsKey x) -> 1 + countUp xs' *)
 
-    if((countUp/left.Length < 0.5) && countUp/right.Length < 0.5) then 
+    if((float(count/left.Length) < 0.5) && float(count/right.Length) < 0.5) then 
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
       Node(shapes,leftTree, rightTree, (mkKdBbox shapes))
-    else Leaf(shapes, (mkKdBbox kdbbox))
+    else Leaf(shapes, (mkKdBbox shapes))
 
