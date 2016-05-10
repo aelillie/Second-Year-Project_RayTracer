@@ -18,19 +18,6 @@ open Util
 module Texture =
   let folder = "texture"
 
-//  let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
-//    let img = new Bitmap(file)
-//    let width = img.Width - 1
-//    let height = img.Height - 1
-//    let widthf = float width
-//    let heightf = float height
-//    let texture x y =
-//      let (x', y') = tr x y
-//      let x'', y'' = int (widthf * x'), int (heightf * y')
-//      let c = lock img (fun () -> img.GetPixel(x'',y''))
-//      mkMaterial (fromColor c) 0.0
-//    mkTexture texture
-
   let renderEarth toScreen =
     let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg"
     let light = mkLight (mkPoint 0.0 1.0 4.0) (fromColor Color.White) 1.0 in
@@ -142,9 +129,9 @@ module Texture =
 
 
   let render toScreen =
-//    renderBox toScreen
-//    renderBunny toScreen
-//    renderCylinder toScreen
+////    renderBox toScreen
+////    renderBunny toScreen
+////    renderCylinder toScreen
 //    renderEarth toScreen
-//    renderPlane toScreen
-    renderSphere toScreen
+    renderPlane toScreen
+////    renderSphere toScreen

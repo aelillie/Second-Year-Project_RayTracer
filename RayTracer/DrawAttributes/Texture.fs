@@ -30,17 +30,26 @@ let loadTexture (file : string) =
  T(texture)
  *)
 
+//let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
+//    let img = new Bitmap(file)
+//    let width = img.Width - 1
+//    let height = img.Height - 1
+//    let widthf = float width
+//    let heightf = float height
+//    let texture x y =
+//        let (x', y') = tr x y
+//        let x'', y'' = int (widthf * x') % 1, int (heightf * y') % 1
+//        let c = lock img (fun () -> img.GetPixel(x'',y''))
+//        mkMaterial (Colour.fromColor c) 0.0
+//    T(texture)
+
 let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
     let img = new Bitmap(file)
-    let width = img.Width - 1
-    let height = img.Height - 1
-    let widthf = float width
-    let heightf = float height
-    let texture x y =
-        let (x', y') = tr x y
-        let x'', y'' = int (widthf * x') % 1, int (heightf * y') % 1
-        let c = lock img (fun () -> img.GetPixel(x'',y''))
-        mkMaterial (Colour.fromColor c) 0.0
+    let widthf = float (img.Width - 1)
+    let heightf = float (img.Height - 1)
+    let texture u v =
+      let color = img.GetPixel (int (widthf * u), int (heightf * (1.0-v)))
+      mkMaterial (Colour.fromColor color) 0.0
     T(texture)
 
  //checkerboard
