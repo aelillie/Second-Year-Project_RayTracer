@@ -24,25 +24,26 @@ let main argv =
 
     let render toScreen =
         (*******Light******)
-        let light = mkLight (mkPoint 0.0 3.0 5.0) (fromColor Color.White) 1.0 in
+        let light = mkLight (mkPoint 0.0 2.0 5.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 2.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 3.0 3.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
-        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Texture.mkTextureFromFile (fun x y -> (x,1.0-y)) "C:\Users\Amalie\Documents\earth.jpg")
         let sphere' = transform sphere (rotateY (System.Math.PI / 2.0))
-        let plane = mkPlane (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
+        let plane = mkPlane (Texture.mkTextureFromFile (fun x y -> (x,1.0-y)) "C:\Users\Amalie\Documents\earth.jpg")
         let plane' = transform plane (translate 0.0 3.0 2.0)
+        
 
-        let unitBox p1 p2 t = mkBox p1 p2 t t t t t t
-        let box = unitBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
-        let disc = mkDisc (mkPoint 0.0 0.0 0.0) 3.4 (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
-        let HC = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 2.0 4.0 (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
-        let SC = mkSolidCylinder (mkPoint 0.0 0.0 0.0) 2.0 4.0 (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")(Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")(Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
-        let SC' = transform SC (rotateY (System.Math.PI))
+    //    let unitBox p1 p2 t = mkBox p1 p2 t t t t t t
+  //      let box = unitBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
+    //    let disc = mkDisc (mkPoint 0.0 0.0 0.0) 3.4 (Texture.loadTexture "C:\Users\Amalie\Documents\checkerboard2.jpg")
+        let HC = mkHollowCylinder (mkPoint 0.0 0.0 0.0) 2.0 4.0 (Texture.mkTextureFromFile (fun x y -> (x,1.0-y)) "C:\Users\Amalie\Documents\sobillede.jpg")
+       // let SC = mkSolidCylinder (mkPoint 0.0 0.0 0.0) 2.0 4.0 (Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")(Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")(Texture.loadTexture "C:\Users\Amalie\Documents\sobillede.jpg")
+    //    let SC' = transform SC (rotateY (System.Math.PI))
 
         (*******Scene******)
-        let scene = mkScene [plane';sphere'] [light] ambientLight camera 0 in
+        let scene = mkScene [plane;HC] [light] ambientLight camera 0 in
         if toScreen then
           Util.render scene None
         else

@@ -7,4 +7,4 @@ val mkMatTexture : mat:Material -> Texture
 val getMaterialAtPoint : tex:Texture -> x:float -> y:float -> Material
 val checkerBoard : mat1:Material -> mat2:Material -> factor:float -> Texture
 val testTexture : Texture
-val loadTexture : file:string -> Texture
+val mkTextureFromFile : tr:(float -> float -> float * float) -> file:string -> Texture
