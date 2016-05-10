@@ -1,5 +1,5 @@
 ﻿module Kdtree
-open Point
+(* open Point
 open BoundingBox
 
 type Kdtree =
@@ -46,3 +46,5 @@ let mkKdtree left right shapes =
         | TShape (s, tr) -> 
             mkmidpoint s 
         | 
+
+        *)

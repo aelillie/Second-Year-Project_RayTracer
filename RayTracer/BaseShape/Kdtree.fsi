@@ -2,7 +2,7 @@
 open BoundingBox
 open Point
 open Shape 
-
+(*
 type Kdtree
 type KdNode
 
@@ -11,3 +11,4 @@ val findNearestNeighbor : KdNode -> Point -> KdNode
 val insert : Point list -> KdNode -> int -> Kdtree 
    
 
+*)

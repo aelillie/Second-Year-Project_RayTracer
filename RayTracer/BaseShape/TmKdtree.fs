@@ -27,8 +27,9 @@ let rec mkTmKdtree shapes =
     let axisMidPoint = 
         let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
         for triangle in shapes do
-            midPoint <- midPoint + (Shape.getTriangleMidPoint triangle * (1.0 / float(shapeList.Length)))
-        midPoint  
+            midPoint <- midPoint + (Shape.getTriangleMidPoint triangle)
+        let avgMid = midPoint / float(shapes.Length)
+        avgMid 
 
     //Splitting the shape list in right & left 
     let rec largerThanSplit (xs:Shape list) = 
@@ -54,15 +55,19 @@ let rec mkTmKdtree shapes =
 
     if(left.IsEmpty && right.Length > 0) then left <- right
     if(right.IsEmpty && left.Length > 0) then right <- left
-    let leftMap = seq { 0 .. count } |> Seq.fold (fun (m: Map<Shape, int>) i -> m.Add(left.[i], 1)) Map.empty
+
+    let leftMap = left |> List.map(fun c -> (c,1)) |> Map.add 
+
+    let leftList = List.map (fun c -> (c,1)) left 
+
     let countUp =
         match right with
         | [] -> 0
         | x::xs' when (leftMap.ContainsKey x) -> 1 + countUp xs' 
 
     if((countUp/left.Length < 0.5) && countUp/right.Length < 0.5) then 
-      let leftTree = (Node(left, Leaf, (mkTmKdtree left),(kdbbox left)) 
-      let rightTree = (Node(right, (mkTmKdtree right),Leaf,(kdbbox right)))
-      Node(shapes,leftTree, rightTree, kdbbox)
-    else Leaf(shapes, kdbbox)
+      let leftTree = mkTmKdtree left 
+      let rightTree = mkTmKdtree right 
+      Node(shapes,leftTree, rightTree, (mkKdBbox shapes))
+    else Leaf(shapes, (mkKdBbox kdbbox))
 
