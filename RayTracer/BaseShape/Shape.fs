@@ -5,7 +5,7 @@ open Ray
 open ExprParse
 open Material
 open Transformation
-open PlyParse
+open Texture
 
 
 
@@ -16,20 +16,19 @@ open PlyParse
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 let pi = System.Math.PI
 type Shape =
-  | S of Point * float * Material
+  | S of Point * float * Texture
   | TShape of Shape * Transformation
-  | PL of Material * Point * Vector
-  | D of Point * float * Material
+  | PL of Texture * Point * Vector
+  | D of Point * float * Texture
   | B of Shape list
-  | HC of Point * float * float * Material
-  | T of Point * Point * Point * Material
+  | HC of Point * float * float * Texture
+  | T of Point * Point * Point * Texture
   | SC of Shape * Shape * Shape
-  | Rec of Point * float * float * Material
+  | Rec of Point * float * float * Texture
   | UniS of Shape * Shape
   | IntS of Shape * Shape
   | SubS of Shape * Shape
   | GroS of Shape * Shape
-  | TM of Shape list
   override s.ToString() =
     match s with
       |S(orego,radius, mat) -> "("+orego.ToString()+","+radius.ToString()+"," + mat.ToString() + ")"
@@ -63,23 +62,19 @@ let subtraction s1 s2  = if isSolid s1 && isSolid s2 then SubS(s1, s2)
 
 
 //Plane
-let mkPlane (material : Material) =
+let mkPlane (t : Texture) =
       let point = mkPoint 0.0 0.0 0.0
       let normVector = mkVector 0.0 -1.0 0.0
-      PL (material,point,normVector)
+      PL (t,point,normVector)
 
 //Rectangle
-let mkRectangle (corner : Point) (width : float) (height : float) (t : Material) : Shape
-    = Rec(corner, width, height, t)
-
+let mkRectangle (corner : Point) (width : float) (height : float) (tex : Texture) : Shape
+    = Rec(corner, width, height, tex)
 //Box
-let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) (bottom : Material) (left : Material) (right : Material) : Shape
-      = let width = System.Math.Abs(Point.getX high - Point.getX low)
-        let height = System.Math.Abs(Point.getY high - Point.getY low)
-        let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
-        let az = System.Math.Min(Point.getZ high, Point.getZ low)
+let mkBox (front : Texture) (back : Texture) (top : Texture) (bottom : Texture) (left : Texture) (right : Texture) : Shape
+      = let width, height, depth = 3.0, 2.0, 2.0
 
-        let frontT = translate (Point.getX low) (Point.getY low) az 
+        let frontT = translate -1.0 -1.0 -1.0 
         let backT =   mergeTransformations [translate 0.0 0.0 depth; frontT;]
         let bottomT = mergeTransformations [frontT; rotateX (pi/2.0)]
         let topT =    mergeTransformations [translate 0.0 height 0.0 ; bottomT; ]
@@ -101,25 +96,19 @@ let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top
         let rects = List.map2 (fun s t -> transform s t) rectangles transformations
 
         B(rects)
-let mkBoxCenter front back top bottom left right = 
-        mkBox (mkPoint 0.0 0.0 0.0) (mkPoint 0.0 0.0 0.0) front back top bottom left right
-
 //Sphere
-let mkSphere (p : Point) (r : float) (m : Material) : Shape = S(p,r,m)
-let mkSphereCenter (r : float) (m : Material) : Shape = mkSphere (mkPoint 0.0 0.0 0.0) r m
+let mkSphere (r : float) (tex : Texture) : Shape = S(mkPoint 0.0 0.0 0.0,r,tex)
 
 
 
 //Cylinders and Discs
-let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) : Shape = HC(c,r,h,t)
-let mkHollowCylinderCenter r h t = mkHollowCylinder (mkPoint 0.0 0.0 0.0) r h t
-let mkDisc (c : Point) (r : float) (t : Material) : Shape = D(c,r,t)
-let mkDiscCenter r t = mkDisc (mkPoint 0.0 0.0 0.0) r t
-let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) : Shape
+let mkHollowCylinder (r : float) (h : float) (t : Texture) : Shape = HC(mkPoint 0.0 0.0 0.0,r,h,t)
+let mkDisc (r : float) (t : Texture) : Shape = D((mkPoint 0.0 0.0 0.0),r,t)
+let mkSolidCylinder (r : float) (h : float) (t : Texture) (top : Texture) (bottom : Texture) : Shape
      = 
-     let cyl = mkHollowCylinder c r h t 
-     let botDisc = mkDisc c r bottom
-     let topDisc = mkDisc c r top
+     let cyl = mkHollowCylinder r h t 
+     let botDisc = mkDisc r bottom
+     let topDisc = mkDisc r top
 
      let transTop = mergeTransformations [translate 0.0 (h/2.0) 0.0; rotateX (-(pi/2.0))]
      let transBot = mergeTransformations [translate 0.0 (-h/2.0) 0.0; rotateX ((pi/2.0)) ]
@@ -127,13 +116,11 @@ let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Ma
      let botDisc' = transform botDisc transBot
 
      SC(cyl,topDisc',botDisc')
-///Construct solid cylinder in 0.0 0.0 0.0
-let mkSolidCylinderCenter r h t top bottom = mkSolidCylinder (mkPoint 0.0 0.0 0.0) r h t top bottom
 
 
 
 //Hit function for Rectangle. Rectangle is AXis alligned with XY. Can be moved by transforming.
-let hitRec (R(p,d)) (Rec(c,w,h,m)) = 
+let hitRec (R(p,d)) (Rec(c,w,h,tex)) = 
     let dz = Vector.getZ d
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
@@ -145,12 +132,18 @@ let hitRec (R(p,d)) (Rec(c,w,h,m)) =
     let ay = Point.getY c
 
 
-    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h) && distance > 0.0
-    then Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
+
+    if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h)
+    then 
+    //calculaton for texture
+        let u = (px-ax)/w
+        let v = (py-ay)/h
+        let material = Texture.getMaterialAtPoint tex u v
+        Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
     else None
 
 //Triangle
-let mkTriangle a b c mat = T(a,b,c,mat)
+let mkTriangle a b c tex = T(a,b,c,tex)
 let getTriangleA (T(a,_,_,_)) = a
 let getTriangleB (T(_,b,_,_)) = b
 let getTriangleC (T(_,_,c,_)) = c
@@ -158,9 +151,17 @@ let getTriangleMat (T(_,_,_,mat)) = mat
 let getTriangleMidPoint (T(a,b,c,_)) = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
 
 
+
+
+
+
+
+
 //Hit function for disc always handles as if XY alligned and centre point in (0,0,0)
-let hitDisc (R(p,d)) (D(c,r,m)) = 
+let hitDisc (R(p,d)) (D(c,r,tex)) = 
     let dz = Vector.getZ d
+    let px = Point.getX p 
+    let py = Point.getY p
     let pz = Point.getZ p
     let distance = (-1.0 * pz) / dz
     let p' = Point.move p (Vector.multScalar d distance)
@@ -168,16 +169,34 @@ let hitDisc (R(p,d)) (D(c,r,m)) =
 
     if result <= (pow (r,2.0)) && distance > 0.0
     then 
-     Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
+     let u = (px+r)/2.0*r
+     let v = (py+r)/2.0*r
+     let material = Texture.getMaterialAtPoint tex u v
+     Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
     else 
      None
 
+
 //Calculates if cylinder hit. Cylinder is always centeret on 0,0,0 and is XZ alligned.
-let hitCylinder (R(p,d)) (HC(center,r,h,m)) = 
+let hitCylinder (R(p,d)) (HC(center,r,h,tex)) = 
     let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
     let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
     let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
     let dis = pow(b, 2.0) - (4.0 * a * c)
+
+    //calculate material
+    let calculateMaterial x y z h r tex =  
+        let n = mkVector (x/r) (0.0) (z/r) 
+        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+        let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
+        let u = phi/(2.0*pi)
+        let v = (y/h) + 0.5
+        let material = Texture.getMaterialAtPoint tex u v
+        material
+
+    let px = Point.getX p 
+    let py = Point.getY p
+    let pz = Point.getZ p
 
     if dis < 0.0 
     then None
@@ -188,16 +207,22 @@ let hitCylinder (R(p,d)) (HC(center,r,h,m)) =
      let pyt2 = Point.getY p + tbig * Vector.getY d
      
 
-     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
+
+     if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle >= 0.0
      then 
         let px = Point.getX p + tlittle * Vector.getX d
         let pz = Point.getZ p + tlittle * Vector.getZ d
-        Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), m)
-     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig > 0.0
+
+        let material = calculateMaterial px py pz h r tex
+
+        Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), material)
+     elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig >= 0.0
      then
         let px = Point.getX p + tbig * Vector.getX d
         let pz = Point.getZ p + tbig * Vector.getZ d
-        Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
+       
+        let material = calculateMaterial px py pz h r tex
+        Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), material)
      else None
 
 let collectFaces = function
@@ -236,7 +261,24 @@ let mkTriangleMesh p (plyList:Ply list) =
 ///should be rendered
 let rec hit ((R(p,d)) as ray) (s:Shape) =
     match s with
-    |S(o,r,mat) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
+    |S(o,r,tex) ->  let makeNV a = Point.move p (a * d) |> Point.direction o
+                    //calculate material
+                    let calculateMaterial p v f r tex = 
+                        let p1 = Point.move p (Vector.multScalar v f)
+                        let vector = Point.distance p p1
+                        let n' = Vector.multScalar vector (1.0/r)
+                        let n = Vector.normalise (Point.distance p1 o)
+
+                        let theta = System.Math.Acos(Vector.getY n)
+                        let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+                        let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
+
+                      //  let u = (theta/(2.0*pi))
+                        //let v = (1.0 - phi)/pi
+                        let u = 1.0 - (phi/(pi*2.0))
+                        let v = 1.0 - (theta/pi)
+                        let material = Texture.getMaterialAtPoint tex u v
+                        material
     
                     let a = (pow((Vector.getX d),2.0) +
                              pow((Vector.getY d),2.0) +
@@ -259,19 +301,33 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                         let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
                         if answer1 < 0.0 && answer2 < 0.0 then None
                         else
-            
                             let answer = System.Math.Min(answer1,answer2)
+
+
                             if answer < 0.0 
                             then 
-                             let answer = System.Math.Max(answer1,answer2)
-                             Some (answer, makeNV answer, mat)
-                            else Some (answer, makeNV answer, mat)
+                             let answer = System.Math.Max(answer1,answer2) 
+                             let material = calculateMaterial o d answer r tex
 
-    |PL(mat,pVector,n) -> let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
+                             Some (answer, makeNV answer, material)
+                             else
+                                 let material = calculateMaterial o d answer r tex
+                                 Some (answer, makeNV answer, material)
+
+
+    |PL(tex,pVector,n) -> let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
                           if(denom > 0.0000001) then
                               let v = Point.distance p pVector
                               let result = (Vector.dotProduct v n) / denom 
-                              if result >= 0.0 then Some (result, n, mat)
+
+                             //Calculating for texture
+                              let u' = abs(Point.getX p)
+                              let v' = abs(Point.getY p)
+                              let u'' = if u' > 0.0 then u' else 1.0 - u'
+                              let v'' = if v' > 0.0 then v' else 1.0 - v'
+                              let material = Texture.getMaterialAtPoint tex u'' v''
+                              Some (result, n, material)
+                              if result >= 0.0 then Some (result, n, material)
                               else None
                           else None
     | TShape(s, tr) -> let p' = transPoint (getInv tr) p //transformed Ray origin
@@ -283,10 +339,10 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
     |D(_) as disc -> hitDisc ray disc
 
     |HC(_) as hc -> hitCylinder ray hc
-    | T(a,b,c,mat) -> 
+    | T(a,b,c,tex) -> 
 
-        let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-        let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
+        let u1 = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
+        let v1 = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
 
         //Function to find the normal of the triangle
         let vectorN a b = Vector.normalise (Vector.crossProduct a b)
@@ -314,14 +370,18 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
           let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
           let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
           let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
+          let alpha = 1.0 - beta - gamma
              
           if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
            then 
-             let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
-  
+             let p' = Point.move a ((Vector.multScalar u1 beta) + (Vector.multScalar v1 gamma))
+             let u = (alpha * Point.getY a) + (beta * Point.getY b) + (gamma * Point.getZ c)
+             let v = (alpha * Point.getX a) + (beta * Point.getY b) + (gamma * Point.getZ c)
+
+             let material = Texture.getMaterialAtPoint tex u v
              //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
              if t > 0.0 
-             then Some(t, vectorN v u, mat)
+             then Some(t, vectorN v1 u1, material)
              else None
           else None //gamma + beta is less than 0 or greater than 1
         else None // Can't divide with zero
@@ -336,10 +396,6 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                  match min with
                  |[] -> None
                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
-    |TM(rects) -> let min = List.map(fun x -> hit ray x) rects |> List.choose id
-                  match min with
-                  |[] -> None
-                  |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
     |Rec(_) as rect -> hitRec ray rect
     | UniS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
                        match (hit1, hit2) with
@@ -349,11 +405,9 @@ let rec hit ((R(p,d)) as ray) (s:Shape) =
                        | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2 
                                                                    then hit2
                                                                    else hit1
-    | GroS(s1, s2)  -> let hit1, hit2 = hit ray s1, hit ray s2
-                       match (hit1, hit2) with
-                       | (None, None) -> None
-                       | (hit1, None) -> hit1
-                       | (None, hit2) -> hit2
-                       | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
-                                                                   then hit2
-                                                                   else hit1
+                       
+
+                       
+
+                        
+

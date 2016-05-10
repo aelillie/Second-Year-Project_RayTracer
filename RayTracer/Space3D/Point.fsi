@@ -1,9 +1,12 @@
 module Point
 
 type Vector = Vector.Vector
-
 [<Sealed>]
-type Point =
+type Point = 
+    static member ( + ) : Point * float -> Point
+    static member ( - ) : Point * float -> Point
+
+
   static member ( + ) : Point * Point -> Point
   static member ( / ) : Point * float -> Point 
 

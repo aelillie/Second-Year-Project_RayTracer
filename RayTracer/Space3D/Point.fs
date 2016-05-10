@@ -22,5 +22,8 @@ let round (P(px,py,pz)) (d:int) =
     P(r px, r py, r pz)
 
 type Point with
+  static member ( + ) ((P(x,y,z)), f) = (P(x+f,y+f,z+f))
+  static member ( - ) ((P(x,y,z)), f) = (P(x-f,y-f,z-f))
+ 
   static member ( + ) (P(ux,uy,uz),P(vx,vy,vz)) = P(ux+vx, uy+vy, uz+vz)
   static member ( / ) (P(ux,uy,uz), f) = P(ux/f, uy/f, uz/f)            

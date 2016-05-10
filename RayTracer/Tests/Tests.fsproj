@@ -55,25 +55,21 @@
     <Compile Include="VectorTest.fs" />
     <Compile Include="ExprParseTest.fs" />
     <Compile Include="ExprToPolyTest.fs" />
-    <Compile Include="TracerTest.fs" />
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="TransformationTest.fs" />
-    <Compile Include="AffineTransformations.fs" />
     <Compile Include="ImplicitSurfaces.fs" />
     <Compile Include="Meshes.fs" />
-    <Compile Include="Shapes.fs" />
     <Compile Include="Texture.fs" />
+    <Compile Include="CSG.fs" />
+    <Compile Include="AffineTransformations.fs" />
+    <Compile Include="Light.fs" />
+    <Compile Include="Shapes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaseShape\BaseShape.fsproj">
-      <Name>BaseShape</Name>
-      <Project>{da3c8a8c-19ab-4fc9-abde-be1e7df5346e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
-      <Project>{c9dcf27d-0261-4d55-8af9-2cdd4210e888}</Project>
+      <Project>{23b2bd0e-c5f4-4dda-b3f9-07e06899aa0c}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
@@ -86,14 +82,19 @@
       <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SceneConstruction\SceneConstruction.fsproj">
+      <Name>SceneConstruction</Name>
+      <Project>{cb0d89de-1378-405c-94d3-fffa04e2e114}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ShapeConstruction\ShapeConstruction.fsproj">
+      <Name>ShapeConstruction</Name>
+      <Project>{c897a112-f268-4564-9743-9def1f15fe2e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Space3D\Space3D.fsproj">
       <Name>Space3D</Name>
       <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\TracerAPI\Tracer.fsproj">
-      <Name>Tracer</Name>
-      <Project>{2ed1f7ee-ed05-4f03-bd9e-0a531146bfae}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

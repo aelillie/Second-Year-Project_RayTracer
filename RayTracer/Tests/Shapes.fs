@@ -1,20 +1,25 @@
 ﻿namespace TestSuite
-open System
-open System.Drawing
-open Light
-open Transformation
+
+open Shapes
+open Texture
+open Material
+open Colour
 open Shape
 open Point
-open Colour
+open Vector
+open Light
 open Scene
 open Camera
-open Vector
-open Material
+open TransformedShape
+open Transformation
+open System
+open System.Drawing
+open Scene
 open Util
 
-module ShapesTest = ()
+module Shapes =
 
-  (* let private folder = "shapes"
+  let private folder = "shapes"
 
   let renderSphere toScreen =
     let light = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0 in
@@ -67,4 +72,4 @@ module ShapesTest = ()
     renderSphere toScreen;
     renderHollowCylinder toScreen;
     renderSolidCylinder toScreen;
-    renderInsideSphere toScreen *)
+    renderInsideSphere toScreen

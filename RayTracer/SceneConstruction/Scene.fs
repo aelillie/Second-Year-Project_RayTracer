@@ -1,13 +1,14 @@
 ﻿module Scene
 
 open Camera
-open Shape
 open Light
-open Tracer
 open Ray
 open Point
 open Vector
 open Drawing
+open Colour
+
+type Shape = Shapes.BasicShape.Shape
 
 type Scene =
   | S of Shape list * Light list * AmbientLight * Camera * int
@@ -31,19 +32,14 @@ let rec isShaded (r:Ray) (xs:Shape list) (l:Light) (p:Point) =
         match xs with
         |[] -> false
         | s::xs'  ->                            //Check if shape is hit with ray towards a light
-            match hit r s with
+            match s.hit r with
             |None   -> isShaded r xs' l p       //Check all possible shapes.
             |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) p |> Vector.magnitude  
-                             if t' > tlight     //Remember to check i shape i behind the lightsource.
+                             if t' > tlight     //Remember to check if shape is behind the lightsource.
                              then 
                               isShaded r xs' l p
                              else
                               true
-//Takes a colour list and returns a color.
-let toColor xs =
-    match xs with
-    |[] -> System.Drawing.Color.Black
-    |v::xs -> Colour.toColor v
 
 
 // recursively casts rays to determine the color a given ray should register
@@ -53,7 +49,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
 
     //Cast a single ray into the scene
     let rec castRay (ray:Ray) reflNumber = 
-        let hitResults = List.map (fun x -> Shape.hit ray x) shapes //Check which shape are hit by a fire
+        let hitResults = List.map (fun (x:Shape) -> x.hit(ray)) shapes //Check which shape are hit by a fire
         
         let intersections = List.collect (fun x -> sort x) hitResults //Sort all None options out.
 
@@ -94,7 +90,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
     //Mapping the rays to colours for each pixel.
     let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
     //Map from colour to color.
-    List.map (fun (x,y,c) -> x,y, sort c |> toColor) pixelplane
+    List.map (fun (x,y,c) -> x,y, sort c |> toColorFromList) pixelplane
 
 
 
