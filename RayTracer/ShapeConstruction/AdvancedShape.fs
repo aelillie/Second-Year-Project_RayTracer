@@ -72,9 +72,8 @@ module AdvancedShape =
         interface Shape with
             member this.isInside p = let (x,y,z) = Point.getCoord p
                                      let (cx, cy, cz) = Point.getCoord c
-                                     let lowR, highR = cx-r, cx+r
                                      let lowH, highH = cy-(h/2.0), cy+(h/2.0)
-                                     lowR < x && x < highR && lowR < z && z < highR
+                                     ((x-cx)**2.0 + (z-cz)**2.0) < r**2.0
                                      && lowH < y && y < highH
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true

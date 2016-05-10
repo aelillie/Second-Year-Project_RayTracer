@@ -28,7 +28,7 @@ let main argv =
         let light = mkLight (mkPoint 0.0 1.0 4.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 30.0 30.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 20.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 1.0 30.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 20.0 2.0 2.0 1000 1000 in
         (*******Shapes******)
         let texture = Texture.mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg"
         let earth = transform (mkSphere (mkPoint 0.0 0.0 0.0) 1.0 texture) 

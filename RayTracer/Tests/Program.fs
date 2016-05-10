@@ -20,15 +20,15 @@ open TestSuite
 //    VectorTest.doTest ()
 //    ExprParseTest.doTest ()
 //    ExprToPolyTest.doTest ()
- //   BoundingBoxTest.doTest ()
+//    BoundingBoxTest.doTest ()
 //    TransformationTest.doTest ()
 
 let renderAll toScreen =
 
 //  Shapes.render toScreen
- // printf "Shapes rendered"
- // AffineTransformations.render toScreen
- // printf "AffineTransformations rendered"
+//  printf "Shapes rendered"
+//  AffineTransformations.render toScreen
+//  printf "AffineTransformations rendered"
 //  ImplicitSurfaces.render toScreen
 //  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
@@ -43,7 +43,7 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
+//    testAll
     renderAll false
-//    renderAll false
     Console.ReadKey() |> ignore
     0 // return an integer exit code

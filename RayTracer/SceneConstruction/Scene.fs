@@ -28,16 +28,17 @@ let mkShadowRay (p:Point) (l:Light)  :Ray =
     Ray.mkRay p sr
 
 //Returns true if a point is shaded from light for a given lightsource or not
-let rec isShaded (r:Ray) (xs:Shape list) (l:Light) (p:Point) =
+let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
         match xs with
         |[] -> false
         | s::xs'  ->                            //Check if shape is hit with ray towards a light
             match s.hit r with
-            |None   -> isShaded r xs' l p       //Check all possible shapes.
-            |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) p |> Vector.magnitude  
+            |None   -> isShaded r xs' l        //Check all possible shapes.
+            |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) (Light.getPoint l) |> Vector.magnitude
+  
                              if t' > tlight     //Remember to check if shape is behind the lightsource.
                              then 
-                              isShaded r xs' l p
+                              isShaded r xs' l 
                              else
                               true
 
@@ -63,7 +64,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     let p' = Point.move p (Vector.multScalar nV' 0.0001)
                     let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
                     //Filter all shadowRays that don't hit out
-                    let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes l (Camera.getPoint cam))) srays
+                    let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes l )) srays
 
                     //Okay here calculate intensity for each colour value. 
                     let lightColourValue = List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r))) sraysHit //Angles calculated
