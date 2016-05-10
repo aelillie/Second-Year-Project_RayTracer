@@ -52,6 +52,10 @@ module BasicShape =
                        
                             let calculateMaterial answer = 
                                 let n = makeNV answer
+
+                                let nx = Point.getX p / r
+                                let ny = Point.getY p / r
+                                let nz = Point.getX p / r
                                 
                                 let theta = System.Math.Acos(Vector.getY n)
                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
