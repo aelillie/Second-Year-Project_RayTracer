@@ -19,9 +19,30 @@ module ImplicitShape =
 
     type ImplicitShape (bs, m) = 
         let sturm map = 
-                    let pLongDivision n d = ()
-                    let deriveMap (m:Map<int,simpleExpr>) = 
-                        let differienteSExpr (sexpr:simpleExpr) d =
+                    let pLongDivision (n:(int*simpleExpr) list) (d:(int*simpleExpr) list) = 
+                                    let degree x = fst (List.last x)
+                                    let lead x = snd (List.last x)
+                                    let divideLead s1 s2 =
+                                            [] 
+                                    if List.isEmpty d 
+                                    then 
+                                     Map.empty 
+                                    else 
+                                     let mutable (q, r) = (0.0, n)
+                                     let mutable t = List.empty
+
+                                     while (List.isEmpty r) && ((degree r) >= (degree d)) do
+                                        t <- divideLead (lead r) (lead d)
+
+                                     Map.empty
+
+
+
+
+
+
+                    let deriveMap m = 
+                        let differienteSExpr sexpr d =
                             let sexpr = match sexpr with 
                                         |SE e -> e
                             if d <> 0 
@@ -41,22 +62,10 @@ module ImplicitShape =
 
                     let p0 = map
                     let p1 = deriveMap map
-                    let pList = pLongDivision p0 p1
+
+                    let p2 = pLongDivision (Map.toList p0) (Map.toList p1)
                     [p0;p1]
-                    
 
-
-
-
-
-
-
-                    
-                     
-                    
-                    
-                    
-                     
         interface Shape with
             member this.getBounding () = failwith "Not implemented"
             member this.isInside p = failwith "Not implemented"
