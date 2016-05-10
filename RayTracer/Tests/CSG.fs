@@ -29,7 +29,7 @@ module CSG =
   let l3 = mkLight (mkPoint 0.0 0.0 0.0) (fromColor Color.White) 1.0 in
   let l = mkLight (mkPoint 4.0 4.0 4.0) (fromColor Color.White) 1.0
   let ambientLight = mkAmbientLight (fromColor Color.White) 0.2 in
-  let camera = mkCamera (mkPoint 4.0 4.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
+  let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
   let camera2 = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
 
   let cube = mkUnitBox (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0))
@@ -39,7 +39,7 @@ module CSG =
 
   let cross = 
     let cy = transform (mkUnitCylinder (mkColourTexture Color.Green 0.0)) (scale 0.7 1.5 0.7)  in
-    let cx = transform cy (rotateX (Util.degrees_to_radians 90.0)) in
+    let cx = transform cy (rotateX (Util.degrees_to_radians 90.0))
     let cz = transform cy (rotateZ (Util.degrees_to_radians 90.0)) in 
     union cy (union cz cx)
 
