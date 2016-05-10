@@ -33,7 +33,7 @@ let renderAll toScreen =
 //  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
-  TextureTest.render toScreen
+  Texture.render toScreen
   printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
