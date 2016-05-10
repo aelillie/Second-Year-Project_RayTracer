@@ -18,8 +18,56 @@ module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        let sturm map = 
+                    let pLongDivision (n:(int*simpleExpr) list) (d:(int*simpleExpr) list) = 
+                                    let degree x = fst (List.last x)
+                                    let lead x = snd (List.last x)
+                                    let divideLead s1 s2 =
+                                            [] 
+                                    if List.isEmpty d 
+                                    then 
+                                     Map.empty 
+                                    else 
+                                     let mutable (q, r) = (0.0, n)
+                                     let mutable t = List.empty
+
+                                     while (List.isEmpty r) && ((degree r) >= (degree d)) do
+                                        t <- divideLead (lead r) (lead d)
+
+                                     Map.empty
+
+
+
+
+
+
+                    let deriveMap m = 
+                        let differienteSExpr sexpr d =
+                            let sexpr = match sexpr with 
+                                        |SE e -> e
+                            if d <> 0 
+                            then
+                                let derive (agx:atomGroup list) d = 
+                                    let deriveAtom atom d = [for i in 1..d do 
+                                                                yield atom]
+                                    List.map (fun ag -> List.collect id (List.map (fun a -> deriveAtom a d ) ag) ) agx  
+                                                            
+                                SE(derive sexpr d)
+                            else SE([[]])
+
+                        let polyList = List.tail (Map.toList map)
+                        let derived = List.map(fun (d,sexpr) ->(d-1, differienteSExpr sexpr d)) polyList
+                        let polyList' = List.fold (fun m (d, exp) -> Map.add d exp m) Map.empty derived
+                        polyList'
+
+                    let p0 = map
+                    let p1 = deriveMap map
+
+                    let p2 = pLongDivision (Map.toList p0) (Map.toList p1)
+                    [p0;p1]
+
         interface Shape with
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = failwith "Not Imlemented"
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = failwith "Not implemented"
             member this.hit (R(p,d) as ray) = 
@@ -61,10 +109,10 @@ module ImplicitShape =
                                 let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
 
                                 //Poly into Map<int,float>
-                                let polyMapOfFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
+                                let polyMapOFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
 
 
-                                let floatMap = polyMapOfFloats pol
+                                let floatMap = polyMapOFloats pol
 
                                 //check what degree of poly we are dealing with, and solve it
                                 let solveDegreePoly =
@@ -76,13 +124,13 @@ module ImplicitShape =
                                
                                            let res = (-b)/a
                                
-                                           let hitPoint = Point.move p (res * d)
-                                           let nVector = Vector.normalise(mkNorm hitPoint expr)
-                                           let denom = Vector.dotProduct nVector (Vector.normalise(d))
-                                          
-                                           if denom < 0.00001 then None
+                                           let hitPoint = Point.move p (res*(Vector.normalise(d)))
+                                           let nVector = mkNorm hitPoint expr
+                                           let denom = Vector.dotProduct d nVector                                        
+                                           if denom<0.0 then None
+                                            //if res < 0.0 then None
                                            else                                  
-                                               Some (res, nVector, m)
+                                                Some (res, nVector, m)
 
             //                               if(denom < 0.0) then none
             //                               else
@@ -121,7 +169,8 @@ module ImplicitShape =
                                                         Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
                                                     else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
-                                    | 4 -> failwith "3rd degree"
+                                    | 4 -> let sturmChain = sturm (polyToMap pol) 
+                                           Some (1.0, mkVector 0.0 0.0 0.0, m)
                                     | 5 -> failwith "4th degree"
                                     | _ -> failwith "degree over 9000"
 

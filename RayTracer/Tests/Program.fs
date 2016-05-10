@@ -21,6 +21,7 @@ let testAll = ()
 //    ExprToPolyTest.doTest ()
 //    BoundingBoxTest.doTest ()
 //    TransformationTest.doTest ()
+//    //ImplicitSurfacesTest.doTest ()
 
 let renderAll toScreen =
 
@@ -28,11 +29,11 @@ let renderAll toScreen =
 //  printf "Shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
-  ImplicitSurfacesTest.render toScreen
-  printf "ImplicitSurfaces rendered"
-//  Meshes.render toScreen
+    ImplicitSurfacesTest.render toScreen
+    printf "ImplicitSurfaces rendered"
+//  //Meshes.render toScreen
 //  printf "Meshes rendered"
-//  Texture.render toScreen
+//  //Texture.render toScreen
 //  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"

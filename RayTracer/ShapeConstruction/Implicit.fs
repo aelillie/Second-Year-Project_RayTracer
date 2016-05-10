@@ -71,18 +71,25 @@ let mkNorm p expr : Vector =
     let getNew m c = if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
                      else (secondFloat m)*(firstFloat m)
 
-    let newX = if derivPolyX.Count>1 then getNew (derivPolyX) x else 0.0
-    let newY = getNew (derivPolyY) y
-    let newZ = getNew (derivPolyZ) z
+    let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 then getNew (m) c
+                                             else if not (m.ContainsKey(0)) then getNew m c
+                                                  else 0.0
+    
+    let newX = checkMap derivPolyX x
+    let newY = checkMap derivPolyY y
+    let newZ = checkMap derivPolyZ z
+//
+//    let newY = if derivPolyY.Count>1 then getNew (derivPolyY) y else 0.0
+//    let newZ = if derivPolyZ.Count>1 then getNew (derivPolyZ) z else 0.0 
 
     Vector.mkVector newX newY newZ
 
 
-let mkImplicit (s : string) : baseShape = 
+let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
     let expr = parseStr s
     
+   // let con = FNum (snd constant)
 
-    
   
     //replace x,y,z with the ray equations corresponding values and 
     let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
@@ -95,7 +102,7 @@ let mkImplicit (s : string) : baseShape =
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
 
-    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
+    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)(*;((fst constant),con)*)]
 
 
 
