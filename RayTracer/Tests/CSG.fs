@@ -38,7 +38,7 @@ module CSG =
   let sphere2 = mkSphere (mkPoint -0.5 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0))
 
   let cross = 
-    let cy = transform (mkUnitCylinder (mkColourTexture Color.Yellow 0.0)) (scale 0.7 1.5 0.7)  in
+    let cy = transform (mkUnitCylinder (mkColourTexture Color.Green 0.0)) (scale 0.7 1.5 0.7)  in
     let cx = transform cy (rotateX (Util.degrees_to_radians 90.0)) in
     let cz = transform cy (rotateZ (Util.degrees_to_radians 90.0)) in 
     union cy (union cz cx)
@@ -83,7 +83,7 @@ module CSG =
 
 
   let renderLantern toScreen =
-    let scene = mkScene [subtraction (intersection sphere cube) cross] [l1;l2;l3] ambientLight camera 0 in
+    let scene = mkScene [subtraction (intersection sphere cube) cross] [l3] ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else

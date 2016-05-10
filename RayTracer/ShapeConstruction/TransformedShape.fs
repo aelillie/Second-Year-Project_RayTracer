@@ -75,7 +75,7 @@ module TransformedShape =
                                   let newPoint = move p ((dist+epsilon) * d) //Inside a shape
                                   let newRay = mkRay newPoint d //Origin on the other side of surface
                                   match hit newRay this with
-                                  | Some(d,v,m) -> Some(dist1+epsilon+d,v,m)
+                                  | Some(d,v,m) -> Some(dist+epsilon+d,v,m)
                                   | _ -> None
 
 
@@ -131,8 +131,8 @@ module TransformedShape =
                       | (hit1, None) -> hit1 //Only hit s1
                       | (Some(dist1, _, _), //Hit both shapes
                          Some(dist2, _, _)) -> 
-                            let hp1, hp2 = move p ((dist1) * d), move p ((dist2) * d)
-                            if (s1.isInside hp2) then if dist1 < dist2 then hit1 else hit2
+                            let hp1, hp2 = move p ((dist1+epsilon) * d), move p ((dist2+epsilon) * d)
+                            if (s1.isInside hp2) then if dist1 < (dist2+epsilon) then hit1 else hit2
                             else if (not (s2.isInside hp1)) then hit1
                                  else
                                  let newPoint = move p ((dist1+epsilon) * d)
