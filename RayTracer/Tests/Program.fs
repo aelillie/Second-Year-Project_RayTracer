@@ -6,6 +6,7 @@ open Colour
 //open BoundingBox 
 open Camera
 open Drawing
+open Texture
 open Light
 open System.Drawing
 open System
@@ -32,12 +33,12 @@ let renderAll toScreen =
 //  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
-//  Texture.render toScreen
-//  printf "Texture rendered"
+  Texture.render toScreen
+  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
-  CSG.render toScreen
-  printf "CSG rendered"
+//  CSG.render toScreen
+//  printf "CSG rendered"
 
 
 [<EntryPoint>]

@@ -50,20 +50,19 @@ module BasicShape =
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction o
                        
-                            let calculateMaterial p v f r tex = 
-                                let p1 = Point.move p (Vector.multScalar v f)
-                                let vector = Point.distance p p1
-                                let n' = Vector.multScalar vector (1.0/r)
-                                let n = Vector.normalise (Point.distance p1 o)
-
+                            let calculateMaterial answer = 
+//                                let hp = Point.move p (answer * d)
+                                let hp = makeNV answer
+                                let n = hp / r
+                                let n = normalise n
+                                
                                 let theta = System.Math.Acos(Vector.getY n)
                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
                                 let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
 
-                              //  let u = (theta/(2.0*pi))
-                                //let v = (1.0 - phi)/pi
-                                let u = 1.0 - (phi/(pi*2.0))
+                                let u = phi / (2.0 * pi)
                                 let v = 1.0 - (theta/pi)
+                               
                                 let material = Texture.getMaterialAtPoint tex u v
                                 material
     
@@ -90,11 +89,11 @@ module BasicShape =
                                 else
             
                                     let answer = System.Math.Min(answer1,answer2)
-                                    let material = calculateMaterial o d answer r tex
+                                    let material = calculateMaterial answer
                                     if answer < 0.0 
                                     then 
                                         let answer = System.Math.Max(answer1,answer2)
-                                        let material = calculateMaterial o d answer r tex
+                                        let material = calculateMaterial answer
                                         Some (answer, makeNV answer, material)
                                     else Some (answer, makeNV answer, material)
 
@@ -110,12 +109,15 @@ module BasicShape =
                             if(denom > 0.0000001) then
                                 let v = Point.distance p pVector
                                 let result = (Vector.dotProduct v n) / denom
-                                let u' = abs(Point.getX p)
-                                let v' = abs(Point.getY p)
-                                let u'' = if u' > 0.0 then u' else 1.0 - u'
-                                let v'' = if v' > 0.0 then v' else 1.0 - v'
-                                let material = Texture.getMaterialAtPoint tex u'' v'' 
-                                if result >= 0.0 then Some (result, n, material)
+                                let getMat a =
+                                    let hp = Point.move p (a * d)
+                                    let u = abs(Point.getX hp) % 1.0
+                                    let v = abs(Point.getY hp) % 1.0
+//                                  
+                                    Texture.getMaterialAtPoint tex u v
+
+                                 
+                                if result >= 0.0 then Some (result, n, getMat result)
                                 else None
                             else None
     type Disc(c:Point, r:float, tex:Texture) =
