@@ -59,11 +59,6 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
             | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections //find intersection with minimum distance
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV //Check if normalVector has to be inversed
                     let i = Light.getAmbientI ambi
-                    let (r,g,b) =  Colour.getRGB (Material.getColour m)
-                    let x = if g > 0.5 
-                            then let k = 0
-                                 k
-                            else 1
                     //Moved point to the surface of the shape hit.
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
                     let p' = Point.move p (Vector.multScalar nV' 0.0001)

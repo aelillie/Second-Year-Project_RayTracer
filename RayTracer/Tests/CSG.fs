@@ -29,7 +29,7 @@ module CSG =
   let l3 = mkLight (mkPoint 0.0 0.0 0.0) (fromColor Color.White) 1.0 in
   let l = mkLight (mkPoint 4.0 4.0 4.0) (fromColor Color.White) 1.0
   let ambientLight = mkAmbientLight (fromColor Color.White) 0.2 in
-  let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
+  let camera = mkCamera (mkPoint 4.0 4.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
   let camera2 = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
 
   let cube = mkUnitBox (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0))
@@ -38,7 +38,7 @@ module CSG =
   let sphere2 = mkSphere (mkPoint -0.5 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0))
 
   let cross = 
-    let cy = transform (mkUnitCylinder (mkColourTexture Color.Green 0.0)) (scale 0.7 1.5 0.7)  in
+    let cy = transform (mkUnitCylinder (mkColourTexture Color.Yellow 0.0)) (scale 0.7 1.5 0.7)  in
     let cx = transform cy (rotateX (Util.degrees_to_radians 90.0))
     let cz = transform cy (rotateZ (Util.degrees_to_radians 90.0)) in 
     union cy (union cz cx)
@@ -83,7 +83,7 @@ module CSG =
 
 
   let renderLantern toScreen =
-    let scene = mkScene [subtraction (intersection sphere cube) cross] [l1;l2;l3] ambientLight camera 0 in
+    let scene = mkScene [subtraction (intersection sphere cube) cross] [l3] ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else
@@ -93,6 +93,6 @@ module CSG =
 //    renderUnion toScreen;
 //    renderIntersection toScreen;
 //    renderSubtraction toScreen;
-//    renderCross toScreen;
+    renderCross toScreen;
 //    renderIntersection2 toScreen;
     renderLantern toScreen

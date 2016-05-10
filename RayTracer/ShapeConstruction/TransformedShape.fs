@@ -70,8 +70,8 @@ module TransformedShape =
                        | Some(dist1, v1, _), 
                          Some(dist2, v2, _) -> 
                              if (not (s1.isInside p)) && (not (s2.isInside p))
-                             then if dist1 < dist2 then hit1 else hit2 
-                             else let dist = if dist1 < dist2 then dist1 else dist2
+                             then if dist1 < dist2+epsilon then hit1 else hit2 
+                             else let dist = if dist1 < dist2+epsilon then dist1 else dist2
                                   let newPoint = move p ((dist+epsilon) * d) //Inside a shape
                                   let newRay = mkRay newPoint d //Origin on the other side of surface
                                   match hit newRay this with
