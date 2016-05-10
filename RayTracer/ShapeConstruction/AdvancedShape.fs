@@ -100,7 +100,6 @@ module AdvancedShape =
                     let y = List.item 1 (List.item i list)
                     let z = List.item 2 (List.item i list)
                     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
-                let rnd = System.Random()  
         
                 let vertexList = plyList |> List.collect collectVertices
                 let faceList = plyList |> List.collect collectFaces
