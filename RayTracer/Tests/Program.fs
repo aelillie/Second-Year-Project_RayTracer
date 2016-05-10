@@ -14,30 +14,30 @@ open PlyParse
 open System.IO
 open TestSuite
 
-let testAll =
-    PointTest.doTest ()
-    VectorTest.doTest ()
-    ExprParseTest.doTest ()
-    ExprToPolyTest.doTest ()
+let testAll = ()
+//    PointTest.doTest ()
+//    VectorTest.doTest ()
+//    ExprParseTest.doTest ()
+//    ExprToPolyTest.doTest ()
 //    BoundingBoxTest.doTest ()
-    TransformationTest.doTest ()
+//    TransformationTest.doTest ()
 
 let renderAll toScreen =
 
-  Shapes.render toScreen
-  printf "Shapes rendered"
-  AffineTransformations.render toScreen
-  printf "AffineTransformations rendered"
-//  ImplicitSurfaces.render toScreen
-//  printf "ImplicitSurfaces rendered"
+//  Shapes.render toScreen
+//  printf "Shapes rendered"
+//  AffineTransformations.render toScreen
+//  printf "AffineTransformations rendered"
+  ImplicitSurfacesTest.render toScreen
+  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
 //  Texture.render toScreen
 //  printf "Texture rendered"
-  Light.render toScreen
-  printf "Light rendered"
-  CSG.render toScreen
-  printf "CSG rendered"
+//  Light.render toScreen
+//  printf "Light rendered"
+//  CSG.render toScreen
+//  printf "CSG rendered"
 
 
 [<EntryPoint>]

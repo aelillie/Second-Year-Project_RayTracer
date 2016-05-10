@@ -19,7 +19,7 @@ let chk' (name,t,r) =
 
 let test01() = 
     
-    let bs = mkImplicit "2*x+2*y+2*z+d" ("d",1.0)
+    let bs = mkImplicit "2*x+2*y+2*z+d" 
     let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
     let p = mkPoint 1.0 2.0 3.0
     let v = mkVector 3.0 2.0 1.0
@@ -48,7 +48,7 @@ let test01() =
 
 let test02() =
     
-    let bs = mkImplicit "x^2+y^2+z^2+-1r^2" ("r",2.0)
+    let bs = mkImplicit "x^2+y^2+z^2+-1r^2" 
    
   
     let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)

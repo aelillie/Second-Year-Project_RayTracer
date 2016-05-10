@@ -77,10 +77,12 @@ module ImplicitShape =
                                            let res = (-b)/a
                                
                                            let hitPoint = Point.move p (res * d)
-                                           let dir = Point.direction p hitPoint
-                                           if res < 0.0 then None
+                                           let nVector = Vector.normalise(mkNorm hitPoint expr)
+                                           let denom = Vector.dotProduct nVector (Vector.normalise(d))
+                                          
+                                           if denom < 0.00001 then None
                                            else                                  
-                                               Some (res, Vector.normalise(mkNorm hitPoint expr), m)
+                                               Some (res, nVector, m)
 
             //                               if(denom < 0.0) then none
             //                               else

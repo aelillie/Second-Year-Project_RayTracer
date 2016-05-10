@@ -37,12 +37,30 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //    | FMult(e1, e2) -> FAdd(FMult(Derivative(e1), e2), FMult(e1, Derivative(e2))) 
 //    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
  
+
     
-//let rec exprsToDivs = function
-//    | FNum c -> FNum c
-//    | FVar s -> FVar s
-//    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-//    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+let rec exprsToDivs = function
+    | FNum c -> FDiv(FNum c, FNum 1.0)
+    | FVar s -> FDiv(FVar s, FNum 1.0)
+    | FAdd(e1,e2) -> FAdd(exprsToDivs e1, exprsToDivs e2)
+    | FMult(e1,e2) -> FMult(exprsToDivs e1, exprsToDivs e2)
+    | FExponent(e,n) -> FDiv(FExponent(exprsToDivs e,n),FNum 1.0)
+    | FRoot(e,n) -> FDiv(FRoot(exprsToDivs e,n),FNum 1.0)
+    | FDiv(e1,e2) -> FDiv(exprsToDivs e1,exprsToDivs e2)
+
+let rec simpDivs = function
+    | FNum c -> FNum c
+    | FVar s -> FVar s
+    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) when e2 = e4 -> FDiv(FAdd(e1,e2),e3) 
+    | FMult(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e3),FMult(simpDivs e2, simpDivs e4))
+    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FAdd(FMult(simpDivs e1,simpDivs e4),FMult(simpDivs e3, simpDivs e2)),FMult(simpDivs e2,simpDivs e4))
+    | FDiv(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e4),FMult(simpDivs e3, simpDivs e2))
+    | FAdd(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FMult(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FDiv(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FExponent(e,n) -> FExponent(simpDivs e,n)
+    | FRoot(e,n) -> failwith "Should only be Adds, Mults and Divs"
+
  
 
 

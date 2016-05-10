@@ -78,12 +78,11 @@ let mkNorm p expr : Vector =
     Vector.mkVector newX newY newZ
 
 
-let mkImplicit (s : string) (constant:string*float) : baseShape = 
+let mkImplicit (s : string) : baseShape = 
     let expr = parseStr s
     
-    let con = FNum (snd constant)
 
-    let nvExpr = subst expr ((fst constant),con)
+    
   
     //replace x,y,z with the ray equations corresponding values and 
     let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
@@ -96,7 +95,7 @@ let mkImplicit (s : string) (constant:string*float) : baseShape =
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
 
-    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez);((fst constant),con)]
+    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
 
 
 
