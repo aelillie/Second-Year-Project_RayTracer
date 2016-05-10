@@ -12,9 +12,10 @@ open Shape
 open Implicit
 open TransformedShape
 open Transformation
-
+open System
 open System.Drawing
 
+[<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv =
 

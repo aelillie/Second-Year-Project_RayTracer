@@ -51,7 +51,7 @@ let rec exprsToDivs = function
     
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
-type atom = ANum of float | AExponent of string * int
+type atom = ANum of float | AExponent of string * int | ANeg of atom
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
