@@ -38,11 +38,12 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
  
     
-//let rec exprsToDivs = function
-//    | FNum c -> FNum c
-//    | FVar s -> FVar s
-//    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-//    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+let rec exprsToDivs = function
+    | FNum c -> FNum c
+    | FVar s -> FVar s
+    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+    | FDiv(e1,e2) -> FDiv(exprsToDivs e1, exprsToDivs e2)
  
 
 

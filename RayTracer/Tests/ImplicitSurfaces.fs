@@ -1,4 +1,5 @@
 ﻿namespace TestSuite
+
 open System
 open System.Drawing
 open Light
@@ -10,10 +11,16 @@ open Camera
 open Vector
 open Material
 open Util
+open Shapes.Shape
+open Implicit
+open Material
+open Texture
 
-module ImplicitSurfacesTest = ()
 
- (* let folder = "implicitSurfaces"
+module ImplicitSurfacesTest =  
+
+
+  let folder = "implicitSurfaces"
 
   let light = mkLight (mkPoint 4.0 2.0 4.0) (fromColor Color.White) 0.5
   let light2 = mkLight (mkPoint -4.0 2.0 4.0) (fromColor Color.White) 0.5
@@ -21,34 +28,35 @@ module ImplicitSurfacesTest = ()
   let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
 
   let sphere1 (r : float) toScreen =
-    let s = mkShape (mkImplicit ("x^2 + y^2 + z^2 + -" + (string (r * r)))) (mkMatTexture (mkMaterial (fromColor Color.Aqua) 0.0))
+    let s = mkShape (mkImplicit ("x^2 + y^2 + z^2 + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else
       Util.render scene (Some (folder, "sphere1.png"))
+      
 
-  let sphere2 (r : float) toScreen =
-    let s = mkShape (mkImplicit ("(x^2 + y^2 + z^2)_2 + -" + (string r))) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
+  (*let sphere2 (r : float) toScreen =
+    let s = mkShape (mkImplicit ("(x^2 + y^2 + z^2)_2 + -" + (string r))) (mkMaterial (fromColor Color.Blue) 0.0)
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else
-      Util.render scene (Some (folder, "sphere2.png"))
+      Util.render scene (Some (folder, "sphere2.png")) *)
 
-  let planeX toScreen =
-    let s = mkShape (mkImplicit "x") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
-    let camera = mkCamera (mkPoint 1.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 16.0 16.0 500 500 in
-    let scene = mkScene [s] lights ambientLight camera 0 in
-    if toScreen then
-      Util.render scene None
-    else
-      Util.render scene (Some (folder, "planeX.png"))
-
+//  let planeX toScreen =
+//    let s = mkShape (mkImplicit "0*x+-3*y+-1z") (mkMaterial (fromColor Color.Blue) 0.0)
+//    let camera = mkCamera (mkPoint 1.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 16.0 16.0 500 500 in
+//    let scene = mkScene [s] lights ambientLight camera 0 in
+//    if toScreen then
+//      Util.render scene None
+//    else
+//      Util.render scene (Some (folder, "planeX.png"))
+      
   let planeY toScreen =
-    let s = mkShape (mkImplicit "y") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit "y") (mkMaterial (fromColor Color.Blue) 0.0)
     let camera = mkCamera (mkPoint 0.0 1.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -57,13 +65,15 @@ module ImplicitSurfacesTest = ()
       Util.render scene (Some (folder, "planeY.png"))
 
   let planeZ toScreen =
-    let s = mkShape (mkImplicit "z") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit "z") (mkMaterial (fromColor Color.Blue) 0.0)
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
     else
       Util.render scene (Some (folder, "planeZ.png"))
+      
+(*
 
 // A torus takes two arguments, the inner and the outer radius of the torus (r and R respectively). 
 //  The outer radius is the distance from the center of the torus to the center of the tube
@@ -129,15 +139,15 @@ module ImplicitSurfacesTest = ()
     else
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
-
+  *)
   let render toScreen =
-    sphere1 1.0 toScreen;
-    sphere2 1.0 toScreen;
-    planeX toScreen;
-    planeY toScreen;
-    planeZ toScreen;
-    torus 1.5 0.5 toScreen;
-    testShape toScreen;
-    chmutov 2 toScreen;
-    chmutov 4 toScreen;
-    chmutov 6 toScreen *)
+        sphere1 1.0 toScreen;
+        //sphere2 1.0 toScreen;
+        //planeX toScreen;
+        //planeY toScreen;
+        //planeZ toScreen;
+    //    torus 1.5 0.5 toScreen;
+    //    testShape toScreen;
+    //    chmutov 2 toScreen;
+    //    chmutov 4 toScreen;
+    //    chmutov 6 toScreen 

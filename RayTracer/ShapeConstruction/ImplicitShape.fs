@@ -19,7 +19,7 @@ module ImplicitShape =
 
     type ImplicitShape (bs, m) = 
         interface Shape with
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = failwith "Not Imlemented"
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = failwith "Not implemented"
             member this.hit (R(p,d) as ray) = 
@@ -61,10 +61,10 @@ module ImplicitShape =
                                 let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
 
                                 //Poly into Map<int,float>
-                                let polyMapOfFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
+                                let polyMapOFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
 
 
-                                let floatMap = polyMapOfFloats pol
+                                let floatMap = polyMapOFloats pol
 
                                 //check what degree of poly we are dealing with, and solve it
                                 let solveDegreePoly =
@@ -76,11 +76,13 @@ module ImplicitShape =
                                
                                            let res = (-b)/a
                                
-                                           let hitPoint = Point.move p (res * d)
-                                           let dir = Point.direction p hitPoint
-                                           if res < 0.0 then None
+                                           let hitPoint = Point.move p (res*(Vector.normalise(d)))
+                                           let nVector = mkNorm hitPoint expr
+                                           let denom = Vector.dotProduct d nVector                                        
+                                           if denom<0.0 then None
+                                            //if res < 0.0 then None
                                            else                                  
-                                               Some (res, Vector.normalise(mkNorm hitPoint expr), m)
+                                                Some (res, nVector, m)
 
             //                               if(denom < 0.0) then none
             //                               else
