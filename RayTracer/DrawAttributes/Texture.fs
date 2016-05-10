@@ -43,13 +43,13 @@ let loadTexture (file : string) =
 //        mkMaterial (Colour.fromColor c) 0.0
 //    T(texture)
 
-let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
+let mkTextureFromFile (tr : float -> float -> float * float) (file : string) (reflection:float) =
     let img = new Bitmap(file)
     let widthf = float (img.Width - 1)
     let heightf = float (img.Height - 1)
     let texture u v =
       let color = img.GetPixel (int (widthf * u), int (heightf * (1.0-v)))
-      mkMaterial (Colour.fromColor color) 0.0
+      mkMaterial (Colour.fromColor color) reflection
     T(texture)
 
  //checkerboard
