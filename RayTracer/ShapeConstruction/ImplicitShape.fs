@@ -18,6 +18,45 @@ module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        let sturm map = 
+                    let pLongDivision n d = ()
+                    let deriveMap (m:Map<int,simpleExpr>) = 
+                        let differienteSExpr (sexpr:simpleExpr) d =
+                            let sexpr = match sexpr with 
+                                        |SE e -> e
+                            if d <> 0 
+                            then
+                                let derive (agx:atomGroup list) d = 
+                                    let deriveAtom atom d = [for i in 1..d do 
+                                                                yield atom]
+                                    List.map (fun ag -> List.collect id (List.map (fun a -> deriveAtom a d ) ag) ) agx  
+                                                            
+                                SE(derive sexpr d)
+                            else SE([[]])
+
+                        let polyList = List.tail (Map.toList map)
+                        let derived = List.map(fun (d,sexpr) ->(d-1, differienteSExpr sexpr d)) polyList
+                        let polyList' = List.fold (fun m (d, exp) -> Map.add d exp m) Map.empty derived
+                        polyList'
+
+                    let p0 = map
+                    let p1 = deriveMap map
+                    let pList = pLongDivision p0 p1
+                    [p0;p1]
+                    
+
+
+
+
+
+
+
+                    
+                     
+                    
+                    
+                    
+                     
         interface Shape with
             member this.getBounding () = failwith "Not implemented"
             member this.isInside p = failwith "Not implemented"
@@ -119,7 +158,8 @@ module ImplicitShape =
                                                         Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
                                                     else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
-                                    | 4 -> failwith "3rd degree"
+                                    | 4 -> let sturmChain = sturm (polyToMap pol) 
+                                           Some (1.0, mkVector 0.0 0.0 0.0, m)
                                     | 5 -> failwith "4th degree"
                                     | _ -> failwith "degree over 9000"
 
