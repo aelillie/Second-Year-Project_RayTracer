@@ -104,15 +104,15 @@ module BasicShape =
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0
-                            let n = mkVector 0.0 -1.0 0.0 
+                            let n = mkVector 0.0 0.0 1.0 
                             let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
                             if(denom > 0.0000001) then
                                 let v = Point.distance p pVector
                                 let result = (Vector.dotProduct v n) / denom
                                 let getMat a =
                                     let hp = Point.move p (a * d)
-                                    let u = abs(Point.getX hp) % 1.0
-                                    let v = abs(Point.getY hp) % 1.0
+                                    let u = Point.getX hp
+                                    let v = Point.getY hp
 //                                  
                                     Texture.getMaterialAtPoint tex u v
 
@@ -135,9 +135,10 @@ module BasicShape =
                             let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
 
                             if result <= (pow (r,2.0)) && distance > 0.0
-                            then 
-                                let u = (px+r)/2.0*r
-                                let v = (py+r)/2.0*r
+                            then
+                                let (x, y, z) = Point.getCoord p'
+                                let u = (x+r)/2.0*r
+                                let v = (y+r)/2.0*r
                                 let material = Texture.getMaterialAtPoint tex u v
                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
@@ -235,15 +236,13 @@ module BasicShape =
 
                                 //calculate material
                             let calculateMaterial x y z h r tex =  
-                                let n = mkVector (x/r) (0.0) (z/r) 
+                                let n = mkVector (x/r) (0.0) (z/r)
                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
                                 let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
                                 let u = phi/(2.0*pi)
                                 let v = (y/h) + 0.5
                                 let material = Texture.getMaterialAtPoint tex u v
                                 material
-
-                            let (px', py', pz') = Point.getCoord p
 
                             if dis < 0.0 
                             then None
@@ -258,13 +257,15 @@ module BasicShape =
                              then 
                                 let px = Point.getX p + tlittle * Vector.getX d
                                 let pz = Point.getZ p + tlittle * Vector.getZ d
-                                let material = calculateMaterial px' py' pz' h r tex
+                                let (x, y, z) = move p (tlittle * d) |> getCoord //Hit point coords
+                                let material = calculateMaterial x y z h r tex
                                 Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), material)
                              elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig > 0.0
                              then
                                 let px = Point.getX p + tbig * Vector.getX d
                                 let pz = Point.getZ p + tbig * Vector.getZ d
-                                let material = calculateMaterial px' py' pz' h r tex
+                                let (x, y, z) = move p (tbig * d) |> getCoord //Hit point coords
+                                let material = calculateMaterial x y z h r tex
                                 Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), material)
                              else None
 
