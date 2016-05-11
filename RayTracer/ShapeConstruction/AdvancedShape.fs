@@ -8,9 +8,10 @@ open Transformation
 open BasicShape
 open TransformedShape
 open PlyParse
+open TmKdtree
 
 module AdvancedShape = 
-    
+    type TmKdtree = TmKdtree.TmKdtree
 
     type Box(low,high,front,back,top,bottom,left,right) = 
         let rects = 
@@ -112,18 +113,22 @@ module AdvancedShape =
                                     let p2 = mkPointFromIndex p (List.item 1 l) vList
                                     let p3 = mkPointFromIndex p (List.item 2 l) vList
                                     new Triangle (p1, p2, p3, (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
-    
-                makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
+                let triangles = makeTriangles vertexList faceList 
+                TmKdtree.mkTmKdtree triangles
+     
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = 
+                TmKdtree.getBox rects
+
+
+
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) = 
-                                    let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
-                                    match min with
-                                    |[] -> None
-                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
-
-
-
+            member this.hit (R(p,d) as ray) =   let hitList (leaf:TmKdtree.Leaf) =
+                                                    let sndRects = List.map(fun x -> x:> Shape) (TmKdtree.getShapes )
+                                                    let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
+                                                    match min with
+                                                    |[] -> None
+                                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+                                                

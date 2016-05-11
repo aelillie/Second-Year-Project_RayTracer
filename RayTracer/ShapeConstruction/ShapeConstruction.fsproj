@@ -49,9 +49,9 @@
     <Compile Include="Transformation.fs" />
     <Compile Include="BasicShape.fs" />
     <Compile Include="TransformedShape.fs" />
+    <Compile Include="TmKdtree.fs" />
     <Compile Include="AdvancedShape.fs" />
     <Compile Include="Shape.fs" />
-    <Compile Include="TmKdtree.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">

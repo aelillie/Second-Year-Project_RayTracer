@@ -21,6 +21,37 @@ module BasicShape =
                         let (lx,ly,lz) = Point.getCoord b.p1
                         let (hx,hy,hz) = Point.getCoord b.p2
                         lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+        member b.getLongestAxis l h =
+                        let xdim = ((Point.getX h) - (Point.getX l), "x")
+                        let ydim = ((Point.getY h) - (Point.getY l), "y")
+                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+                        List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
+        member b.getH =
+                b.p1
+        member b.getL =
+                b.p2
+        member b.hit (R(p,d)) =
+                //Check intersection between bbox and ray 
+            let (ox,oy,oz) = Point.getCoord p
+            let (dx,dy,dz) = Vector.getCoord d
+            let ((hx,hy,hz), (lx,ly,lz)) = 
+                if (dx, dy, dz) > (0.0, 0.0, 0.0) 
+                then (Point.getCoord b.p1, Point.getCoord b.p2) 
+                else (Point.getCoord b.p2, Point.getCoord b.p1)
+            let tx = (lx-ox)/dx
+            let ty = (ly-oy)/dy
+            let tz = (lz-oz)/dz
+            let t'x = (hx-ox)/dx
+            let t'y = (hy-oy)/dy
+            let t'z = (hz-oz)/dz
+            let t = List.max [tx;ty;tz]
+            let t'= List.min [t'x;t'y;t'z]
+            if t < t' && t' > 0.0
+            then Some (t,t')
+            else None
+
+                        
+        
 
 
     type Shape = 
@@ -141,9 +172,11 @@ module BasicShape =
                             else None
 
     type Triangle(a,b,c,mat) = 
+        member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = 
+                        member this.getBounding () = 
                             let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
                             let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
