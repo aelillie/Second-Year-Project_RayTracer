@@ -22,18 +22,36 @@ module ImplicitShape =
                     let pLongDivision (n:(int*simpleExpr) list) (d:(int*simpleExpr) list) = 
                                     let degree x = fst (List.last x)
                                     let lead x = snd (List.last x)
-                                    let divideLead s1 s2 =
-                                            [] 
+
+                                    let polyPlus t1 t2 =
+                                            t1::t2
+                                            
+                                    let polyMinus t1 t2 = 
+                                            failwith "Not Implemented"
+
+
+
+                                    let polyMult t1 t2 = 
+                                            failwith "Not Implemented"
+
+
+
+                                    let polyDivide t1 t2 =
+                                            failwith "Not Implemented"
+
+
                                     if List.isEmpty d 
                                     then 
                                      Map.empty 
                                     else 
-                                     let mutable (q, r) = (0.0, n)
+                                     let mutable x = (degree n) - 1
+                                     let mutable (q, r) = (List.empty, n)
                                      let mutable t = List.empty
-
+                                     
                                      while (List.isEmpty r) && ((degree r) >= (degree d)) do
-                                        t <- divideLead (lead r) (lead d)
-
+                                        t <- polyDivide (lead r) (lead d)
+                                        q <- polyPlus t q
+                                        r <- polyMinus r (polyMult t d)
                                      Map.empty
 
 
@@ -64,7 +82,7 @@ module ImplicitShape =
                     let p1 = deriveMap map
 
                     let p2 = pLongDivision (Map.toList p0) (Map.toList p1)
-                    [p0;p1]
+                    [p0;p1;p2]
 
         interface Shape with
             member this.getBounding () = failwith "Not Imlemented"
