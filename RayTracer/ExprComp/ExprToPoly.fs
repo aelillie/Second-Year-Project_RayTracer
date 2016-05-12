@@ -74,7 +74,7 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
     
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
-type atom = ANum of float | AExponent of string * int | ANeg of atom | ADiv of atom list list * atom list list
+type atom = ANum of float | AExponent of string * int  | ADiv of atom list list * atom list list
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list  //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
