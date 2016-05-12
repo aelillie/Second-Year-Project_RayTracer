@@ -110,6 +110,7 @@ module ImplicitShape =
                                     match s with
                                     | SE (x) -> x
 
+                               
                   
                                 let pol = getPoly bs
                                 let expr = getExpr bs
@@ -146,7 +147,7 @@ module ImplicitShape =
                                 //Poly into Map<int,float>
                                 let polyMapOFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
 
-
+                                
                                 let floatMap = polyMapOFloats pol
 
                                 //check what degree of poly we are dealing with, and solve it
@@ -156,16 +157,19 @@ module ImplicitShape =
                                     | 2 -> let a = floatMap.Item 1
 
                                            let b = floatMap.Item 0                               
+                                            
+                                           if a=0.0 then None
+                                           else let res = (-b)/a
+                                           
                                
-                                           let res = (-b)/a
-                               
-                                           let hitPoint = Point.move p (res*(Vector.normalise(d)))
-                                           let nVector = mkNorm hitPoint expr
-                                           let denom = Vector.dotProduct d nVector                                        
-                                           if denom<0.0 then None
-                                            //if res < 0.0 then None
-                                           else                                  
-                                                Some (res, nVector, m)
+                                                let hitPoint = Point.move p (res*d)
+                                                let nVector = Vector.normalise(mkNorm hitPoint expr)
+                                                let denom = Vector.dotProduct  d nVector 
+//                                                printfn "%f" denom
+//                                                printfn "%f" res                              
+                                                if -denom<0.000001 then None
+                                                //else if res < 0.0 then None
+                                                else Some (res, nVector, m)
 
             //                               if(denom < 0.0) then none
             //                               else

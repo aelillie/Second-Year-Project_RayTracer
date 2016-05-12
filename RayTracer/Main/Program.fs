@@ -31,8 +31,14 @@ let main argv =
         let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
 
         let implicitSphere (r:float) = mkShape (mkImplicit ("x^2+y^2+z^2+-1*" + (string (r*r)))) (mkMaterial (fromColor Color.Yellow) 0.2) in
-        let tSphere = transform (implicitSphere 1.0) (translate 0.0 1.0 0.0) 
-        let implicitPlane = mkShape (mkImplicit "-3y+-1z") (mkMaterial (fromColor Color.Blue) 0.1) in
+        let implicitSphere2 (r:float) = mkShape (mkImplicit ("x^2+y^2+z^2+-1*" + (string (r*r)))) (mkMaterial (fromColor Color.Blue) 0.2) in
+
+
+        let tSphere = transform (implicitSphere 1.0) (translate -1.0 1.0 0.0) 
+        let t2 = transform (implicitSphere2 1.0) (translate 1.5 0.0 0.0)
+        
+        let implicitPlane = mkShape (mkImplicit "y") (mkMaterial (fromColor Color.Blue) 0.4) in
+        let tPlane = transform (implicitPlane) (rotateX (System.Math.PI/2.0)) 
 
         (*******Scene******)
         let scene = mkScene [implicitPlane] [light] ambientLight camera 0 in

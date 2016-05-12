@@ -24,8 +24,8 @@ let pow (x, y) = System.Math.Pow(x, y)
 
 //helper functions to extract certain types from types
 let polyToMap p : Map<int,simpleExpr> =
-        match p with
-        |Po (x) -> x
+    match p with
+    |Po (x) -> x
 
 let getPoly bs =
     match bs with
@@ -78,9 +78,7 @@ let mkNorm p expr : Vector =
     let newX = checkMap derivPolyX x
     let newY = checkMap derivPolyY y
     let newZ = checkMap derivPolyZ z
-//
-//    let newY = if derivPolyY.Count>1 then getNew (derivPolyY) y else 0.0
-//    let newZ = if derivPolyZ.Count>1 then getNew (derivPolyZ) z else 0.0 
+
 
     Vector.mkVector newX newY newZ
 
@@ -102,7 +100,7 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
 
-    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)(*;((fst constant),con)*)]
+    let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
 
 
 
