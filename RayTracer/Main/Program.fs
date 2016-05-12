@@ -16,6 +16,9 @@ open TransformedShape
 open Transformation
 
 open System.Drawing
+open Texture
+open Material
+open Colour
 
 [<EntryPoint>]
 let main argv =
@@ -24,13 +27,14 @@ let main argv =
 
     let render toScreen =
         (*******Light******)
-        let light = mkLight (mkPoint 0.0 3.0 5.0) (fromColor Color.White) 1.0 in
+        let light = mkLight (mkPoint 0.0 10.0 5.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 5.0 50.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
         (*******Shapes******)
-        let plyFile = PlyParse.parsePly "C:\\Program Files\\galleon.ply"
+        let plyFile = PlyParse.parsePly "C:\\Program Files\\ant.ply"
         let tm = mkTriangleMesh (mkPoint 0.0 0.0 0.0) plyFile
+        let plane = mkPlane (Texture.mkMatTexture ((Material.mkMaterial (Colour.fromColor Color.Blue)) 0.0))
 
         (*******Scene******)
         let scene = mkScene [tm] [light] ambientLight camera 0 in

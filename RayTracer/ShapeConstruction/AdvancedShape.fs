@@ -125,23 +125,30 @@ module AdvancedShape =
 
 
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) =   let hitList (triList : BasicShape.Triangle list)=
-                                                    let sndRects = List.map(fun x -> x:> Shape) triList
-                                                    let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
-                                                    match min with
-                                                    |[] -> None
-                                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+            member this.hit (R(p,d) as ray) =           
                                                 
-                                                let rec traverse tree = 
-                                                    let mutable finalList = List.empty
-                                                    match (TmKdtree.getBox tree).hit(ray) with
-                                                    |None -> None
-                                                    |Some(_) -> match tree with
-                                                               |Node(_,l,_,_) -> (traverse l) 
-                                                               |Node(_,_,r,_) -> (traverse r)
-                                                               |Leaf(l,_) -> finalList <- List.append (TmKdtree.getShapes tree)
-                                                    finalList
-                                               
-                                                hitList (traverse rects)
+                                                    
+                                                                     
+                                                    let hitList (triList : BasicShape.Triangle list) =
+                                                        let sndRects = List.map(fun x -> x:> Shape) triList
+                                                        List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
+                                                        
 
+                                                    let rec traverse tree =
+                                                        match (TmKdtree.getBox tree).hit(ray) with
+                                                        |None -> []
+                                                        |Some(_) -> match tree with
+                                                                    |Node(_,l,r,_) -> traverse l @ traverse r 
+                                                                    |Leaf(o,_) -> hitList o
+                                                    
+                                                    let k = traverse rects
+                                                    match k with
+                                                        |[] -> None
+                                                        |_ -> Some(List.minBy (fun (di, nV, mat) -> di) k)
+
+                                              
+                                                    
+
+
+                                                
                                                 
