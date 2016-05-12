@@ -157,11 +157,11 @@ module BasicShape =
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-                            let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
+                            let u = mkVectorFromPoint (getCoord (b-a))
+                            let v = mkVectorFromPoint (getCoord (c-a))
 
                             //Function to find the normal of the triangle
-                            let vectorN a b = Vector.normalise (Vector.crossProduct a b)
+                            let vectorN a b = crossProduct a b |> normalise
 
                             let a1 = (Point.getX a) - (Point.getX b)
                             let b1 = (Point.getX a) - (Point.getX c)

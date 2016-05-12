@@ -85,7 +85,7 @@ module AdvancedShape =
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
     type TriangleMesh (p,plyList) = 
-        let rects = 
+        let triangles = 
                 let collectFaces = function
                  |Face(x) -> [x]
                  |_ -> []
@@ -99,7 +99,6 @@ module AdvancedShape =
                     let y = List.item 1 (List.item i list)
                     let z = List.item 2 (List.item i list)
                     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
-                let rnd = System.Random()  
         
                 let vertexList = plyList |> List.collect collectVertices
                 let faceList = plyList |> List.collect collectFaces
@@ -120,7 +119,7 @@ module AdvancedShape =
             member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
-                                    let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
+                                    let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id
                                     match min with
                                     |[] -> None
                                     |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
