@@ -44,7 +44,7 @@ let rec isShaded (r:Ray) (xs:Shape list) (l:Light) (p:Point) =
 
 // recursively casts rays to determine the color a given ray should register
 let renderScene (S(shapes, lights, ambi, cam, n)) =
-    let rays = mkRays cam  //Create rays from camera
+    let rays = List.toArray (mkRays cam)  //Create rays from camera
     let maxRefl = n
 
     //Cast a single ray into the scene
@@ -88,9 +88,9 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                          | _ -> Some c'
                     else Some c'    //Else return own color.    
     //Mapping the rays to colours for each pixel.
-    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
+    let pixelplane = Array.Parallel.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
     //Map from colour to color.
-    List.map (fun (x,y,c) -> x,y, sort c |> toColorFromList) pixelplane
+    List.map (fun (x,y,c) -> x,y, sort c |> toColorFromList) (List.ofArray pixelplane)
 
 
 
