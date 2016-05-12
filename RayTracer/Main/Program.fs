@@ -37,7 +37,7 @@ let main argv =
         let tSphere = transform (implicitSphere 1.0) (translate -1.0 1.0 0.0) 
         let t2 = transform (implicitSphere2 1.0) (translate 1.5 0.0 0.0)
         
-        let implicitPlane = mkShape (mkImplicit "y") (mkMaterial (fromColor Color.Blue) 0.4) in
+        let implicitPlane = mkShape (mkImplicit  "(x + -2)^2(x+2)^2 + (y + -2)^2(y+2)^2 + (z + -2)^2(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z + -10(x^2 + y^2 + z^2) + 22") (mkMaterial (fromColor Color.Blue) 0.4) in
         let tPlane = transform (implicitPlane) (rotateX (System.Math.PI/2.0)) 
 
         (*******Scene******)

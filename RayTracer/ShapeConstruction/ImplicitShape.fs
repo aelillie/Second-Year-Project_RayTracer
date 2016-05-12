@@ -12,80 +12,116 @@ open PlyParse
 open ExprParse
 open ExprToPoly
 open Implicit
-open System
 
 
 module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
-        //let newRaph = failwith ""
+        let intervalSize = 100.0
+        let evalInterval sc interval =
+                        let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
+                                                                                            then 
+                                                                                            acc + (value*(float deg)*interval)
+                                                                                            else 
+                                                                                            acc + value) 0.0 (Map.toList m)) sc
+                        let rec matchSign x=
+                         function 
+                            |[] -> x
+                            |n1::n2::ns' -> let n1Sign = System.Math.Sign (n1:float)
+                                            let n2Sign = System.Math.Sign n2
+                                            if n1Sign <> n2Sign && (n1Sign <> 0 && n2Sign <> 0)
+                                            then
+                                             matchSign (x+1) (n2::ns')
+                                            else 
+                                             matchSign (x) (n2::ns')
+                            |_ -> x
+                                               
+                        matchSign 0 values
         let sturm map = 
-                    let pLongDivision (n:(int*simpleExpr) list) (d:(int*simpleExpr) list) = 
-                                    let degree x = fst (List.last x)
-                                    let lead x = snd (List.last x)
 
-                                    let polyPlus t1 t2 =
-                                            t1::t2
-                                            
-                                    let polyMinus t1 t2 = 
-                                            failwith "Not Implemented"
+                let pLongDivisions xs1 xs2 = 
+
+                    let pLongDivision (n:Map<int,float>) (d:Map<int,float>) = 
+                        let degree x = fst (List.last (Map.toList  x))
+
+                        let lead x = List.last (Map.toList x)
+
+                        let polyPlus (deg, t1) t2 =
+                                Map.add deg t1 t2
+
+                        let polyMinus t1 t2 =
+                                let minus x1 x2 = 
+                                          match x1 with 
+                                           |None ->  x2
+                                           |Some t -> x2 - t
+                                        
+                                let t1' = Map.toList t1
+                                List.map (fun (deg, t) -> let x = Map.tryFind deg t2 in (deg, minus x t) ) t1'
+                                |> Map.ofList     
+                            
+
+                        let polyMult (deg, t1:float) t2 = 
+                                Map.fold (fun acc key value -> (Map.add (key+deg) (value*t1) acc)) Map.empty t2
+
+                        let polyDivide (deg1, t1:float) (deg2 , t2:float) =
+                                (deg1 - deg2, t1/t2)
+ 
+                        let removeZero r =
+                            Map.filter (fun key value -> value <> 0.0) r
+
+                        let q = Map.empty
+                        let r = n
+
+                        let rec calcQR (q, (r:Map<int,float>)) d =
+                            match Map.isEmpty r with
+                            |true -> (q , r)
+                            |_ -> if (degree r) >= (degree d) 
+                                  then 
+                                   let (deg,t) = polyDivide (lead r) (lead d)
+                                   let q = polyPlus (deg, t) q
+                                   let x = polyMult (deg, t) d
+                                   let r' = polyMinus r x 
+                                   let r'' = removeZero r'
+                                   calcQR (q,r'') d
+                                  else (q, r)
+                        calcQR (q,r) d
+
+                    let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) = 
+                        Map.map (fun key value -> let m1v = Map.tryFind key m1
+                                                  match m1v with
+                                                  |None -> value
+                                                  |Some x -> x + value) m2
+
+                    let negatePolyMaps m = 
+                        Map.map (fun key value -> value * (-1.0)) m
+                                                
+                    let rec pLong p px xs = 
+                        if Map.isEmpty px 
+                        then
+                         xs
+                        else
+                         let (q, rem) = pLongDivision p px
+                         let px' = plusPolyMaps q rem |> negatePolyMaps
+                         pLong px px' (px'::xs)
+                          
+                         
+                    pLong xs1 xs2 List.empty
 
 
 
-                                    let polyMult t1 t2 = 
-                                            failwith "Not Implemented"
-
-
-
-                                    let polyDivide t1 t2 =
-                                            failwith "Not Implemented"
-
-
-                                    if List.isEmpty d 
-                                    then 
-                                     Map.empty 
-                                    else 
-                                     let mutable x = (degree n) - 1
-                                     let mutable (q, r) = (List.empty, n)
-                                     let mutable t = List.empty
-                                     
-                                     while (List.isEmpty r) && ((degree r) >= (degree d)) do
-                                        t <- polyDivide (lead r) (lead d)
-                                        q <- polyPlus t q
-                                        r <- polyMinus r (polyMult t d)
-                                     Map.empty
-
-
-
-
-
-
-                    let deriveMap m = 
-                        let differienteSExpr sexpr d =
-                            let sexpr = match sexpr with 
-                                        |SE e -> e
-                            if d <> 0 
-                            then
-                                let derive (agx:atomGroup list) d = 
-                                    let deriveAtom atom d = [for i in 1..d do 
-                                                                yield atom]
-                                    List.map (fun ag -> List.collect id (List.map (fun a -> deriveAtom a d ) ag) ) agx  
-                                                            
-                                SE(derive sexpr d)
-                            else SE([[]])
-
-                        let polyList = List.tail (Map.toList map)
-                        let derived = List.map(fun (d,sexpr) ->(d-1, differienteSExpr sexpr d)) polyList
-                        let polyList' = List.fold (fun m (d, exp) -> Map.add d exp m) Map.empty derived
-                        polyList'
-
-                    let p0 = map
-                    let p1 = deriveMap map
-
-                    let p2 = pLongDivision (Map.toList p0) (Map.toList p1)
-                    [p0;p1;p2]
-
+                let derive (m:Map<int,float>) : Map<int,float> =
+                    let m' =  (List.tail (Map.toList m))
+                    let m' = List.map (fun (d, n) -> (d-1, n * (float d))) m'
+                    Map.ofList m' 
+                
+                let p0 = map
+                let p1 = derive map
+                
+                let sturmChain = List.append [p0;p1] (List.rev (pLongDivisions p0 p1)) 
+                List.filter (fun x -> not (Map.isEmpty x)) sturmChain
+                
+                 
         interface Shape with
             member this.getBounding () = failwith "Not Imlemented"
             member this.isInside p = failwith "Not implemented"
@@ -193,10 +229,36 @@ module ImplicitShape =
                                                         Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
                                                     else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
-                                    | 4 -> let sturmChain = sturm (polyToMap pol) 
-                                           Some (1.0, mkVector 0.0 0.0 0.0, m)
-                                    | 5 -> failwith "4th degree"
-                                    | _ -> failwith "degree over 9000"
+                                    | 4 -> let sturmChain = sturm (floatMap) 
+                                           let x = sturmChain
+                                               
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
+                                           
+                                            
+                                           let numberOfRoots = negative - positive 
+                                            
+                                           failwith "3rd degree"
+
+                                    | 5 -> let sturmChain = sturm (floatMap) 
+                                           let x = sturmChain
+                                               
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
+                                           
+                                            
+                                           let numberOfRoots = negative - positive 
+                                           failwith "4th degree"
+
+                                    | _ -> let sturmChain = sturm (floatMap) 
+                                           let x = sturmChain
+                                               
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
+                                           
+                                            
+                                           let numberOfRoots = negative - positive 
+                                           failwith "degree over 9000"
 
                                 solveDegreePoly
 
