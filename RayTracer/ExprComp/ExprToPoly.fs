@@ -38,14 +38,37 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
  
     
+//let rec exprsToDivs = function
+//    | FNum c -> FNum c
+//    | FVar s -> FVar s
+//    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+//    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
+//    | FDiv(e1,e2) -> FDiv(exprsToDivs e1, exprsToDivs e2)
+
+        
 let rec exprsToDivs = function
+    | FNum c -> FDiv(FNum c, FNum 1.0)
+    | FVar s -> FDiv(FVar s, FNum 1.0)
+    | FAdd(e1,e2) -> FAdd(exprsToDivs e1, exprsToDivs e2)
+    | FMult(e1,e2) -> FMult(exprsToDivs e1, exprsToDivs e2)
+    | FExponent(e,n) -> FDiv(FExponent(exprsToDivs e,n),FNum 1.0)
+    | FRoot(e,n) -> FDiv(FRoot(exprsToDivs e,n),FNum 1.0)
+    | FDiv(e1,e2) -> FDiv(exprsToDivs e1,exprsToDivs e2)
+
+let rec simpDivs = function
     | FNum c -> FNum c
     | FVar s -> FVar s
-    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-    | FDiv(e1,e2) -> FDiv(exprsToDivs e1, exprsToDivs e2)
+    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) when e2 = e4 -> FDiv(FAdd(e1,e2),e3) 
+    | FMult(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e3),FMult(simpDivs e2, simpDivs e4))
+    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FAdd(FMult(simpDivs e1,simpDivs e4),FMult(simpDivs e3, simpDivs e2)),FMult(simpDivs e2,simpDivs e4))
+    | FDiv(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e4),FMult(simpDivs e3, simpDivs e2))
+    | FAdd(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FMult(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FDiv(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+    | FExponent(e,n) -> FExponent(simpDivs e,n)
+    | FRoot(e,n) -> failwith "Should only be Adds, Mults and Divs"
  
-
+ 
 
 
     
@@ -53,7 +76,7 @@ let rec exprsToDivs = function
 //Single variable, x, is represented as AExponent(x,1)
 type atom = ANum of float | AExponent of string * int | ANeg of atom
 type atomGroup = atom list //implicitly multiplied atoms
-type simpleExpr = SE of atomGroup list //implicitly added atom groups
+type simpleExpr = SE of atomGroup list  //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
 
 
@@ -72,13 +95,15 @@ let rec combine xss = function
   | ys::yss -> List.map ((@) ys) xss @ combine xss yss
 
 
+
+
 //let rec combDivide xss = function
 //    | [] -> []
 //    | ys::yss -> List.map ( fun xs -> ADivision(ys,xs)) xss @ combDivide xss yss
 
 //Simplify an expression into a simpleExpr (Use table on p. 2)
 let rec simplify = function
-  | FNum c          -> [[ANum c]]
+  | FNum c          -> [[ANum c]] 
   | FVar s          -> [[AExponent(s,1)]]
   | FAdd(e1,e2)     -> simplify e1 @ simplify e2
   | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
@@ -86,8 +111,11 @@ let rec simplify = function
   | FExponent(e1,1) -> simplify e1
   | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
-  | FDiv(e1,e2) -> failwith""
-  | FRoot(e,n) -> simplify (FExponent(e,1/n))  
+  //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
+  | FRoot(e,n) -> simplify (FExponent(e,1/n))
+
+
+
 
 
 //reduces duplication, so x*x becomes x^2
@@ -118,7 +146,7 @@ let simplifyAtomGroup ag =
     | (num, atomGroup)              -> ANum num :: AExList
 
 //implicitly added atom groups
-let simplifySimpleExpr (SE ags) =
+let simplifySimpleExpr (SE (ags)) =
   //simplify each atom group
   let ags' = List.map simplifyAtomGroup ags
   // Add atom groups with only constants together.

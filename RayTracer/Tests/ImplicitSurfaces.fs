@@ -46,14 +46,14 @@ module ImplicitSurfacesTest =
     else
       Util.render scene (Some (folder, "sphere2.png")) *)
 
-//  let planeX toScreen =
-//    let s = mkShape (mkImplicit "0*x+-3*y+-1z") (mkMaterial (fromColor Color.Blue) 0.0)
-//    let camera = mkCamera (mkPoint 1.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 16.0 16.0 500 500 in
-//    let scene = mkScene [s] lights ambientLight camera 0 in
-//    if toScreen then
-//      Util.render scene None
-//    else
-//      Util.render scene (Some (folder, "planeX.png"))
+  let planeX toScreen =
+    let s = mkShape (mkImplicit "x") (mkMaterial (fromColor Color.Blue) 0.0)
+    let camera = mkCamera (mkPoint 1.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 16.0 16.0 500 500 in
+    let scene = mkScene [s] lights ambientLight camera 0 in
+    if toScreen then
+      Util.render scene None
+    else
+      Util.render scene (Some (folder, "planeX.png"))
       
   let planeY toScreen =
     let s = mkShape (mkImplicit "y") (mkMaterial (fromColor Color.Blue) 0.0)
@@ -142,10 +142,10 @@ module ImplicitSurfacesTest =
   *)
   let render toScreen =
         sphere1 1.0 toScreen;
-        //sphere2 1.0 toScreen;
-        //planeX toScreen;
-        //planeY toScreen;
-        //planeZ toScreen;
+       // sphere2 1.0 toScreen;
+        planeX toScreen;
+        planeY toScreen;
+        planeZ toScreen;
     //    torus 1.5 0.5 toScreen;
     //    testShape toScreen;
     //    chmutov 2 toScreen;
