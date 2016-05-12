@@ -84,7 +84,7 @@ module AdvancedShape =
                             |[] -> None
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
-    type TriangleMesh (p,plyList) = 
+    type TriangleMesh (p, plyList, texture) = 
         let triangles = 
                 let collectFaces = function
                  |Face(x) -> [x]
@@ -99,6 +99,13 @@ module AdvancedShape =
                     let y = List.item 1 (List.item i list)
                     let z = List.item 2 (List.item i list)
                     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
+
+                let (ui, vi) = textureIndexes plyList //Texture coords indexes in ply file
+                let mapPointToTexture i list =
+                    let l = List.item i list
+                    let u = List.item ui l
+                    let v = List.item vi l
+                    [(u,v)]
         
                 let vertexList = plyList |> List.collect collectVertices
                 let faceList = plyList |> List.collect collectFaces
@@ -108,9 +115,12 @@ module AdvancedShape =
                      |[] -> []
                      |l::fList' ->  
                                     let p1 = mkPointFromIndex p (List.item 0 l) vList
+                                    let l1 = mapPointToTexture (List.item 0 l) vList
                                     let p2 = mkPointFromIndex p (List.item 1 l) vList
+                                    let l2 = mapPointToTexture (List.item 1 l) vList
                                     let p3 = mkPointFromIndex p (List.item 2 l) vList
-                                    new Triangle (p1, p2, p3, (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
+                                    let l3 = mapPointToTexture (List.item 2 l) vList
+                                    new Triangle (p1, p2, p3, texture, (l1@l2@l3))::makeTriangles vList fList'
     
                 makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
 

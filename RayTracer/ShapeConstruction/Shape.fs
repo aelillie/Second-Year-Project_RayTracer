@@ -52,4 +52,4 @@ module Shape =
          = new SolidCylinder((mkPoint 0.0 0.0 0.0),r,h,t,top,bottom) |> moveShape c
 
     //Triangle
-    let mkTriangle a b c mat = new Triangle(a,b,c,mat)
+    let mkTriangle a b c tex = new Triangle(a,b,c,tex, [])

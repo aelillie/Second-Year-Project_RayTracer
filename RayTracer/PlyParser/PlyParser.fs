@@ -123,5 +123,9 @@ let rec textureIndexes = function
         | x::xs -> textureIndexes xs
         | [] -> failwith "No elements in PLY file"
 
-
+//let textureCoords ui vi l =
+//    let rec findCoords ply =
+//        match ply with
+//        | Vertex(l) :: rest
+//        | x::xs -> findCoords xs
 

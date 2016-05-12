@@ -143,7 +143,7 @@ module BasicShape =
                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
 
-    type Triangle(a,b,c,mat) = 
+    type Triangle(a,b,c,tex, texList) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -185,12 +185,23 @@ module BasicShape =
                             if (D <> 0.0)  then 
                               let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
                               let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
+                              let alfa = 1.0-beta-gamma
                               let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
              
                               if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
                                then 
-                                 let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
-  
+                                 //Find material for the texture
+                                 let mat = if List.isEmpty texList 
+                                           then let u = alfa+beta+gamma
+                                                let v = alfa+beta+gamma
+                                                getMaterialAtPoint tex u v
+                                           else let (ua,va) = List.item 0 texList //TODO: Use map from point to tex coords
+                                                let (ub,vb) = List.item 1 texList
+                                                let (uc,vc) = List.item 2 texList
+                                                let u = alfa*ua+beta*ub+gamma*uc
+                                                let v = alfa*va+beta*vb+gamma*vc
+                                                getMaterialAtPoint tex u v
+
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
                                  then Some(t, vectorN v u, mat)
