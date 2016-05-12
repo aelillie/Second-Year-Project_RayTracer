@@ -132,16 +132,14 @@ module AdvancedShape =
                                                     |[] -> None
                                                     |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
                                                 
-                                                let rec traverse tree = 
-                                                    let mutable finalList = List.empty
-                                                    match (TmKdtree.getBox tree).hit(ray) with
-                                                    |None -> None
-                                                    |Some(_) -> match tree with
-                                                               |Node(_,l,_,_) -> (traverse l) 
-                                                               |Node(_,_,r,_) -> (traverse r)
-                                                               |Leaf(l,_) -> finalList <- List.append (TmKdtree.getShapes tree)
-                                                    finalList
-                                               
+
+                                                let rec traverse tree =
+                                                    let bboxRay = (TmKdtree.getBox tree).hit(ray)
+                                                    match bboxRay with
+                                                    | None -> []
+                                                    | Some(_) -> match tree with
+                                                                    |Node(_,l,r,_) -> traverse l @ traverse r 
+                                                                    |Leaf(l,_) -> (TmKdtree.getShapes tree)
                                                 hitList (traverse rects)
 
                                                 
