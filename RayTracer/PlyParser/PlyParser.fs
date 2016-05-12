@@ -118,14 +118,9 @@ let rec textureIndexes = function
                     | x::xs -> failwith "No properties"
                     | [] -> (u, v) //Return u and v index
             let (u, v) = checkEle l 0 0 0
-            if u = 0 && v = 0 then failwith "No texture in ply"
-            else (u, v)
+            if u = 0 && v = 0 then None
+            else Some(u, v)
         | x::xs -> textureIndexes xs
         | [] -> failwith "No elements in PLY file"
 
-//let textureCoords ui vi l =
-//    let rec findCoords ply =
-//        match ply with
-//        | Vertex(l) :: rest
-//        | x::xs -> findCoords xs
 

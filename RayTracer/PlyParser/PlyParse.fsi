@@ -13,4 +13,4 @@ type Ply =
 val parsePly : string -> Ply list
 //val print : Ply -> TextWriter -> unit
 
-val textureIndexes : _arg1:Ply list -> int * int
+val textureIndexes : _arg1:Ply list -> (int * int) option

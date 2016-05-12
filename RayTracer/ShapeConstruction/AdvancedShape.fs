@@ -100,8 +100,8 @@ module AdvancedShape =
                     let z = List.item 2 (List.item i list)
                     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
 
-                let (ui, vi) = textureIndexes plyList //Texture coords indexes in ply file
-                let mapPointToTexture i list =
+                
+                let mapPointToTexture i list ui vi =
                     let l = List.item i list
                     let u = List.item ui l
                     let v = List.item vi l
@@ -115,12 +115,18 @@ module AdvancedShape =
                      |[] -> []
                      |l::fList' ->  
                                     let p1 = mkPointFromIndex p (List.item 0 l) vList
-                                    let l1 = mapPointToTexture (List.item 0 l) vList
                                     let p2 = mkPointFromIndex p (List.item 1 l) vList
-                                    let l2 = mapPointToTexture (List.item 1 l) vList
                                     let p3 = mkPointFromIndex p (List.item 2 l) vList
-                                    let l3 = mapPointToTexture (List.item 2 l) vList
-                                    new Triangle (p1, p2, p3, texture, (l1@l2@l3))::makeTriangles vList fList'
+                                    
+                                    let texCoords = 
+                                        match textureIndexes plyList with
+                                        | None -> []
+                                        | Some(ui, vi) -> 
+                                            let l1 = mapPointToTexture (List.item 0 l) vList ui vi
+                                            let l2 = mapPointToTexture (List.item 1 l) vList ui vi
+                                            let l3 = mapPointToTexture (List.item 2 l) vList ui vi
+                                            (l1@l2@l3)
+                                    new Triangle (p1, p2, p3, texture, texCoords)::makeTriangles vList fList'
     
                 makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
 

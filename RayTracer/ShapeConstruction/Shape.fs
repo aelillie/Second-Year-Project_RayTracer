@@ -14,6 +14,11 @@ open Texture
 module Shape = 
     type Shape = Shapes.BasicShape.Shape
 
+    type BaseShape =
+        | PLY of Point * Ply list
+
+    let getPly (PLY(p,l)) = (p, l)
+
     ///Translate a shape to some point
     let moveShape p s = let (x,y,z) = Point.getCoord p in transform s (translate x y z)
 
@@ -53,3 +58,10 @@ module Shape =
 
     //Triangle
     let mkTriangle a b c tex = new Triangle(a,b,c,tex, [])
+
+    //Make baseshape for a ply file
+    let mkPLY (filename : string) (smooth : bool) = PLY((mkPoint 0.0 0.0 0.0), parsePly filename)
+
+    let mkShape (b : BaseShape) (t : Texture) = 
+        let (p, l) = getPly b
+        new TriangleMesh(p, l, t)
