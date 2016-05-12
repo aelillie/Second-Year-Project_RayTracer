@@ -26,3 +26,5 @@ type Vector with
   static member ( - ) (V(ux,uy,uz),V(vx,vy,vz)) = V(ux-vx, uy-vy, uz-vz)
   static member ( * ) (s, v) = multScalar v s
   static member ( * ) (u, v) = dotProduct u v
+  static member ( / ) ((V(x,y,z)), f) = (V(x/f,y/f,z/f))
+

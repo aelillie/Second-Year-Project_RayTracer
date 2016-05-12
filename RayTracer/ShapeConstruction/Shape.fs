@@ -41,7 +41,8 @@ module Shape =
           = new Box(low, high,front,back,top,bottom,left,right)
 
     //Sphere
-    let mkSphere (p : Point) (r : float) (tex : Texture) = new Sphere ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape p
+    let mkSphere (p : Point) (r : float) (tex : Texture) = 
+        new Sphere ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape p
     let mkSphereCenter r tex = new Sphere (mkPoint 0.0 0.0 0.0,r,tex)
     //Cylinders and Discs
     let mkHollowCylinder (c : Point) (r : float) (h : float) (tex : Texture) = 
