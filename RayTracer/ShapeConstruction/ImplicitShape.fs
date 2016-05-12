@@ -18,6 +18,25 @@ module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        let evalInterval sc interval =
+                        let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
+                                                                                            then 
+                                                                                            acc + (value*(float deg)*interval)
+                                                                                            else 
+                                                                                            acc + value) 0.0 (Map.toList m)) sc
+                        let rec matchSign x=
+                         function 
+                            |[] -> x
+                            |n1::n2::ns' -> let n1Sign = System.Math.Sign (n1:float)
+                                            let n2Sign = System.Math.Sign n2
+                                            if n1Sign <> n2Sign && (n1Sign <> 0 && n2Sign <> 0)
+                                            then
+                                             matchSign (x+1) (n2::ns')
+                                            else 
+                                             matchSign (x) (n2::ns')
+                            |_ -> x
+                                               
+                        matchSign 0 values
         let sturm map = 
 
                 let pLongDivisions xs1 xs2 = 
@@ -98,7 +117,8 @@ module ImplicitShape =
                 let p0 = map
                 let p1 = derive map
                 
-                List.append [p0;p1] (List.rev (pLongDivisions p0 p1)) 
+                let sturmChain = List.append [p0;p1] (List.rev (pLongDivisions p0 p1)) 
+                List.filter (fun x -> not (Map.isEmpty x)) sturmChain
                 
                  
         interface Shape with
@@ -210,26 +230,6 @@ module ImplicitShape =
                                                     else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
                                     | 4 -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
-                                           let evalInterval sc interval =
-                                               let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                                                                  then 
-                                                                                                                   acc + (value*(float deg)*interval)
-                                                                                                                  else 
-                                                                                                                   acc + value) 0.0 (Map.toList m)) sc
-                                               let rec matchSign x=
-                                                function 
-                                                 |[] -> x
-                                                 |n1::n2::ns' -> let n1Sign = System.Math.Sign (n1:float)
-                                                                 let n2Sign = System.Math.Sign n2
-                                                                 if n1Sign <> n2Sign && (n1Sign <> 0 && n2Sign <> 0)
-                                                                 then
-                                                                  matchSign (x+1) (n2::ns')
-                                                                 else 
-                                                                  matchSign (x) (n2::ns')
-                                                 |_ -> x
-                                               
-                                               matchSign 0 values
-
                                                
                                            let positive = evalInterval sturmChain 100.0
                                            let negative = evalInterval sturmChain -100.0
@@ -238,8 +238,26 @@ module ImplicitShape =
                                            let numberOfRoots = negative - positive 
                                             
                                            failwith "3rd degree"
-                                    | 5 -> failwith "4th degree"
-                                    | _ -> failwith "degree over 9000"
+
+                                    | 5 -> let sturmChain = sturm (floatMap) 
+                                           let x = sturmChain
+                                               
+                                           let positive = evalInterval sturmChain 100.0
+                                           let negative = evalInterval sturmChain -100.0
+                                           
+                                            
+                                           let numberOfRoots = negative - positive 
+                                           failwith "4th degree"
+
+                                    | _ -> let sturmChain = sturm (floatMap) 
+                                           let x = sturmChain
+                                               
+                                           let positive = evalInterval sturmChain 100.0
+                                           let negative = evalInterval sturmChain -100.0
+                                           
+                                            
+                                           let numberOfRoots = negative - positive 
+                                           failwith "degree over 9000"
 
                                 solveDegreePoly
 
