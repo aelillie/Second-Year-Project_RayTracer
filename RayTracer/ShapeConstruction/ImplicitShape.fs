@@ -18,6 +18,7 @@ module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        let intervalSize = 100.0
         let evalInterval sc interval =
                         let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                             then 
@@ -231,8 +232,8 @@ module ImplicitShape =
                                     | 4 -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
                                                
-                                           let positive = evalInterval sturmChain 100.0
-                                           let negative = evalInterval sturmChain -100.0
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
                                            
                                             
                                            let numberOfRoots = negative - positive 
@@ -242,8 +243,8 @@ module ImplicitShape =
                                     | 5 -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
                                                
-                                           let positive = evalInterval sturmChain 100.0
-                                           let negative = evalInterval sturmChain -100.0
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
                                            
                                             
                                            let numberOfRoots = negative - positive 
@@ -252,8 +253,8 @@ module ImplicitShape =
                                     | _ -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
                                                
-                                           let positive = evalInterval sturmChain 100.0
-                                           let negative = evalInterval sturmChain -100.0
+                                           let positive = evalInterval sturmChain intervalSize
+                                           let negative = evalInterval sturmChain (-intervalSize)
                                            
                                             
                                            let numberOfRoots = negative - positive 
