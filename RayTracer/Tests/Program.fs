@@ -15,15 +15,16 @@ open PlyParse
 open System.IO
 open TestSuite
 
-//let testAll =
+let testAll =
 //    PointTest.doTest ()
 //    VectorTest.doTest ()
 //    ExprParseTest.doTest ()
 //    ExprToPolyTest.doTest ()
 //    BoundingBoxTest.doTest ()
 //    TransformationTest.doTest ()
+    PLYParserTest.doTest ()
 
-let renderAll toScreen =
+//let renderAll toScreen =
 
 //  Shapes.render toScreen
 //  printf "Shapes rendered"
@@ -33,8 +34,8 @@ let renderAll toScreen =
 //  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
-  Texture.render toScreen
-  printf "Texture rendered"
+//  Texture.render toScreen
+//  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
 //  CSG.render toScreen
@@ -43,7 +44,7 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
-//    testAll
-    renderAll false
+    testAll
+//    renderAll false
     Console.ReadKey() |> ignore
     0 // return an integer exit code

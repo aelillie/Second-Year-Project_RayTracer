@@ -105,7 +105,7 @@ let parsePly filePath =
     let body = List.filter (fun x -> not (isHeader x)) (List.map (fun x -> parse pPly2 x) lines)
     List.append header body  //Return complete list.
 
-let rec textureCoords = function
+let rec textureIndexes = function
         | Element(s, n, l) :: rest when s = "vertex" -> 
             let rec checkEle e u v i = //i is index
                     match e with
@@ -120,7 +120,7 @@ let rec textureCoords = function
             let (u, v) = checkEle l 0 0 0
             if u = 0 && v = 0 then failwith "No texture in ply"
             else (u, v)
-        | x::xs -> textureCoords xs
+        | x::xs -> textureIndexes xs
         | [] -> failwith "No elements in PLY file"
 
 

@@ -64,6 +64,7 @@
     <Compile Include="AffineTransformations.fs" />
     <Compile Include="Light.fs" />
     <Compile Include="Shapes.fs" />
+    <Compile Include="PLYParserTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
