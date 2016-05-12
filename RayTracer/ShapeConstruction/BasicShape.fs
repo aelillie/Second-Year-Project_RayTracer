@@ -192,9 +192,7 @@ module BasicShape =
                                then 
                                  //Find material for the texture
                                  let mat = if List.isEmpty texList 
-                                           then let u = alfa+beta+gamma
-                                                let v = alfa+beta+gamma
-                                                getMaterialAtPoint tex u v
+                                           then Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0
                                            else let (ua,va) = List.item 0 texList //TODO: Use map from point to tex coords
                                                 let (ub,vb) = List.item 1 texList
                                                 let (uc,vc) = List.item 2 texList
