@@ -12,12 +12,14 @@ open PlyParse
 open ExprParse
 open ExprToPoly
 open Implicit
+open System
 
 
 module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        //let newRaph = failwith ""
         let sturm map = 
                     let pLongDivision (n:(int*simpleExpr) list) (d:(int*simpleExpr) list) = 
                                     let degree x = fst (List.last x)

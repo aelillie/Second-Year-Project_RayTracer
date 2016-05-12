@@ -3,7 +3,7 @@ module ExprToPoly
 type expr = ExprParse.expr
 val subst: expr -> (string * expr) -> expr
 
-type atom = ANum of float | AExponent of string * int | ANeg of atom
+type atom = ANum of float | AExponent of string * int | ANeg of atom | ADiv of atom list list * atom list list
 type atomGroup = atom list  
 type simpleExpr = SE of atomGroup list
 val ppSimpleExpr: simpleExpr -> string
