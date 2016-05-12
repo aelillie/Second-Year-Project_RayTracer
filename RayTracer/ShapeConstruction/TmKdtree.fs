@@ -18,13 +18,35 @@ let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
     let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox) 
     {p1=min ; p2=max} 
 
-let getShapes(Node(b,_,_,_)) = b
-let getBox (Node(_,_,_,bbox)) = bbox
+
+//Get left node
+let getLeft s = 
+    match s with
+    | Node(_,l,_,_) -> Some l
+    | Leaf(_,_) -> None
+
+let getRight s = 
+    match s with
+    | Node(_,_,r,_) -> Some r
+    | Leaf(_,_) -> None
+
+
+//Get the triangle list
+let getShapes s = 
+    match s with
+    | Node(b,_,_,_) -> b
+    | Leaf(b,_) -> b
+
+//Get bounding box
+let getBox s =
+    match s with
+    | Node(_,_,_,b) -> b
+    | Leaf(_,b) -> b
 
 
     
     
-//Finding the midpoint in the triangles in Shapes-list
+//Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
 let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
      //Finding biggest dimension in the shapes list
     let box = mkKdBbox shapes
@@ -58,8 +80,14 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
     let mutable right = largerThanSplit shapes
     let mutable left = lessThanSplit shapes
 
+    //If one of the trees are empty, we add make left and right equivelant. 
     if(left.IsEmpty && right.Length > 0) then left <- right
     if(right.IsEmpty && left.Length > 0) then right <- left
+
+    (*
+    let count = 0
+    let checking = List.fold (List.fold *)
+      
 
     let mutable count = 0 
     let leftMap = 

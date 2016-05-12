@@ -125,10 +125,23 @@ module AdvancedShape =
 
 
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) =   let hitList (leaf:TmKdtree.Leaf) =
-                                                    let sndRects = List.map(fun x -> x:> Shape) (TmKdtree.getShapes )
+            member this.hit (R(p,d) as ray) =   let hitList (triList : BasicShape.Triangle list)=
+                                                    let sndRects = List.map(fun x -> x:> Shape) triList
                                                     let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
                                                     match min with
                                                     |[] -> None
                                                     |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+                                                
+                                                let rec traverse tree = 
+                                                    let mutable finalList = List.empty
+                                                    match (TmKdtree.getBox tree).hit(ray) with
+                                                    |None -> None
+                                                    |Some(_) -> match tree with
+                                                               |Node(_,l,_,_) -> (traverse l) 
+                                                               |Node(_,_,r,_) -> (traverse r)
+                                                               |Leaf(l,_) -> finalList <- List.append (TmKdtree.getShapes tree)
+                                                    finalList
+                                               
+                                                hitList (traverse rects)
+
                                                 
