@@ -35,7 +35,25 @@ module ImplicitSurfacesTest =
       Util.render scene None
     else
       Util.render scene (Some (folder, "sphere1.png"))
-      
+
+  let EllipsoidX (r : float) toScreen =
+    let s = mkShape (mkImplicit ("(1/2)*x^2 + (1/3)*y^2 + z^2 + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
+    let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
+    let scene = mkScene [s] lights ambientLight camera 0 in
+    if toScreen then
+      Util.render scene None
+    else
+      Util.render scene (Some (folder, "EllipsoidX.png"))
+  
+
+  let OhGod (r : float) toScreen =
+    let s = mkShape (mkImplicit ("(x/4) + (1/4)*y^2 + 0.2*z^2 + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
+    let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
+    let scene = mkScene [s] lights ambientLight camera 0 in
+    if toScreen then
+      Util.render scene None
+    else
+      Util.render scene (Some (folder, "OhGod.png"))
 
   (*let sphere2 (r : float) toScreen =
     let s = mkShape (mkImplicit ("(x^2 + y^2 + z^2)_2 + -" + (string r))) (mkMaterial (fromColor Color.Blue) 0.0)
@@ -142,13 +160,15 @@ module ImplicitSurfacesTest =
   
   
   let render toScreen =
-        sphere1 1.0 toScreen;
-       // sphere2 1.0 toScreen;
-        planeX toScreen;
-        planeY toScreen;
-        planeZ toScreen;
-    //    torus 1.5 0.5 toScreen;
-    //    testShape toScreen;
-    //    chmutov 2 toScreen;
-    //    chmutov 4 toScreen;
-    //    chmutov 6 toScreen 
+//        sphere1 1.0 toScreen;
+//        EllipsoidX 1.0 toScreen;
+        OhGod 1.0 toScreen;
+//        sphere2 1.0 toScreen;
+//        planeX toScreen;
+//        planeY toScreen;
+//        planeZ toScreen;
+//        torus 1.5 0.5 toScreen;
+//        testShape toScreen;
+//        chmutov 2 toScreen;
+//        chmutov 4 toScreen;
+//        chmutov 6 toScreen 

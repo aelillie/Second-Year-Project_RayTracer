@@ -6,6 +6,7 @@ open ExprParse
 open Material
 open ExprToPoly
 
+
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 // Implicit Surfaces:
 // 1. Parsing
@@ -48,7 +49,7 @@ let mkNorm p expr : Vector =
     let derivPolyY = polyToMap (exprToPoly expr "y")
     let derivPolyZ = polyToMap (exprToPoly expr "z")
 
-     
+      
 
     //make list of keys from polyMap
     let listFst m = List.map fst (Map.toList m)
@@ -68,7 +69,7 @@ let mkNorm p expr : Vector =
                                                 let ANumDLast = List.last ag |> List.last        
                                                 match ANumLast with 
                                                 |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
-                                                           f/d
+                                                           f
                                                 |_ -> failwith "Expected to be ANum"
                        
                                
@@ -103,14 +104,14 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
     let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
 
    
-  
+    let s = ppExpr expr
 //     let polX = subst expr ("x", ex)
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
 
     let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
 
-
+    let k = ppExpr polyExprSubbed
 
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
     printfn "%s" print
@@ -120,7 +121,7 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
     
 
     
-
+        
 
     
 (*

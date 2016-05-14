@@ -127,7 +127,7 @@ let rec simplify = function
   | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
   | FDiv(FNum x, FNum y) -> [[ANum (x/y)]]
-  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c)]]
+  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c);AExponent (s,1)]]
   //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
   | FDiv(e1, e2) -> simplify e1
@@ -135,8 +135,8 @@ let rec simplify = function
 
 let rec simplifyDivisor = function
   | FDiv(FNum x, FNum y) -> [[ANum 1.0]]
-  | FDiv(FVar s, FNum c) -> [[ANum 1.0]]
-  | FDiv(e1, e2) -> simplify e2
+  | FDiv(FVar s, FNum c) -> [[ANum 1.0; ANum 1.0]]
+  | FDiv(e1, e2) ->  simplify e1 |> List.map (fun x -> List.last <| simplify e2)
   | FNum c          -> [[ANum 1.0]]
   | FVar s          -> [[ANum 1.0]]
   | FAdd(e1,e2)     -> simplifyDivisor e1 @ simplifyDivisor e2
@@ -145,6 +145,7 @@ let rec simplifyDivisor = function
   | FExponent(e1,1) -> simplifyDivisor e1
   | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
+  | FRoot(_,_) -> failwith "Not implemented"
 
 
 
@@ -182,6 +183,7 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
   //simplify each atom group
   let ags1' = List.map simplifyAtomGroup ags1
   //simplify divisor 
+  
   let ags2' = List.map simplifyAtomGroup ags2
   // Add atom groups with only constants together.
   let cFolder (a, s, d) elem divisor =
@@ -190,7 +192,9 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
                                        |[ANum (1.0)] -> ([ANum (f+n)], s, d) //acc numbers
                                        | _ -> (a, elem :: s, divisor::d)
         | _ -> (a, elem :: s, divisor::d) //just cons rest of ag'
+
   let (agConst, ags1'', ags2'') = List.fold2 cFolder ([ANum (0.0)], [], []) ags1' ags2'
+  
   
   // Last task is to group similar atomGroups into one group
   let eFolder map elem div =  //map ag to their number of appearance

@@ -15,5 +15,6 @@ val simplifySimpleExpr: simpleExpr -> simpleExpr
 
 type poly =  Po of Map<int,simpleExpr>
 val ppPoly: string -> poly -> string
+val ppExpr: expr -> string
 val simpleExprToPoly: simpleExpr -> string -> poly
 val exprToPoly: expr -> string -> poly
