@@ -86,49 +86,45 @@ module AdvancedShape =
 
     type TriangleMesh (p, plyList, texture) = 
         let triangles = 
-                let collectFaces = function
-                 |Face(x) -> [x]
-                 |_ -> []
 
                 let collectVertices = function
-                 |Vertex(floatList) -> [floatList]
-                 |_ -> []
+                    | Vertex(floatList) -> [floatList]
+                    | _ -> []
 
-                let mkPointFromIndex p i list =
-                    let x = List.item 0 (List.item i list)
-                    let y = List.item 1 (List.item i list)
-                    let z = List.item 2 (List.item i list)
-                    Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
+                let mkPointFromIndex i vertices =
+                    let vertex = List.item i vertices
+                    let x = List.item 0 vertex
+                    let y = List.item 1 vertex
+                    let z = List.item 2 vertex
+                    Point.mkPoint x y z
 
                 
-                let mapPointToTexture i list ui vi =
-                    let l = List.item i list
-                    let u = List.item ui l
-                    let v = List.item vi l
+                let mapPointToTexture i vertices ui vi =
+                    let vertex = List.item i vertices
+                    let u = List.item ui vertex
+                    let v = List.item vi vertex
                     [(u,v)]
         
                 let vertexList = plyList |> List.collect collectVertices
-                let faceList = plyList |> List.collect collectFaces
     
-                let rec makeTriangles vList fList = 
-                    match fList with
-                     |[] -> []
-                     |l::fList' ->  
-                                    let p1 = mkPointFromIndex p (List.item 0 l) vList
-                                    let p2 = mkPointFromIndex p (List.item 1 l) vList
-                                    let p3 = mkPointFromIndex p (List.item 2 l) vList
+                let rec makeTriangles vertices = function
+                     | Face([a;b;c])::rest->  
+                                    let p1 = mkPointFromIndex a vertices
+                                    let p2 = mkPointFromIndex b vertices
+                                    let p3 = mkPointFromIndex c vertices
                                     
                                     let texCoords = 
                                         match textureIndexes plyList with
                                         | None -> []
                                         | Some(ui, vi) -> 
-                                            let l1 = mapPointToTexture (List.item 0 l) vList ui vi
-                                            let l2 = mapPointToTexture (List.item 1 l) vList ui vi
-                                            let l3 = mapPointToTexture (List.item 2 l) vList ui vi
+                                            let l1 = mapPointToTexture a vertices ui vi
+                                            let l2 = mapPointToTexture b vertices ui vi
+                                            let l3 = mapPointToTexture c vertices ui vi
                                             (l1@l2@l3)
-                                    new Triangle (p1, p2, p3, texture, texCoords)::makeTriangles vList fList'
+                                    new Triangle (p1, p2, p3, texture, texCoords) :> Shape::makeTriangles vertices rest
+                     | _ -> []
     
-                makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
+                makeTriangles vertexList plyList
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
