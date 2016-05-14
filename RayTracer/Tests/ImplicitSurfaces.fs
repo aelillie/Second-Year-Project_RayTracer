@@ -99,6 +99,7 @@ module ImplicitSurfacesTest =
   
   let heart toScreen =
     let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 - 1)^3 - x^2 * z^3 - (9.0/80.0)*y^2*z^3"
+    let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 - 1)^3 - x^2 * z^3 - (9.0/x)*y^2*z^3"
     let s = mkShape is (mkMatTexture (mkMaterial (fromColor Color.DarkRed) 0.0))
     let camera = mkCamera (mkPoint 0.0 3.0 1.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 0.0 1.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in

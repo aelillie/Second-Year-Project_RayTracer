@@ -74,7 +74,7 @@ let rec simpDivs = function
     
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
-type atom = ANum of float | AExponent of string * int | ANeg of atom
+type atom = ANum of float | AExponent of string * int 
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list  //implicitly added atom groups
 let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
@@ -111,6 +111,8 @@ let rec simplify = function
   | FExponent(e1,1) -> simplify e1
   | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
+  | FDiv(FNum x, FNum y) -> [[ANum (x/y)]]
+  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c)]]
   //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
 
