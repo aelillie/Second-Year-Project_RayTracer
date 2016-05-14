@@ -76,8 +76,8 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //Single variable, x, is represented as AExponent(x,1)
 type atom = ANum of float | AExponent of string * int 
 type atomGroup = atom list //implicitly multiplied atoms
-type simpleExpr = SE of atomGroup list  //implicitly added atom groups
-let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
+type simpleExpr = SE of atomGroup list * atomGroup list  //implicitly added atom groups
+let isSimpleExprEmpty (SE (ags,ags')) = ags = [] || ags = [[]]
 
 
 
@@ -87,7 +87,7 @@ let ppAtom = function
   | AExponent(s,1) -> s
   | AExponent(s,n) -> s+"^"+(string(n))
 let ppAtomGroup ag = String.concat "*" (List.map ppAtom ag)
-let ppSimpleExpr (SE ags) = String.concat "+" (List.map ppAtomGroup ags)
+let ppSimpleExpr (SE (ags, ags')) = String.concat "+" (List.map ppAtomGroup ags)
 
 //multiply all components and eliminate parantheses
 let rec combine xss = function
@@ -167,15 +167,18 @@ let simplifyAtomGroup ag =
     | (num, atomGroup)              -> ANum num :: AExList
 
 //implicitly added atom groups
-let simplifySimpleExpr (SE (ags)) =
+let simplifySimpleExpr (SE (ags1, ags2)) =
   //simplify each atom group
-  let ags' = List.map simplifyAtomGroup ags
+  let ags1' = List.map simplifyAtomGroup ags1
+  //simplify divisor 
+  let ags2' = List.map simplifyAtomGroup ags2
   // Add atom groups with only constants together.
   let cFolder (a, s) elem =
         match (a, elem) with
         | ([ANum (n)], [ANum (f)]) -> ([ANum (f+n)], s) //acc numbers
         | _ -> (a, elem :: s) //just cons rest of ag'
-  let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags'
+  let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags1'
+  
   // Last task is to group similar atomGroups into one group
   let eFolder map elem =  //map ag to their number of appearance
         
@@ -191,7 +194,7 @@ let simplifySimpleExpr (SE (ags)) =
   if agConst.Head = ANum (0.0) then SE (agSim) //dispose 0s
   else SE (agConst :: agSim) 
 
-let exprToSimpleExpr e = simplifySimpleExpr (SE (simplify e))
+let exprToSimpleExpr e = simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
 
 type poly = Po of Map<int,simpleExpr>
 
