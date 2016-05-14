@@ -76,8 +76,9 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //Single variable, x, is represented as AExponent(x,1)
 type atom = ANum of float | AExponent of string * int 
 type atomGroup = atom list //implicitly multiplied atoms
-type simpleExpr = SE of atomGroup list * atomGroup list  //implicitly added atom groups
-let isSimpleExprEmpty (SE (ags,ags')) = ags = [] || ags = [[]]
+type simpleExpr = {SE : atomGroup list; Divisions : Map<atomGroup, atomGroup list>} //implicitly added atom groups
+let isSimpleExprEmpty se = let ags = se.SE 
+                           ags = [] || ags = [[]]
 
 
 
@@ -86,12 +87,16 @@ let ppAtom = function
   | ANum c -> string(c)
   | AExponent(s,1) -> s
   | AExponent(s,n) -> s+"^"+(string(n))
-let ppAtomGroup ag agd = "( " + (String.concat "*" (List.map ppAtom ag)) + " / " + (String.concat "*" (List.map ppAtom agd)) + " )"
+let ppAtomGroup mapD ag = let s = "( " + (String.concat "*" (List.map ppAtom ag)) + " ) "
+                          if Map.containsKey ag mapD 
+                          then s + "/ " + String.concat "+" (List.map (fun agd -> String.concat "*" (List.map ppAtom agd)) (Map.find ag mapD))
+                          else s 
                          
-let ppSimpleExpr (SE (ags, ags')) = 
-                                    String.concat "+" (List.map2 ppAtomGroup ags ags' )
+let ppSimpleExpr se = let (ags, map) = se.SE, se.Divisions
+                      String.concat "+" (List.map (ppAtomGroup <| map) ags  )
 
 //multiply all components and eliminate parantheses
+
 let rec combine xss = function
   | [] -> []
   | ys::yss -> List.map ((@) ys) xss @ combine xss yss
@@ -117,36 +122,63 @@ let rec combine xss = function
   //| FRoot(e,n) -> simplify (FExponent(e,1/n))
   //| FExponent(e1,n) when n < 0 -> [[ADiv(simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
 
-let rec simplify = function
-  | FNum c          -> [[ANum c]] 
-  | FVar s          -> [[AExponent(s,1)]]
-  | FAdd(e1,e2)     -> simplify e1 @ simplify e2
-  | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
-  | FExponent(e1,0) -> [[ANum 1.0]]
-  | FExponent(e1,1) -> simplify e1
-  | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
-  | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
-  | FDiv(FNum x, FNum y) -> [[ANum (x/y)]]
-  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c);AExponent (s,1)]]
-  //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
-  | FRoot(e,n) -> simplify (FExponent(e,1/n))
-  | FDiv(e1, e2) -> simplify e1
+let simplify e = 
+ 
+  let rec simDiv m top div = 
+      List.fold (fun map e -> Map.add e div map) m top
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  let simMultForDiv m a1 a2 = 
+      ()
+ 
+ 
+ 
+ 
+ 
+  let rec sim m = function
+      | FNum c          -> [[ANum c]],m 
+      | FVar s          -> [[AExponent(s,1)]],m
+      | FAdd(e1,e2)     -> let x = fst (sim m e1) @  fst (sim m e2)
+                           x, m
+      | FMult(e1,e2)    -> simMultForDiv m e1 e2, m
+      | FExponent(e1,0) -> [[ANum 1.0]], m
+      | FExponent(e1,1) -> sim m e1
+      | FExponent(e1,n) when n < 0 -> sim m (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+      | FExponent(e1,n) -> sim m (FMult(e1, FExponent(e1, n-1)))
+      | FDiv(FNum x, FNum y) -> [[ANum (x/y)]], m
+      | FDiv(FVar s, FNum c) -> [[ANum(1.0/c);AExponent (s,1)]], m
+      //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
+      | FRoot(e,n) -> failwith "not implemented"
+      | FDiv(e1, e2) -> let (t,m') = sim m e1 
+                        let (d,m'') = sim m' e2
+                        t,simDiv m'' (t) (d)
 
 
-let rec simplifyDivisor = function
-  | FDiv(FNum x, FNum y) -> [[ANum 1.0]]
-  | FDiv(FVar s, FNum c) -> [[ANum 1.0; ANum 1.0]]
-  | FDiv(e1, e2) ->  simplify e1 |> List.map (fun x -> List.last <| simplify e2)
-  | FNum c          -> [[ANum 1.0]]
-  | FVar s          -> [[ANum 1.0]]
-  | FAdd(e1,e2)     -> simplifyDivisor e1 @ simplifyDivisor e2
-  | FMult(e1,e2)    -> combine (simplifyDivisor e1) (simplifyDivisor e2)
-  | FExponent(e1,0) -> [[ANum 1.0]]
-  | FExponent(e1,1) -> simplifyDivisor e1
-  | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
-  | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
-  | FRoot(_,_) -> failwith "Not implemented"
 
+  let se = sim e
+  ()
+
+
+
+//let rec simplifyDivisions = function
+//  | FDiv(FNum x, FNum y) -> [[ANum 1.0]]
+//  | FDiv(FVar s, FNum c) -> [[ANum 1.0; ANum 1.0]]
+//  | FDiv(e1, e2) ->  simplify e1 |> List.map (fun x -> List.last <| simplify e2)
+//  | FNum c          -> [[ANum 1.0]]
+//  | FVar s          -> [[ANum 1.0]]
+//  | FAdd(e1,e2)     -> simplifyDivisor e1 @ simplifyDivisor e2
+//  | FMult(e1,e2)    -> combine (simplifyDivisor e1) (simplifyDivisor e2)
+//  | FExponent(e1,0) -> [[ANum 1.0]]
+//  | FExponent(e1,1) -> simplifyDivisor e1
+//  | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+//  | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
+//  | FRoot(_,_) -> failwith "Not implemented"
+//
 
 
 
@@ -212,7 +244,7 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
   if agConst.Head = ANum (0.0) then SE (agS, agD) //dispose 0s
   else SE (agConst :: agS, [ANum 1.0] :: agD) 
 
-let exprToSimpleExpr e = simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
+let exprToSimpleExpr e = simplifySimpleExpr (simplify e)
 
 type poly = Po of Map<int,simpleExpr>
 
