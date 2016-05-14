@@ -46,28 +46,28 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
 //    | FDiv(e1,e2) -> FDiv(exprsToDivs e1, exprsToDivs e2)
 
         
-let rec exprsToDivs = function
-    | FNum c -> FDiv(FNum c, FNum 1.0)
-    | FVar s -> FDiv(FVar s, FNum 1.0)
-    | FAdd(e1,e2) -> FAdd(exprsToDivs e1, exprsToDivs e2)
-    | FMult(e1,e2) -> FMult(exprsToDivs e1, exprsToDivs e2)
-    | FExponent(e,n) -> FDiv(FExponent(exprsToDivs e,n),FNum 1.0)
-    | FRoot(e,n) -> FDiv(FRoot(exprsToDivs e,n),FNum 1.0)
-    | FDiv(e1,e2) -> FDiv(exprsToDivs e1,exprsToDivs e2)
+//let rec exprsToDivs = function
+//    | FNum c -> FDiv(FNum c, FNum 1.0)
+//    | FVar s -> FDiv(FVar s, FNum 1.0)
+//    | FAdd(e1,e2) -> FAdd(exprsToDivs e1, exprsToDivs e2)
+//    | FMult(e1,e2) -> FMult(exprsToDivs e1, exprsToDivs e2)
+//    | FExponent(e,n) -> FDiv(FExponent(exprsToDivs e,n),FNum 1.0)
+//    | FRoot(e,n) -> FDiv(FRoot(exprsToDivs e,n),FNum 1.0)
+//    | FDiv(e1,e2) -> FDiv(exprsToDivs e1,exprsToDivs e2)
 
-let rec simpDivs = function
-    | FNum c -> FNum c
-    | FVar s -> FVar s
-    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) when e2 = e4 -> FDiv(FAdd(e1,e2),e3) 
-    | FMult(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e3),FMult(simpDivs e2, simpDivs e4))
-    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FAdd(FMult(simpDivs e1,simpDivs e4),FMult(simpDivs e3, simpDivs e2)),FMult(simpDivs e2,simpDivs e4))
-    | FDiv(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e4),FMult(simpDivs e3, simpDivs e2))
-    | FAdd(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-    | FMult(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-    | FDiv(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-    | FExponent(e,n) -> FExponent(simpDivs e,n)
-    | FRoot(e,n) -> failwith "Should only be Adds, Mults and Divs"
- 
+//let rec simpDivs = function
+//    | FNum c -> FNum c
+//    | FVar s -> FVar s
+//    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) when e2 = e4 -> FDiv(FAdd(e1,e2),e3) 
+//    | FMult(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e3),FMult(simpDivs e2, simpDivs e4))
+//    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FAdd(FMult(simpDivs e1,simpDivs e4),FMult(simpDivs e3, simpDivs e2)),FMult(simpDivs e2,simpDivs e4))
+//    | FDiv(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e4),FMult(simpDivs e3, simpDivs e2))
+//    | FAdd(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+//    | FMult(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+//    | FDiv(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
+//    | FExponent(e,n) -> FExponent(simpDivs e,n)
+//    | FRoot(e,n) -> failwith "Should only be Adds, Mults and Divs"
+// 
  
 
 
@@ -102,6 +102,19 @@ let rec combine xss = function
 //    | ys::yss -> List.map ( fun xs -> ADivision(ys,xs)) xss @ combDivide xss yss
 
 //Simplify an expression into a simpleExpr (Use table on p. 2)
+//let rec simplify = function
+//  | FNum c          -> [[ADiv([[ANum c]],[[ANum 1.0]])] ]
+//  | FVar s          -> [[ADiv([[AExponent(s,1)]],[[ANum 1.0]])]]
+//  | FAdd(FNum c, FNum c2) -> [[ADiv([[ANum (c+c2)]],[[ANum 1.0]])]]
+//  | FAdd(e1,e2)     -> simplify e1 @ simplify e2
+//  | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
+//  | FExponent(e1,0) -> [[ADiv([[ANum 1.0]],[[ANum 1.0]])]]
+//  | FExponent(e1,1) -> [[ADiv(simplify e1,[[ANum 1.0]])]]
+//  | FExponent(e1,n) -> [[ADiv(simplify (FMult(e1, FExponent(e1, n-1))),[[ANum 1.0]])]]
+//  | FDiv(e1,e2) -> [[ADiv(simplify e1, simplify e2)]]
+  //| FRoot(e,n) -> simplify (FExponent(e,1/n))
+  //| FExponent(e1,n) when n < 0 -> [[ADiv(simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+
 let rec simplify = function
   | FNum c          -> [[ANum c]] 
   | FVar s          -> [[AExponent(s,1)]]
@@ -115,6 +128,7 @@ let rec simplify = function
   | FDiv(FVar s, FNum c) -> [[ANum(1.0/c)]]
   //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
+
 
 
 
