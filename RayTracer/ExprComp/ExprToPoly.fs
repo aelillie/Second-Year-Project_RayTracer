@@ -134,8 +134,17 @@ let rec simplify = function
 
 
 let rec simplifyDivisor = function
+  | FDiv(FNum x, FNum y) -> [[ANum 1.0]]
+  | FDiv(FVar s, FNum c) -> [[ANum 1.0]]
   | FDiv(e1, e2) -> simplify e2
-  | _ -> [[ANum 1.0]]
+  | FNum c          -> [[ANum 1.0]]
+  | FVar s          -> [[ANum 1.0]]
+  | FAdd(e1,e2)     -> simplifyDivisor e1 @ simplifyDivisor e2
+  | FMult(e1,e2)    -> combine (simplifyDivisor e1) (simplifyDivisor e2)
+  | FExponent(e1,0) -> [[ANum 1.0]]
+  | FExponent(e1,1) -> simplifyDivisor e1
+  | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+  | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
 
 
 

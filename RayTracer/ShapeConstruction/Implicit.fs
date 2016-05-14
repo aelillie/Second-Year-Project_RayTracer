@@ -58,17 +58,26 @@ let mkNorm p expr : Vector =
     //make a list of values from polyMap
     let listSnd m = List.map snd (Map.toList m)
     //get multiplication value as float
-    let secondFloat m = if List.last (listSnd m) = SE ([[]],[[]]) then 1.0
-                        else let se = List.last (listSnd m)
+    let secondFloat (m:Map<int,simpleExpr>) = 
+                        let se = List.last (listSnd m)
+                        let ag = match se with |SE (ag,_) -> ag
+                        if ag = [[]] then 1.0
+                        else 
                              match se with
-                                        |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
-                                                        match ANumLast with 
-                                                        |ANum f -> f
-                                                        |_ -> failwith "Expected to be ANum"
+                                |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
+                                                let ANumDLast = List.last ag |> List.last        
+                                                match ANumLast with 
+                                                |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
+                                                           f/d
+                                                |_ -> failwith "Expected to be ANum"
                        
                                
                          
-    let getNew m c = if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
+    let getNew m c = 
+                     let x = firstFloat m
+                     let k = Map.toList m |> List.map snd
+                     let k = secondFloat m 
+                     if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
                      else (secondFloat m)*(firstFloat m)
 
     let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 then getNew (m) c
@@ -85,7 +94,6 @@ let mkNorm p expr : Vector =
 
 let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
     let expr = parseStr s
-    
    // let con = FNum (snd constant)
 
   
