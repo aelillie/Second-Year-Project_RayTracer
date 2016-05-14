@@ -84,45 +84,36 @@ module AdvancedShape =
                             |[] -> None
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
-    type TriangleMesh (p, plyList, texture) = 
+    type TriangleMesh (plyList, texture) = 
         let triangles = 
 
-                let collectVertices = function
-                    | Vertex(floatList) -> [floatList]
-                    | _ -> []
+                let vertexList = 
+                    plyList |> 
+                    List.collect (fun x -> match x with
+                                           | Vertex(floatList) -> [floatList]
+                                           | _ -> [])
 
-                let mkPointFromIndex i vertices =
+                let mkVertex i vertices =
                     let vertex = List.item i vertices
                     let x = List.item 0 vertex
                     let y = List.item 1 vertex
                     let z = List.item 2 vertex
-                    Point.mkPoint x y z
-
-                
-                let mapPointToTexture i vertices ui vi =
-                    let vertex = List.item i vertices
-                    let u = List.item ui vertex
-                    let v = List.item vi vertex
-                    [(u,v)]
-        
-                let vertexList = plyList |> List.collect collectVertices
-    
+                    match textureIndexes plyList with
+                    | None -> ((Point.mkPoint x y z), [])
+                    | Some(ui, vi) -> 
+                        let u = List.item ui vertex
+                        let v = List.item vi vertex
+                        ((Point.mkPoint x y z), [(u,v)])
+            
                 let rec makeTriangles vertices = function
                      | Face([a;b;c])::rest->  
-                                    let p1 = mkPointFromIndex a vertices
-                                    let p2 = mkPointFromIndex b vertices
-                                    let p3 = mkPointFromIndex c vertices
+                                    let (p1,l1) = mkVertex a vertices
+                                    let (p2,l2) = mkVertex b vertices
+                                    let (p3,l3) = mkVertex c vertices
                                     
-                                    let texCoords = 
-                                        match textureIndexes plyList with
-                                        | None -> []
-                                        | Some(ui, vi) -> 
-                                            let l1 = mapPointToTexture a vertices ui vi
-                                            let l2 = mapPointToTexture b vertices ui vi
-                                            let l3 = mapPointToTexture c vertices ui vi
-                                            (l1@l2@l3)
-                                    new Triangle (p1, p2, p3, texture, texCoords) :> Shape::makeTriangles vertices rest
-                     | _ -> []
+                                    new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::makeTriangles vertices rest
+                     | _::rest -> makeTriangles vertices rest
+                     | [] -> []
     
                 makeTriangles vertexList plyList
 

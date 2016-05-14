@@ -34,7 +34,7 @@ let main argv =
         (*******Shapes******)
         let ply = mkPLY "../../../ply/ant.ply" false
         let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg" 0.1
-        let ant = mkShape ply texture
+        let ant = mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))
         
 
         (*******Scene******)

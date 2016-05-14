@@ -15,9 +15,9 @@ module Shape =
     type Shape = Shapes.BasicShape.Shape
 
     type BaseShape =
-        | PLY of Point * Ply list
+        | PLY of Ply list
 
-    let getPly (PLY(p,l)) = (p, l)
+    let getPly (PLY(l)) = l
 
     ///Translate a shape to some point
     let moveShape p s = let (x,y,z) = Point.getCoord p in transform s (translate x y z)
@@ -60,8 +60,9 @@ module Shape =
     let mkTriangle a b c tex = new Triangle(a,b,c,tex, [])
 
     //Make baseshape for a ply file
-    let mkPLY (filename : string) (smooth : bool) = PLY((mkPoint 0.0 0.0 0.0), parsePly filename)
+    let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename)
 
     let mkShape (b : BaseShape) (t : Texture) = 
-        let (p, l) = getPly b
-        new TriangleMesh(p, l, t)
+        match b with
+        | PLY(plyList) -> new TriangleMesh(plyList, t)
+        | _ -> failwith "Not implemented"

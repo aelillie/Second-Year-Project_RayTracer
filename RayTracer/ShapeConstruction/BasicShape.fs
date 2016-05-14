@@ -113,7 +113,7 @@ module BasicShape =
                                     let hp = Point.move p (a * d)
                                     let u = Point.getX hp
                                     let v = Point.getY hp
-//                                  
+                                 
                                     Texture.getMaterialAtPoint tex u v
 
                                  
@@ -143,7 +143,7 @@ module BasicShape =
                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
 
-    type Triangle(a,b,c,tex, texList) = 
+    type Triangle(a,b,c,tex, texCoordList) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -191,11 +191,11 @@ module BasicShape =
                               if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
                                then 
                                  //Find material for the texture
-                                 let mat = if List.isEmpty texList 
+                                 let mat = if List.isEmpty texCoordList //No texture in ply file
                                            then Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0
-                                           else let (ua,va) = List.item 0 texList //TODO: Use map from point to tex coords
-                                                let (ub,vb) = List.item 1 texList
-                                                let (uc,vc) = List.item 2 texList
+                                           else let (ua,va) = List.item 0 texCoordList //Vertex a
+                                                let (ub,vb) = List.item 1 texCoordList //Vertex b
+                                                let (uc,vc) = List.item 2 texCoordList //Vertex c
                                                 let u = alfa*ua+beta*ub+gamma*uc
                                                 let v = alfa*va+beta*vb+gamma*vc
                                                 getMaterialAtPoint tex u v
