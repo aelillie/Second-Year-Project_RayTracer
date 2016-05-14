@@ -22,6 +22,9 @@ let main argv =
     let folder = "shapes"
 
     let render toScreen =
+
+
+        
         (*******Light******)
         let light = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in

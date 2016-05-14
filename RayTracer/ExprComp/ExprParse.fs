@@ -14,7 +14,7 @@ e is the empty sequence.
 *)
 
 type terminal =
-  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Root | Div
+  Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Root | Div | Neg
 
 let isblank c = System.Char.IsWhiteSpace c
 let isdigit c  = System.Char.IsDigit c
@@ -56,6 +56,8 @@ let scan s =
     | '_' :: cr -> Root :: sc cr     
     | '-' :: c :: cr when isdigit c -> let (cs1, t) = scnum(cr, -1 * intval c)
                                        t :: sc cs1
+    | '-' :: cr -> sc ('-'::'1'::'*'::cr)
+
     | c :: cr when isdigit c -> let (cs1, t) = scnum(cr, intval c) 
                                 t :: sc cs1
     | c :: cr when isblank c -> sc cr

@@ -128,7 +128,12 @@ let rec simplify = function
   | FDiv(FVar s, FNum c) -> [[ANum(1.0/c)]]
   //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
+  | FDiv(e1, e2) -> simplify e1
 
+
+let rec simplifyDivisor = function
+  | FDiv(e1, e2) -> simplify e2
+  | _ -> [[ANum 1.0]]
 
 
 
