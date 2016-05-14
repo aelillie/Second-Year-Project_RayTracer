@@ -58,13 +58,13 @@ let mkNorm p expr : Vector =
     //make a list of values from polyMap
     let listSnd m = List.map snd (Map.toList m)
     //get multiplication value as float
-    let secondFloat m = if List.last (listSnd m) = SE [[]] then 1.0
+    let secondFloat m = if List.last (listSnd m) = SE ([[]],[[]]) then 1.0
                         else let se = List.last (listSnd m)
                              match se with
-                                       |SE ag -> let ANumLast = List.last ag |> List.last
-                                                 match ANumLast with 
-                                                 |ANum f -> f
-                                                 |_ -> failwith "Expected to be ANum"
+                                        |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
+                                                        match ANumLast with 
+                                                        |ANum f -> f
+                                                        |_ -> failwith "Expected to be ANum"
                        
                                
                          

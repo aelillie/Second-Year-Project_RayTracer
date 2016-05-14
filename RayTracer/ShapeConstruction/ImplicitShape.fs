@@ -127,9 +127,9 @@ module ImplicitShape =
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = failwith "Not implemented"
             member this.hit (R(p,d) as ray) = 
-                                let getSEList s : atomGroup list = 
+                                let getSEList s = 
                                     match s with
-                                    | SE (x) -> x
+                                    | SE (ag, ags) -> (ag,ags)
 
                                
                   
@@ -138,10 +138,10 @@ module ImplicitShape =
 
                     
                                 // map of SE to map of atomGroupList (atom list list)
-                                let mapToAtomList m = Map.map (fun x y -> getSEList y) m
+                                let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
  
                                 //substitute atoms with float values: atom list list -> float list list
-                                let substSE ags = 
+                                let substAtomG ags = 
                                     List.map (fun x -> List.map (fun a -> match a with
                                                                             | AExponent (s,i) -> let sub = 
                                                                                                     match s with
@@ -156,17 +156,24 @@ module ImplicitShape =
                                                                             | ANum c  -> c ) x) ags 
 
                                 //Collect the float list list into a single float list
-                                let subFloats m = Map.map (fun x y -> substSE y) m
+                                let subFloats m = Map.map (fun x (y,d) -> (substAtomG y, substAtomG d) ) m
 
-                                let multFloats m = Map.map (fun x y -> List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y) m
-                   
+                                let multFloats m = Map.map (fun x (y,d) -> let y' = List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y
+                                                                           let d' = List.map (fun ds -> List.fold (fun a b -> a*b) 1.0 ds) d
+                                                                           (y',d')) m
+                                
+                                
+
+                                let divideFloats m = Map.map (fun x (y,d) -> (y/d)) m
                                 //let collectFloats m = Map.map (fun x y -> List.collect id (substSE y)) m 
     
                                 //Add the floats in each list of the map     
-                                let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
+                                let foldMap m = Map.map (fun x (y,d) -> let ys = List.fold (fun a b -> a+b) 0.0 y
+                                                                        let ds = List.fold (fun a b -> a+b) 0.0 d
+                                                                        (ys,ds)) m
 
                                 //Poly into Map<int,float>
-                                let polyMapOFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
+                                let polyMapOFloats m = (polyToMap >> mapSEToAtomGroups >> subFloats >> multFloats >> foldMap >> divideFloats)  m
 
                                 
                                 let floatMap = polyMapOFloats pol

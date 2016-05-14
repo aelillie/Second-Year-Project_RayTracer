@@ -5,7 +5,7 @@ val subst: expr -> (string * expr) -> expr
 
 type atom = ANum of float | AExponent of string * int 
 type atomGroup = atom list  
-type simpleExpr = SE of atomGroup list
+type simpleExpr = SE of atomGroup list * atomGroup list
 val ppSimpleExpr: simpleExpr -> string
 val exprToSimpleExpr: expr -> simpleExpr
 val simplifyAtomGroup: atomGroup -> atomGroup

@@ -86,8 +86,10 @@ let ppAtom = function
   | ANum c -> string(c)
   | AExponent(s,1) -> s
   | AExponent(s,n) -> s+"^"+(string(n))
-let ppAtomGroup ag = String.concat "*" (List.map ppAtom ag)
-let ppSimpleExpr (SE (ags, ags')) = String.concat "+" (List.map ppAtomGroup ags)
+let ppAtomGroup ag agd = "( " + (String.concat "*" (List.map ppAtom ag)) + " / " + (String.concat "*" (List.map ppAtom agd)) + " )"
+                         
+let ppSimpleExpr (SE (ags, ags')) = 
+                                    String.concat "+" (List.map2 ppAtomGroup ags ags' )
 
 //multiply all components and eliminate parantheses
 let rec combine xss = function
@@ -173,26 +175,29 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
   //simplify divisor 
   let ags2' = List.map simplifyAtomGroup ags2
   // Add atom groups with only constants together.
-  let cFolder (a, s) elem =
+  let cFolder (a, s, d) elem divisor =
         match (a, elem) with
-        | ([ANum (n)], [ANum (f)]) -> ([ANum (f+n)], s) //acc numbers
-        | _ -> (a, elem :: s) //just cons rest of ag'
-  let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags1'
+        | ([ANum (n)], [ANum (f)]) -> match divisor with
+                                       |[ANum (1.0)] -> ([ANum (f+n)], s, d) //acc numbers
+                                       | _ -> (a, elem :: s, divisor::d)
+        | _ -> (a, elem :: s, divisor::d) //just cons rest of ag'
+  let (agConst, ags1'', ags2'') = List.fold2 cFolder ([ANum (0.0)], [], []) ags1' ags2'
   
   // Last task is to group similar atomGroups into one group
-  let eFolder map elem =  //map ag to their number of appearance
-        
-        let count = if Map.containsKey elem map //update if exists
-                    then (Map.find elem map) + 1.0 else 1.0 
+  let eFolder map elem div =  //map ag to their number of appearance
+
+        let count = if Map.containsKey (elem,div) map //update if exists
+                    then (Map.find (elem,div) map) + 1.0 else 1.0 
         if List.isEmpty elem 
         then map
-        else Map.add elem count map
-  let agSimMap = List.fold eFolder Map.empty ags''
-  let filterAg (s, f) = if f <> 1.0 && f <> 0.0 
-                        then (ANum (f)) :: s else s
-  let agSim = (Map.toList agSimMap) |> List.map filterAg
-  if agConst.Head = ANum (0.0) then SE (agSim) //dispose 0s
-  else SE (agConst :: agSim) 
+        else Map.add (elem,div) count map
+  let agSimMap = List.fold2 eFolder Map.empty ags1'' ags2''
+  let filterAg ((s,(d:atom list)), f) = if f <> 1.0 && f <> 0.0 
+                                        then ((ANum (f)) :: s, d) else (s,d)
+  let agSim = (Map.toList agSimMap)
+  let (agS, agD) = agSim |> List.map filterAg |> List.unzip
+  if agConst.Head = ANum (0.0) then SE (agS, agD) //dispose 0s
+  else SE (agConst :: agS, [ANum 1.0] :: agD) 
 
 let exprToSimpleExpr e = simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
 
@@ -210,24 +215,27 @@ let removeV v = function
     | _ -> true
 
 (* Collect atom groups into groups with respect to one variable v *)
-let splitAG v m = function
-  | [] -> m
-  | ag ->
-    let eqV = function AExponent(v',_) -> v = v' | _ -> false
-    let addMap d ag m = 
-        let agTrimmed = List.filter (removeV v) ag
-        if Map.containsKey d m
-        then match Map.find d m with
-             | SE agList -> Map.add d (SE (agTrimmed :: agList)) m
-        else Map.add d (SE [agTrimmed]) m
-    match List.tryFind eqV ag with
-      | Some (AExponent(_,d)) ->
-        let ag' = List.filter (not << eqV) ag
-        addMap d ag' m
-      | Some _ -> failwith "splitAG: Must never come here! - ANum will not match eqV"
-      | None -> addMap 0 ag m
+let splitAG v m s d = 
+ match s,d with
+  | ([],[]) -> m
+  | (ag,agd) ->
+        let eqV = function AExponent(v',_) -> v = v' | _ -> false
+        let addMap d ag agd m = 
+            let agTrimmed = List.filter (removeV v) ag
+            let agdTrimmed = List.filter (removeV v) agd
+            if Map.containsKey d m
+            then match Map.find d m with
+                 | SE (agList, agDList) -> Map.add d (SE (agTrimmed :: agList, agdTrimmed::agDList)) m
+            else Map.add d (SE ([agTrimmed], [agdTrimmed])) m
+        match List.tryFind eqV ag with
+          | Some (AExponent(_,d)) ->
+            let ag' = List.filter (not << eqV) ag
+            let agd' = List.filter (not << eqV) agd
+            addMap d ag' agd' m
+          | Some _ -> failwith "splitAG: Must never come here! - ANum will not match eqV"
+          | None -> addMap 0 ag agd m
 
-let simpleExprToPoly (SE ags) v =
-  Po (List.fold (splitAG v) Map.empty ags)
+let simpleExprToPoly (SE (ags, agd)) (v:string) =
+  Po (List.fold2 (splitAG v) Map.empty ags agd)
 
 let exprToPoly e v = (exprToSimpleExpr >> simplifySimpleExpr >> simpleExprToPoly) e v
