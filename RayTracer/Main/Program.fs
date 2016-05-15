@@ -23,18 +23,20 @@ open PlyParse
 let main argv =
 
     let folder = "shapes"
+    let pi = System.Math.PI
 
     let render toScreen =
         (*******Light******)
-        let light = mkLight (mkPoint 2.0 1.0 4.0) (fromColor Color.White) 1.0
+        let light = mkLight (mkPoint 1.0 1.0 4.0) (fromColor Color.White) 1.0
         let light1 = mkLight (mkPoint -2.0 1.0 4.0) (fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 1.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000 in
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000 in
         (*******Shapes******)
         let ply = mkPLY "../../../ply/ant.ply" false
         let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg" 0.1
-        let ant = mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))
+        let ant = transform (mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))) 
+                    (scale 0.2 0.2 0.2)
         
 
         (*******Scene******)

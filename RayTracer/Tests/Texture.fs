@@ -78,26 +78,26 @@ module Texture =
     Util.render' scene (folder, "box.png") toScreen
 
 
-//  let renderBunny toScreen =
-//    let baseBunny = mkPLY "../../../ply/bunny_textured.ply" true
-//    let t = mergeTransformations
-//              [rotateY (Math.PI / 4.0);
-//               scale 6.0 6.0 6.0;
-//               translate 0.0 3.0 0.0] in
-//    let white = fromColor Color.White
-//    let tex = mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png"
-//    let bunny = mkShape baseBunny tex
-//    let affineBunny = transform bunny t in
-//    let t' = scale 0.5 0.5 0.5
-//    let l1 = mkLight (mkPoint 6.0 2.0 6.0) white 0.5
-//    let l2 = mkLight (mkPoint -6.0 2.0 6.0) (fromColor Color.Red) 0.5
-//    let l3 = mkLight (mkPoint -3.5 12.0 4.0) white 1.0
-//    let p = transform (mkPlane (mkMatTexture (mkMaterial (fromColor Color.Green) 0.5)))
-//              (rotateX (System.Math.PI/2.0))
-//    let c = mkCamera (mkPoint 4.0 8.0 16.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 4.0 4.0 4.0 1000 1000
-//    let ambientLight = mkAmbientLight (fromColor Color.Green) 0.1
-//    let scene = mkScene [p; affineBunny] [l1; l2; l3] ambientLight c 2
-//    Util.render' scene (folder, "bunny.png") toScreen
+  let renderBunny toScreen =
+    let baseBunny = mkPLY "../../../ply/bunny_textured.ply" true
+    let t = mergeTransformations
+              [rotateY (Math.PI / 4.0);
+               scale 6.0 6.0 6.0;
+               translate 0.0 3.0 0.0] in
+    let white = fromColor Color.White
+    let tex = mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png" 0.0
+    let bunny = mkShape baseBunny tex
+    let affineBunny = transform bunny t in
+    let t' = scale 0.5 0.5 0.5
+    let l1 = mkLight (mkPoint 6.0 2.0 6.0) white 0.5
+    let l2 = mkLight (mkPoint -6.0 2.0 6.0) (fromColor Color.Red) 0.5
+    let l3 = mkLight (mkPoint -3.5 12.0 4.0) white 1.0
+    let p = transform (mkPlane (mkMatTexture (mkMaterial (fromColor Color.Green) 0.5)))
+              (rotateX (System.Math.PI/2.0))
+    let c = mkCamera (mkPoint 4.0 8.0 16.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 4.0 4.0 4.0 1000 1000
+    let ambientLight = mkAmbientLight (fromColor Color.Green) 0.1
+    let scene = mkScene [p; affineBunny] [l1; l2; l3] ambientLight c 2
+    Util.render' scene (folder, "bunny.png") toScreen
 
 
   let renderPlane toScreen =
@@ -129,9 +129,9 @@ module Texture =
 
 
   let render toScreen =
-    renderBox toScreen
-//    renderBunny toScreen
-    renderCylinder toScreen
-    renderEarth toScreen
-    renderPlane toScreen
-    renderSphere toScreen
+//    renderBox toScreen
+    renderBunny toScreen
+//    renderCylinder toScreen
+//    renderEarth toScreen
+//    renderPlane toScreen
+//    renderSphere toScreen

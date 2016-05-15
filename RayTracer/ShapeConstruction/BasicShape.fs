@@ -196,9 +196,9 @@ module BasicShape =
                                            else let (ua,va) = List.item 0 texCoordList //Vertex a
                                                 let (ub,vb) = List.item 1 texCoordList //Vertex b
                                                 let (uc,vc) = List.item 2 texCoordList //Vertex c
-                                                let u = alfa*ua+beta*ub+gamma*uc
-                                                let v = alfa*va+beta*vb+gamma*vc
-                                                getMaterialAtPoint tex u v
+                                                let tu = alfa*ua+beta*ub+gamma*uc
+                                                let tv = alfa*va+beta*vb+gamma*vc
+                                                getMaterialAtPoint tex tu tv
 
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
