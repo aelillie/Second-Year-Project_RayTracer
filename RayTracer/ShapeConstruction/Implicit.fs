@@ -113,6 +113,7 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
 
     let k = ppExpr polyExprSubbed
 
+    let k = exprToPoly polyExprSubbed "t"
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
     printfn "%s" print
     //simplify equation 

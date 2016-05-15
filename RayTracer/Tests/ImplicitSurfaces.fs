@@ -37,7 +37,7 @@ module ImplicitSurfacesTest =
       Util.render scene (Some (folder, "sphere1.png"))
 
   let EllipsoidX (r : float) toScreen =
-    let s = mkShape (mkImplicit ("(1/2)*x^2 + (1/3)*y^2 + z^2 + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
+    let s = mkShape (mkImplicit ("(1/2)*x^2 + (1/3)*y^2 + (z^2/2) + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -47,7 +47,7 @@ module ImplicitSurfacesTest =
   
 
   let OhGod (r : float) toScreen =
-    let s = mkShape (mkImplicit ("(x/4) + (1/4)*y^2 + 0.2*z^2 + -" + (string (r * r)))) (mkMaterial (fromColor Color.Aqua) 0.0)
+    let s = mkShape (mkImplicit ("(x/4)*x + y^2 + 3*z^2 + 2")) (mkMaterial (fromColor Color.Aqua) 0.0)
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -161,8 +161,8 @@ module ImplicitSurfacesTest =
   
   let render toScreen =
 //        sphere1 1.0 toScreen;
-//        EllipsoidX 1.0 toScreen;
-        OhGod 1.0 toScreen;
+        EllipsoidX 1.0 toScreen;
+//        OhGod 1.0 toScreen;
 //        sphere2 1.0 toScreen;
 //        planeX toScreen;
 //        planeY toScreen;

@@ -45,15 +45,15 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
-//    testAll
-//    let expr  = parseStr "-(15.0/5.0)*x^1+y^2 +(20.0/4.0)*z^3"
+//    testall
+    let expr  = ExprParse.parseStr "((1 + 3 * 4)/2)*x^2"
 //    let expr2 = parseStr "-(x/4)*x^2 + 30*y^1"
-//    
-//    let simpleExpr = exprToSimpleExpr expr
-//    let simpleExpr2 = exprToSimpleExpr expr2
+    let ppe = ppExpr expr  
+//    let simpleexpr = exprToSimpleExpr expr
+//    let simpleexpr2 = exprToSimpleExpr expr2
 //
-//    let s = ppSimpleExpr simpleExpr
-//    let s2 = ppSimpleExpr simpleExpr2
+//    let s = ppSimpleExpr simpleexpr
+//    let s2 = ppSimpleExpr simpleexpr2
 //    printf "%s" s2
 //    printf "%s" s 
     renderAll false
