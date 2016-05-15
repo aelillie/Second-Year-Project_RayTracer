@@ -136,7 +136,6 @@ module ImplicitShape =
                                 let pol = getPoly bs
                                 let expr = getExpr bs
 
-                                let pp = ppPoly "t" pol
                                 // map of SE to map of atomGroupList (atom list list)
                                 let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
  
@@ -172,14 +171,6 @@ module ImplicitShape =
                                 let foldMap m = Map.map (fun x y -> let ys = List.fold (fun a b -> a+b) 0.0 y
                                                                     (ys)) m
 
-                                //Poly into Map<int,float>
-                                let p1 = polyToMap pol
-                                let p2 = mapSEToAtomGroups p1
-                                let p3 = subFloats p2 
-                                let p4 = multFloats p3
-                                let p5 = divideFloats p4
-                                let p6 = foldMap p5
-                                
 
                                 let polyMapOFloats m = (polyToMap >> mapSEToAtomGroups >> subFloats >> multFloats >> divideFloats >> foldMap )  m
 
