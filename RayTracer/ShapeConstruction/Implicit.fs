@@ -49,7 +49,7 @@ let mkNorm p expr : Vector =
     let derivPolyY = polyToMap (exprToPoly expr "y")
     let derivPolyZ = polyToMap (exprToPoly expr "z")
 
-      
+    let k = ppExpr expr  
 
     //make list of keys from polyMap
     let listFst m = List.map fst (Map.toList m)
@@ -69,7 +69,7 @@ let mkNorm p expr : Vector =
                                                 let ANumDLast = List.last ag |> List.last        
                                                 match ANumLast with 
                                                 |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
-                                                           f
+                                                           f/d
                                                 |_ -> failwith "Expected to be ANum"
                        
                                

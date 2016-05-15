@@ -22,9 +22,9 @@ module ImplicitSurfacesTest =
 
   let folder = "implicitSurfaces"
 
-  let light = mkLight (mkPoint 4.0 2.0 4.0) (fromColor Color.White) 0.5
+  let light = mkLight (mkPoint 2.0 0.0 4.0) (fromColor Color.White) 1.0
   let light2 = mkLight (mkPoint -4.0 2.0 4.0) (fromColor Color.White) 0.5
-  let lights = [light; light2]
+  let lights = [light]
   let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
 
   let sphere1 (r : float) toScreen =
@@ -164,9 +164,9 @@ module ImplicitSurfacesTest =
         EllipsoidX 1.0 toScreen;
         OhGod 1.0 toScreen;
 //        sphere2 1.0 toScreen;
-        planeX toScreen;
-        planeY toScreen;
-        planeZ toScreen;
+//        planeX toScreen;
+//        planeY toScreen;
+//        planeZ toScreen;
 //        torus 1.5 0.5 toScreen;
 //        testShape toScreen;
 //        chmutov 2 toScreen;

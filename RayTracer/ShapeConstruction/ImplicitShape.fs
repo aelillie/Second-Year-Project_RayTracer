@@ -232,9 +232,14 @@ module ImplicitShape =
                                                         let answer = System.Math.Max(answer1,answer2)
                                                         //normal vector point with maximum answer value
                                                         let nvPointMax = Point.move p (answer * d)
-                                                        Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+
+                                                        Some (answer, Vector.normalise(nV),m) 
+                                                        
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                                    else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
+                                                    else
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+                                                        Some (answer, Vector.normalise(nV),m) 
                                     | 4 -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
                                                

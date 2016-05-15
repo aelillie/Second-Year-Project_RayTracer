@@ -28,7 +28,7 @@ let testAll = ()
 let renderAll toScreen =
 
 //  Shapes.render toScreen
-//  printf "Shapes rendered"
+//  printf "shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
     ImplicitSurfacesTest.render toScreen
