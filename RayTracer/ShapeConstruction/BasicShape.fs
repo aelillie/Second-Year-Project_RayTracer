@@ -161,7 +161,7 @@ module BasicShape =
                             let v = mkVectorFromPoint (getCoord (c-a))
 
                             //Function to find the normal of the triangle
-                            let vectorN a b = crossProduct a b |> normalise
+                            let n = crossProduct u v |> normalise
 
                             let a1 = (Point.getX a) - (Point.getX b)
                             let b1 = (Point.getX a) - (Point.getX c)
@@ -202,7 +202,7 @@ module BasicShape =
 
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
-                                 then Some(t, vectorN v u, mat)
+                                 then Some(t, n, mat)
                                  else None
                               else None //gamma + beta is less than 0 or greater than 1
                             else None // Can't divide with zero

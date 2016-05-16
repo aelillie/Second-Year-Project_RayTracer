@@ -31,16 +31,18 @@ let main argv =
         let light1 = mkLight (mkPoint -2.0 1.0 4.0) (fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000 in
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let ply = mkPLY "../../../ply/ant.ply" false
-        let texture = mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg" 0.1
-        let ant = transform (mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))) 
-                    (scale 0.2 0.2 0.2)
+        let texture = mkTextureFromFile (fun x y -> (y, x)) "../../../textures/bunny.png"
+        let t s = transform s (mergeTransformations [scale 0.5 0.5 0.5])
+        let ant = mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0)) |> t
+        let bunny = mkShape ply texture
+                    
         
 
         (*******Scene******)
-        let scene = mkScene [ant] [light] ambientLight camera 3
+        let scene = mkScene [bunny] [light] ambientLight camera 3
         if toScreen then
           Util.render scene None
         else
