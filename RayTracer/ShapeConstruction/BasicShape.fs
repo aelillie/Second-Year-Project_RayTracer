@@ -21,7 +21,47 @@ module BasicShape =
                         let (lx,ly,lz) = Point.getCoord b.p1
                         let (hx,hy,hz) = Point.getCoord b.p2
                         lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+        member b.getLongestAxis l h =
+                        let xdim = ((Point.getX h) - (Point.getX l), "x")
+                        let ydim = ((Point.getY h) - (Point.getY l), "y")
+                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+                        List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
+        member b.getH =
+                b.p2
+        member b.getL =
+                b.p1
+        member b.hit (R(p,d)) =
+                //Check intersection between bbox and ray 
+            let (ox,oy,oz) = Point.getCoord p
+            let (dx,dy,dz) = Vector.getCoord d
+            let ((hx,hy,hz), (lx,ly,lz)) = (Point.getCoord b.getH, Point.getCoord b.getL)    
+            let (tx,tx') = 
+                if dx >= 0.0 then
+                   (lx - ox)/dx,  
+                   (hx - ox)/dx 
+                else 
+                   (hx - ox)/dx, 
+                   (lx - ox)/dx
 
+            let (ty,ty') = 
+                if dy >= 0.0 then
+                    (ly - oy)/dy,  
+                    (hy - oy)/dy 
+                else 
+                    (hy - oy)/dy, 
+                    (ly - oy)/dy
+            let (tz,tz') = 
+                if dz >= 0.0 then
+                    (lz - oz)/dz,  
+                    (hz - oz)/dz 
+                else 
+                    (hz - oz)/dz, 
+                    (lz - oz)/dz
+            let t = List.max [tx;ty;tz]
+            let t'= List.min [tx';ty';tz']
+            if t < t' && t' > 0.0
+            then Some (t,t')
+            else None
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option

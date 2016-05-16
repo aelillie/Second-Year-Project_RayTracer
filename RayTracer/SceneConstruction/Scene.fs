@@ -8,6 +8,7 @@ open Vector
 open Drawing
 open Colour
 
+type BoundingBox = Shapes.BasicShape.BoundingBox
 type Shape = Shapes.BasicShape.Shape
 
 type Scene =
@@ -48,9 +49,14 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
     let rays = List.toArray (mkRays cam)  //Create rays from camera
     let maxRefl = n
 
+    let bBoxes = List.map (fun (x:Shape) -> x.getBounding()) shapes
+
     //Cast a single ray into the scene
     let rec castRay (ray:Ray) reflNumber = 
-        let hitResults = List.map (fun (x:Shape) -> x.hit(ray)) shapes //Check which shape are hit by a fire
+        let hitResults = List.map2 (fun (x:Shape) (b:BoundingBox) ->   match b.hit ray with
+                                                                        |None -> None
+                                                                        | Some _ ->
+                                                                                    x.hit(ray)) shapes bBoxes //Check which shape are hit by a fire
         
         let intersections = List.collect (fun x -> sort x) hitResults //Sort all None options out.
 
