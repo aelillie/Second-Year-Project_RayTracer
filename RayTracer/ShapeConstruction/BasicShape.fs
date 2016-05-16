@@ -140,7 +140,7 @@ module BasicShape =
     type Plane(tex:Texture) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = {p1= (mkPoint -1000.0 -1000.0 -1000.0); p2 = (mkPoint 1000.0 1000.0 1000.0)}
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0

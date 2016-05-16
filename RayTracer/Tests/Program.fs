@@ -26,16 +26,16 @@ open TestSuite
 
 let renderAll toScreen =
 
-  Shapes.render toScreen
-  printf "Shapes rendered"
+//  Shapes.render toScreen
+//  printf "Shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
 //  ImplicitSurfaces.render toScreen
 //  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
-//  Texture.render toScreen
-//  printf "Texture rendered"
+  Texture.render toScreen
+  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
 //  CSG.render toScreen
