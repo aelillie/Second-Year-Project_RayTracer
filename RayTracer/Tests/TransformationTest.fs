@@ -2,7 +2,7 @@
 open Transformation
 
 let chk (name,res1,res2) =
-  printf "%s %s\n" name (if res1 = res2 then "OK" else "FAILED\nActual:\n"+(string)res1+"\nExpected:\n"+(string)res2+"\n")
+  printf "%s %s\n" name (if res1 = res2 then "OK" else "FAILED\nExpected:\n"+(string)res1+"\nActual:\n"+(string)res2+"\n")
 
 let a = scale 2.0 2.0 2.0      
 let b = rotateX System.Math.PI

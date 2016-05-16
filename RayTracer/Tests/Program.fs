@@ -44,10 +44,7 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
-//    testAll
-    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    //    testAll
     renderAll false
-    stopWatch.Stop()
-    printfn "\n%i" stopWatch.Elapsed.Minutes
     Console.ReadKey() |> ignore
     0 // return an integer exit code
