@@ -122,7 +122,12 @@ module AdvancedShape =
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = 
+                                    let shapeX = List.map(fun x -> x:> Shape) triangles
+                                    let sbbox = List.map (fun (c:Shape) -> c.getBounding()) shapeX
+                                    let max = List.maxBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox)
+                                    let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox) 
+                                    {p1=min ; p2=max}
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                                     let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id

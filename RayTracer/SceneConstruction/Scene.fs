@@ -55,16 +55,17 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
     let rec castRay (ray:Ray) reflNumber = 
         let hitResults = List.map2 (fun (x:Shape) (b:BoundingBox) ->   match b.hit ray with
                                                                         |None -> None
-                                                                        | Some _ ->
+                                                                        |Some _ ->
                                                                                     x.hit(ray)) shapes bBoxes //Check which shape are hit by a fire
         
-        let intersections = List.collect (fun x -> sort x) hitResults //Sort all None options out.
+        let intersections = List.choose id hitResults //Sort all None options out.
 
         match intersections with 
             | [] -> None
             | _  -> let (t,nV,m) = List.minBy (fun (t,_,_) -> t ) intersections //find intersection with minimum distance
                     let nV' = if (Ray.getD ray) * nV > 0.0 then (-1.0 * nV) else nV //Check if normalVector has to be inversed
                     let i = Light.getAmbientI ambi
+
                     //Moved point to the surface of the shape hit.
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
                     let p' = Point.move p (Vector.multScalar nV' 0.0001)

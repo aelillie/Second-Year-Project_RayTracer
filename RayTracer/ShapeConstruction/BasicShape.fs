@@ -191,7 +191,7 @@ module BasicShape =
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
                             let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
 
-                            let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
+                            let l = Point.mkPoint((List.min xlist) - epsilon) ((List.min ylist) - epsilon) ((List.min zlist) - epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
                             {p1 = l; p2 = h}
 
