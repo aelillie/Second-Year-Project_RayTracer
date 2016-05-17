@@ -243,16 +243,64 @@ module ImplicitShape =
                                                     else
                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
                                                         Some (answer, Vector.normalise(nV),m) 
-                                    | 4 -> let sturmChain = sturm (floatMap) 
-                                           let x = sturmChain
-                                               
-                                           let positive = evalInterval sturmChain intervalSize
-                                           let negative = evalInterval sturmChain (-intervalSize)
+                                    | 4 -> let newtRaph sturmChain = 
+                                                          let nOfRoots iStart iEnd = let positive = evalInterval sturmChain iEnd
+                                                                                     let negative = evalInterval sturmChain iStart
+                                                                                     negative-positive
                                            
-                                            
-                                           let numberOfRoots = negative - positive 
-                                            
-                                           failwith "3rd degree"
+                                                          if nOfRoots 0.0 100.0 > 0 then  let mutable counter = 6 
+                                                                                          let mutable prev = 0.0                                   
+                                                                                          let rec getInterval s e : (float*float) = if counter > 0 then
+                                                                                                                                        if (nOfRoots s e) > 0 then
+                                                                                                                                                            prev <- e   
+                                                                                                                                                            counter <- counter-1                                                                                                                                  
+                                                                                                                                                            getInterval s ((e+s)/2.0) 
+                                                                                                                                                            
+                                                                                                                                        else counter <- counter-1
+                                                                                                                                             getInterval e prev
+                                                                                                                                             
+                                                                                                                                        
+                                                                                                                                    else (s,e)
+                                                                                                                                  
+                                                                                          let intv = getInterval 0.0 100.0
+                                                                                          let iStart = fst intv
+                                                                                          let iEnd = snd intv
+
+                                                                                          let fNorm = (Map.toList (List.item 0 sturmChain))
+                                                                                          let fPrime = (Map.toList (List.item 1 sturmChain))
+                                                                                           
+                                                                                          let mutable raphCount = 13 //(int iEnd)-(int iStart)
+
+
+                                                                                          let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
+                                                                                                                                             then 
+                                                                                                                                              acc + System.Math.Pow(value*i,(float deg))
+                                                                                                                                             else 
+                                                                                                                                              acc + value) 0.0 l 
+                                                                                        
+                                                                                          let rec calcGuess guess = if raphCount > 0 then
+                                                                                                                        let lol = (calcT fNorm guess)
+                                                                                                                        let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
+                                                                                                                        raphCount <- raphCount - 1
+                                                                                                                        calcGuess newGuess
+
+                                                                                                                    else guess
+                                                                                          
+                                                                                          calcGuess ((iEnd+iStart)/2.0)
+
+
+                                                                                         
+
+                                                          else 0.0                    
+                                                                
+                                           
+                                           let root = newtRaph (sturm floatMap)
+                                           
+                                           if root = 0.0 || root < 0.0 then None
+                                           else                                             
+                                               let hitPoint = Point.move p (root*d)
+
+                                               Some (root, Vector.normalise(mkNorm hitPoint expr), m)
 
                                     | 5 -> let newtRaph sturmChain = 
                                                           let nOfRoots iStart iEnd = let positive = evalInterval sturmChain iEnd
