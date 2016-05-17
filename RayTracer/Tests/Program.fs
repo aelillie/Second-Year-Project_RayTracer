@@ -46,9 +46,9 @@ let renderAll toScreen =
 [<EntryPoint>]
 let main argv = 
 //    testall
-    let expr  = ExprParse.parseStr "((1 + 3 * 4)/2)*x^2"
+//    let expr  = ExprParse.parseStr "((1 + 3 * 4)/2)*x^2"
 //    let expr2 = parseStr "-(x/4)*x^2 + 30*y^1"
-    let ppe = ppExpr expr  
+//    let ppe = ppExpr expr  
 //    let simpleexpr = exprToSimpleExpr expr
 //    let simpleexpr2 = exprToSimpleExpr expr2
 //
