@@ -22,9 +22,9 @@ module ImplicitShape =
         let evalInterval sc interval =
                         let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                             then 
-                                                                                            acc + (value*(float deg)*interval)
+                                                                                             acc + System.Math.Pow(value*interval,(float deg))
                                                                                             else 
-                                                                                            acc + value) 0.0 (Map.toList m)) sc
+                                                                                             acc + value) 0.0 (Map.toList m)) sc
                         let rec matchSign x=
                          function 
                             |[] -> x
@@ -280,22 +280,24 @@ module ImplicitShape =
                                                                                           let fNorm = (Map.toList (List.item 0 sturmChain))
                                                                                           let fPrime = (Map.toList (List.item 1 sturmChain))
                                                                                            
-                                                                                          let mutable raphCount = (int iEnd)-(int iStart)
+                                                                                          let mutable raphCount = 13 //(int iEnd)-(int iStart)
 
 
                                                                                           let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                                                                              then 
-                                                                                                                                             acc + (value*(float deg)*i)
+                                                                                                                                              acc + System.Math.Pow(value*i,(float deg))
                                                                                                                                              else 
-                                                                                                                                             acc + value) 0.0 l 
+                                                                                                                                              acc + value) 0.0 l 
                                                                                         
                                                                                           let rec calcGuess guess = if raphCount > 0 then
+                                                                                                                        let lol = (calcT fNorm guess)
                                                                                                                         let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
                                                                                                                         raphCount <- raphCount - 1
                                                                                                                         calcGuess newGuess
 
                                                                                                                     else guess
-                                                                                          calcGuess iStart
+                                                                                          
+                                                                                          calcGuess ((iEnd+iStart)/2.0)
 
 
                                                                                          
@@ -346,9 +348,9 @@ module ImplicitShape =
 
                                                                                          let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                                                                             then 
-                                                                                                                                            acc + (value*(float deg)*i)
+                                                                                                                                             acc + System.Math.Pow(value*i,(float deg))
                                                                                                                                             else 
-                                                                                                                                            acc + value) 0.0 l 
+                                                                                                                                             acc + value) 0.0 l 
                                                                                         
                                                                                          let rec calcGuess guess = if raphCount > 0 then
                                                                                                                         let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
