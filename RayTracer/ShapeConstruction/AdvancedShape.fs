@@ -12,6 +12,24 @@ open PlyParse
 module AdvancedShape = 
     
 
+    let bBoxFromList xs = 
+        let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) xs
+
+        let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
+        let bH = List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox
+
+        let minX = List.minBy (fun x -> Point.getX x) bL
+        let minY = List.minBy (fun x -> Point.getY x) bL
+        let minZ = List.minBy (fun x -> Point.getZ x) bL
+
+        let maxX = List.maxBy (fun x -> Point.getX x) bH
+        let maxY = List.maxBy (fun x -> Point.getY x) bH
+        let maxZ = List.maxBy (fun x -> Point.getZ x) bH
+        Some {p1=(mkPoint (Point.getX minX - (epsilon*2.0)) (Point.getY minY - (epsilon*2.0)) (Point.getZ minZ - (epsilon *2.0)) ) 
+        ; p2=(mkPoint (Point.getX maxX + (epsilon * 2.0)) (Point.getY maxY + (epsilon*2.0)) (Point.getZ maxZ + (epsilon * 2.0)) )}
+
+        
+
     type Box(low,high,front,back,top,bottom,left,right) = 
         let rects = 
                 let width = System.Math.Abs(Point.getX high - Point.getX low)
@@ -51,7 +69,7 @@ module AdvancedShape =
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = bBoxFromList rects
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = this.hit ray 
 
@@ -75,7 +93,8 @@ module AdvancedShape =
                                      let lowH, highH = cy-(h/2.0), cy+(h/2.0)
                                      ((x-cx)**2.0 + (z-cz)**2.0) < r**2.0
                                      && lowH < y && y < highH
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let cylinder = cyl.[0]
+                                         cylinder.getBounding()
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                             let hits = List.map(fun (x:Shape) -> x.hit ray) cyl
@@ -124,22 +143,7 @@ module AdvancedShape =
             member this.isInside p = failwith "Not implemented"
             member this.getBounding () = 
                                     let shapeX = List.map(fun x -> x:> Shape) triangles
-                                    let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) shapeX
-
-                                    let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
-                                    let bH = List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox
-
-                                    let minX = List.minBy (fun x -> Point.getX x) bL
-                                    let minY = List.minBy (fun x -> Point.getY x) bL
-                                    let minZ = List.minBy (fun x -> Point.getZ x) bL
-
-                                    let maxX = List.maxBy (fun x -> Point.getX x) bH
-                                    let maxY = List.maxBy (fun x -> Point.getY x) bH
-                                    let maxZ = List.maxBy (fun x -> Point.getZ x) bH
-//                                    let max = List.maxBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox)
-//                                    let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox) 
-                                    Some {p1=(mkPoint (Point.getX minX - epsilon) (Point.getY minY - epsilon) (Point.getZ minZ - epsilon) ) 
-                                     ; p2=(mkPoint (Point.getX maxX + epsilon) (Point.getY maxY + epsilon) (Point.getZ maxZ + epsilon) )}
+                                    bBoxFromList shapeX
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                                     let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id

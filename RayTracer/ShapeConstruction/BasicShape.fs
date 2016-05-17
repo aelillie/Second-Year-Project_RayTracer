@@ -140,7 +140,7 @@ module BasicShape =
     type Plane(tex:Texture) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0
@@ -163,7 +163,8 @@ module BasicShape =
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (Point.getX c - r - epsilon) (Point.getY c - r - epsilon ) (Point.getZ c - epsilon))
+                                              ; p2 = (mkPoint (Point.getX c + r + epsilon) (Point.getY c + r + epsilon ) (Point.getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -250,7 +251,8 @@ module BasicShape =
     type Rectangle(c,w,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (getX c - (w/2.0) - epsilon ) (getY c - (h/2.0) - epsilon) (getZ c - epsilon)) 
+                                              ; p2 = (mkPoint (getX c + (w/2.0) + epsilon) (getY c + (h/2.0) + epsilon) (getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -275,7 +277,13 @@ module BasicShape =
     type HollowCylinder (center,r,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h/2.0)) (getZ center - r )
+                                         let pLow = pLow - epsilon
+                                         
+                                         let pHigh = mkPoint (getX center + r) (getY center + (h/2.0)) (getZ center + r)
+                                         let pHigh = pHigh + epsilon
+                                         Some {p1 = pLow; p2 = pHigh} 
+                                        
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)

@@ -38,15 +38,18 @@ let main argv =
         let texture = mkTextureFromFile (fun x y -> (y, x)) "../../../textures/bunny.png"
         let t s = transform s (mergeTransformations [scale 0.5 0.5 0.5])
 //        let ant = mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0)) |> t
-        let bunny = mkShape ply texture
-        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))            
-        sw.Stop()
+//        let bunny = mkShape ply texture
+//        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 2.0 (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))            
+//        sw.Stop()
+
+        let box = mkBox (mkPoint 0.0 0.0 0.0 ) (mkPoint 2.0 2.0 2.0) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) 
+        let box = transform box (rotateX (System.Math.PI / 1.5)) 
 
         printf "%f" sw.Elapsed.TotalSeconds
 
         (*******Scene******)
 
-        let scene = mkScene [bunny] [light] ambientLight camera 3
+        let scene = mkScene [box] [light] ambientLight camera 3
         if toScreen then
           Util.render scene None
         else
