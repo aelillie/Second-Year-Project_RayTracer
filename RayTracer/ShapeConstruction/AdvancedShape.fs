@@ -125,27 +125,28 @@ module AdvancedShape =
                         let v = List.item vi vertex
                         ((Point.mkPoint x y z), [(u,v)])
             
-                let rec makeTriangles shapes vertices = function
+                let rec makeTriangles (shapes:BasicShape.Triangle list) vertices = function
                      | Face([a;b;c])::rest->  
                                     let (p1,l1) = mkVertex a vertices
                                     let (p2,l2) = mkVertex b vertices
                                     let (p3,l3) = mkVertex c vertices
                                     
-                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
+                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> BasicShape.Triangle::shapes) vertices rest
                      | _::rest -> makeTriangles shapes vertices rest
                      | [] -> shapes
                 printf "Triangles constructed\n"
-                makeTriangles [] vertexList plyList
+                TmKdtree.mkTmKdtree (makeTriangles [] vertexList plyList)
+                
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
             member this.getBounding () = 
-                TmKdtree.getBox rects
+                TmKdtree.getBox triangles
 
 
 
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) =   match TmKdtree.traverse rects ray with
+            member this.hit (R(p,d) as ray) =   match TmKdtree.traverse triangles ray with
                                                 |Some x -> x
                                                 |None -> None
 

@@ -14,7 +14,7 @@ type TmKdtree =
 let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
     let epsilon = 0.00001
     let shapeX = List.map(fun x -> x:> Shape) shapes
-    let sbbox = List.map (fun (c:Shape) -> c.getBounding()) shapeX
+    let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) shapeX
     let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
     let bH = List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox
 
@@ -54,8 +54,8 @@ let getAxis s =
 //Get bounding box
 let getBox s =
     match s with
-    | Node(_,_,_,b,_) -> b
-    | Leaf(_,b) -> b
+    | Node(_,_,_,b,_) -> Some b
+    | Leaf(_,b) -> Some b
 
 let closestHit (triList : BasicShape.Triangle list) ray =
     let sndRects = List.map(fun x -> x:> Shape) triList
@@ -100,7 +100,7 @@ let rec search node ray t t' =
 
 
 let traverse tree ray =
-    match(getBox tree).hit(ray) with
+    match(getBox tree).Value.hit(ray) with
     |Some(t,t') -> search tree ray t t'
     |None -> None
     

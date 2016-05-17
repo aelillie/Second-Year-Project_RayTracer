@@ -197,7 +197,9 @@ module BasicShape =
                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
 
-    type Triangle(a,b,c,tex, texCoordList) = 
+    type Triangle(a,b,c,tex, texCoordList) =
+        member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+         
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
                         member this.getBounding () = 
