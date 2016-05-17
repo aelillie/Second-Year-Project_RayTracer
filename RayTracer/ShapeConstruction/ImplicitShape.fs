@@ -130,21 +130,20 @@ module ImplicitShape =
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = failwith "Not implemented"
             member this.hit (R(p,d) as ray) = 
-                                let getSEList s : atomGroup list = 
+                                let getSEList s = 
                                     match s with
-                                    | SE (x) -> x
+                                    | SE (ag, ags) -> (ag,ags)
 
                                
                   
                                 let pol = getPoly bs
                                 let expr = getExpr bs
 
-                    
                                 // map of SE to map of atomGroupList (atom list list)
-                                let mapToAtomList m = Map.map (fun x y -> getSEList y) m
+                                let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
  
                                 //substitute atoms with float values: atom list list -> float list list
-                                let substSE ags = 
+                                let substAtomG ags = 
                                     List.map (fun x -> List.map (fun a -> match a with
                                                                             | AExponent (s,i) -> let sub = 
                                                                                                     match s with
@@ -159,17 +158,24 @@ module ImplicitShape =
                                                                             | ANum c  -> c ) x) ags 
 
                                 //Collect the float list list into a single float list
-                                let subFloats m = Map.map (fun x y -> substSE y) m
+                                let subFloats m = Map.map (fun x (y,d) -> (substAtomG y, substAtomG d) ) m
 
-                                let multFloats m = Map.map (fun x y -> List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y) m
-                   
+                                let multFloats m = Map.map (fun x (y,d) -> let y' = List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y
+                                                                           let d' = List.map (fun ds -> List.fold (fun a b -> a*b) 1.0 ds) d
+                                                                           (y',d')) m
+                                
+                                
+
+                                let divideFloats m = 
+                                                    Map.map (fun x (y,d) -> (List.map2 (fun t d -> t/d) y d)) m
                                 //let collectFloats m = Map.map (fun x y -> List.collect id (substSE y)) m 
     
                                 //Add the floats in each list of the map     
-                                let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
+                                let foldMap m = Map.map (fun x y -> let ys = List.fold (fun a b -> a+b) 0.0 y
+                                                                    (ys)) m
 
-                                //Poly into Map<int,float>
-                                let polyMapOFloats m = (polyToMap >> mapToAtomList >> subFloats >> multFloats >> foldMap)  m
+
+                                let polyMapOFloats m = (polyToMap >> mapSEToAtomGroups >> subFloats >> multFloats >> divideFloats >> foldMap )  m
 
                                 
                                 let floatMap = polyMapOFloats pol
@@ -229,9 +235,14 @@ module ImplicitShape =
                                                         let answer = System.Math.Max(answer1,answer2)
                                                         //normal vector point with maximum answer value
                                                         let nvPointMax = Point.move p (answer * d)
-                                                        Some (answer, Vector.normalise(mkNorm nvPointMax expr),m) 
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+
+                                                        Some (answer, Vector.normalise(nV),m) 
+                                                        
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                                    else Some (answer, Vector.normalise(mkNorm nvPointMin expr),m) 
+                                                    else
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+                                                        Some (answer, Vector.normalise(nV),m) 
                                     | 4 -> let sturmChain = sturm (floatMap) 
                                            let x = sturmChain
                                                

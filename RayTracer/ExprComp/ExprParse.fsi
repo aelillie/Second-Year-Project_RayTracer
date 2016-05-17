@@ -1,6 +1,6 @@
 module ExprParse
 
-type terminal = Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Root | Div
+type terminal = Add | Mul | Pwr | Lpar | Rpar | Int of int | Float of float | Var of string | Root | Div | Neg
 exception Scanerror
 val scan: char seq -> terminal list
 val insertMult: terminal list -> terminal list

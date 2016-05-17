@@ -6,6 +6,7 @@ open ExprParse
 open Material
 open ExprToPoly
 
+
 //A Sphere has the function x^2 + y^2 + z^2 - r^2 = 0
 // Implicit Surfaces:
 // 1. Parsing
@@ -48,7 +49,7 @@ let mkNorm p expr : Vector =
     let derivPolyY = polyToMap (exprToPoly expr "y")
     let derivPolyZ = polyToMap (exprToPoly expr "z")
 
-     
+    let k = ppExpr expr  
 
     //make list of keys from polyMap
     let listFst m = List.map fst (Map.toList m)
@@ -58,17 +59,26 @@ let mkNorm p expr : Vector =
     //make a list of values from polyMap
     let listSnd m = List.map snd (Map.toList m)
     //get multiplication value as float
-    let secondFloat m = if List.last (listSnd m) = SE [[]] then 1.0
-                        else let se = List.last (listSnd m)
+    let secondFloat (m:Map<int,simpleExpr>) = 
+                        let se = List.last (listSnd m)
+                        let ag = match se with |SE (ag,_) -> ag
+                        if ag = [[]] then 1.0
+                        else 
                              match se with
-                                       |SE ag -> let ANumLast = List.last ag |> List.last
-                                                 match ANumLast with 
-                                                 |ANum f -> f
-                                                 |_ -> failwith "Expected to be ANum"
+                                |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
+                                                let ANumDLast = List.last ag |> List.last        
+                                                match ANumLast with 
+                                                |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
+                                                           f/d
+                                                |_ -> failwith "Expected to be ANum"
                        
                                
                          
-    let getNew m c = if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
+    let getNew m c = 
+                     let x = firstFloat m
+                     let k = Map.toList m |> List.map snd
+                     let k = secondFloat m 
+                     if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
                      else (secondFloat m)*(firstFloat m)
 
     let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 then getNew (m) c
@@ -85,7 +95,6 @@ let mkNorm p expr : Vector =
 
 let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
     let expr = parseStr s
-    
    // let con = FNum (snd constant)
 
   
@@ -95,15 +104,16 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
     let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
 
    
-  
+    let s = ppExpr expr
 //     let polX = subst expr ("x", ex)
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
 
     let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
 
+    let k = ppExpr polyExprSubbed
 
-
+    let k = exprToPoly polyExprSubbed "t"
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
     printfn "%s" print
     //simplify equation 
@@ -112,7 +122,7 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
     
 
     
-
+        
 
     
 (*

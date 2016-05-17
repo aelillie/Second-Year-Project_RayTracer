@@ -74,10 +74,10 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
     
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
-type atom = ANum of float | AExponent of string * int | ANeg of atom | ADiv of atom list list * atom list list
+type atom = ANum of float | AExponent of string * int 
 type atomGroup = atom list //implicitly multiplied atoms
-type simpleExpr = SE of atomGroup list  //implicitly added atom groups
-let isSimpleExprEmpty (SE ags) = ags = [] || ags = [[]]
+type simpleExpr = SE of atomGroup list * atomGroup list  //implicitly added atom groups
+let isSimpleExprEmpty (SE (ags,ags')) = ags = [] || ags = [[]]
 
 
 
@@ -86,8 +86,10 @@ let ppAtom = function
   | ANum c -> string(c)
   | AExponent(s,1) -> s
   | AExponent(s,n) -> s+"^"+(string(n))
-let ppAtomGroup ag = String.concat "*" (List.map ppAtom ag)
-let ppSimpleExpr (SE ags) = String.concat "+" (List.map ppAtomGroup ags)
+let ppAtomGroup ag agd = "( " + (String.concat "*" (List.map ppAtom ag)) + " / " + (String.concat "*" (List.map ppAtom agd)) + " )"
+                         
+let ppSimpleExpr (SE (ags, ags')) = 
+                                    String.concat "+" (List.map2 ppAtomGroup ags ags' )
 
 //multiply all components and eliminate parantheses
 let rec combine xss = function
@@ -116,17 +118,37 @@ let rec combine xss = function
   //| FExponent(e1,n) when n < 0 -> [[ADiv(simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
 
 let rec simplify = function
-    | FNum c          -> [[ANum c]] 
-    | FVar s          -> [[AExponent(s,1)]]
-    | FAdd(e1,e2)     -> simplify e1 @ simplify e2
-    | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
-    | FExponent(e1,0) -> [[ANum 1.0]]
-    | FExponent(e1,1) -> simplify e1
-    | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
-    | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
-    //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
-    | FRoot(e,n) -> simplify (FExponent(e,1/n))
+  | FNum c          -> [[ANum c]] 
+  | FVar s          -> [[AExponent(s,1)]]
+  | FAdd(e1,e2)     -> simplify e1 @ simplify e2
+  | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
+  | FExponent(e1,0) -> [[ANum 1.0]]
+  | FExponent(e1,1) -> simplify e1
+  | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+  | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
+//  | FDiv(FNum x, FNum y) -> [[ANum (x/y)]]
+//  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c);AExponent (s,1)]]
+  //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
+  | FRoot(e,n) -> simplify (FExponent(e,1/n))
+  | FDiv(e1, e2) -> simplify e1
 
+
+let rec simplifyDivisor = function
+  | FDiv(FNum x, FNum y) -> [[ANum y]]
+  | FDiv(FVar s, FNum c) -> [[ANum c]]
+  | FDiv(FMult(e1 ,e2), e3) -> simplifyDivisor (FDiv(e1,e3)) @ simplifyDivisor (FDiv(e2,e3))
+  | FDiv(FAdd(e1,e2),e3) -> simplifyDivisor (FAdd(FDiv(e1,e3),FDiv(e1,e3))) 
+  | FDiv(e1, e2) ->  simplify e1 |> List.fold (fun s x -> s @ (simplify e2)) [[]]
+  | FNum c          -> [[ANum 1.0]]
+  | FVar s          -> [[ANum 1.0]]
+  | FAdd(e1,e2)     -> simplifyDivisor e1 @ simplifyDivisor e2
+  | FMult(e1,e2)    -> combine (simplifyDivisor e1) (simplifyDivisor e2)
+  | FExponent(FDiv(e1,e2), n) as f -> simplify f |> List.fold (fun s x -> s @ (simplify e2)) [[]]
+  | FExponent(e1,0) -> [[ANum 1.0]]
+  | FExponent(e1,1) -> simplifyDivisor e1
+  | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
+  | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
+  | FRoot(_,_) -> failwith "Not implemented"
 
 
 
@@ -160,31 +182,42 @@ let simplifyAtomGroup ag =
     | (num, atomGroup)              -> ANum num :: AExList
 
 //implicitly added atom groups
-let simplifySimpleExpr (SE (ags)) =
+let simplifySimpleExpr (SE (ags1, ags2)) =
   //simplify each atom group
-  let ags' = List.map simplifyAtomGroup ags
+  let ags1' = List.map simplifyAtomGroup ags1
+  //simplify divisor 
+  
+  let ags2' = List.map simplifyAtomGroup ags2
+
+  let ags2' = List.filter (fun x -> not (List.isEmpty x)) ags2'
   // Add atom groups with only constants together.
-  let cFolder (a, s) elem =
+  let cFolder (a, s, d) elem divisor =
         match (a, elem) with
-        | ([ANum (n)], [ANum (f)]) -> ([ANum (f+n)], s) //acc numbers
-        | _ -> (a, elem :: s) //just cons rest of ag'
-  let (agConst, ags'') = List.fold cFolder ([ANum (0.0)], []) ags'
+        | ([ANum (n)], [ANum (f)]) -> match divisor with
+                                       |[ANum (1.0)] -> ([ANum (f+n)], s, d) //acc numbers
+                                       | _ -> (a, elem :: s, divisor::d)
+        | _ -> (a, elem :: s, divisor::d) //just cons rest of ag'
+
+  let (agConst, ags1'', ags2'') = List.fold2 cFolder ([ANum (0.0)], [], []) ags1' ags2'
+  
+  let pp = ppSimpleExpr (SE(ags1'',ags2''))
   // Last task is to group similar atomGroups into one group
-  let eFolder map elem =  //map ag to their number of appearance
-        
-        let count = if Map.containsKey elem map //update if exists
-                    then (Map.find elem map) + 1.0 else 1.0 
+  let eFolder map elem div =  //map ag to their number of appearance
+
+        let count = if Map.containsKey (elem,div) map //update if exists
+                    then (Map.find (elem,div) map) + 1.0 else 1.0 
         if List.isEmpty elem 
         then map
-        else Map.add elem count map
-  let agSimMap = List.fold eFolder Map.empty ags''
-  let filterAg (s, f) = if f <> 1.0 && f <> 0.0 
-                        then (ANum (f)) :: s else s
-  let agSim = (Map.toList agSimMap) |> List.map filterAg
-  if agConst.Head = ANum (0.0) then SE (agSim) //dispose 0s
-  else SE (agConst :: agSim) 
+        else Map.add (elem,div) count map
+  let agSimMap = List.fold2 eFolder Map.empty ags1'' ags2''
+  let filterAg ((s,(d:atom list)), f) = if f <> 1.0 && f <> 0.0 
+                                        then ((ANum (f)) :: s, d) else (s,d)
+  let agSim = (Map.toList agSimMap)
+  let (agS, agD) = agSim |> List.map filterAg |> List.unzip
+  if agConst.Head = ANum (0.0) then SE (agS, agD) //dispose 0s
+  else SE (agConst :: agS, [ANum 1.0] :: agD) 
 
-let exprToSimpleExpr e = simplifySimpleExpr (SE (simplify e))
+let exprToSimpleExpr e = simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
 
 type poly = Po of Map<int,simpleExpr>
 
@@ -200,24 +233,28 @@ let removeV v = function
     | _ -> true
 
 (* Collect atom groups into groups with respect to one variable v *)
-let splitAG v m = function
-  | [] -> m
-  | ag ->
-    let eqV = function AExponent(v',_) -> v = v' | _ -> false
-    let addMap d ag m = 
-        let agTrimmed = List.filter (removeV v) ag
-        if Map.containsKey d m
-        then match Map.find d m with
-             | SE agList -> Map.add d (SE (agTrimmed :: agList)) m
-        else Map.add d (SE [agTrimmed]) m
-    match List.tryFind eqV ag with
-      | Some (AExponent(_,d)) ->
-        let ag' = List.filter (not << eqV) ag
-        addMap d ag' m
-      | Some _ -> failwith "splitAG: Must never come here! - ANum will not match eqV"
-      | None -> addMap 0 ag m
+let splitAG v m s d = 
+ match s,d with
+  | ([],[]) -> m
+  | (ag,agd) ->
+        let eqV = function AExponent(v',_) -> v = v' | _ -> false
+        let addMap d ag agd m = 
+            let agTrimmed = List.filter (removeV v) ag
+            let agdTrimmed = List.filter (removeV v) agd
+            if Map.containsKey d m
+            then match Map.find d m with
+                 | SE (agList, agDList) -> Map.add d (SE (agTrimmed :: agList, agdTrimmed::agDList)) m
+            else Map.add d (SE ([agTrimmed], [agdTrimmed])) m
+        match List.tryFind eqV ag with
+          | Some (AExponent(_,d)) ->
+            let ag' = List.filter (not << eqV) ag
+            let agd' = List.filter (not << eqV) agd
+            addMap d ag' agd' m
+          | Some _ -> failwith "splitAG: Must never come here! - ANum will not match eqV"
+          | None -> addMap 0 ag agd m
 
-let simpleExprToPoly (SE ags) v =
-  Po (List.fold (splitAG v) Map.empty ags)
+let simpleExprToPoly (SE (ags, agd)) (v:string) =
+  let k = ppSimpleExpr (SE(ags, agd))
+  Po (List.fold2 (splitAG v) Map.empty ags agd)
 
 let exprToPoly e v = (exprToSimpleExpr >> simplifySimpleExpr >> simpleExprToPoly) e v

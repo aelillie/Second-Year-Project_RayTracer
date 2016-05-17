@@ -121,34 +121,34 @@ let test04() =
   let genChk ((n,r),e) = (n,(exprToSimpleExpr >> ppSimpleExpr) e,r)
   List.map genChk (allEs @ allEsStr @ allEs2 @ allEs2Str)
 
-let (t1,t2) =
-  let sphere = FAdd(FAdd(FAdd(FExponent(FVar "x",2),
-                              FExponent(FVar "y",2)),
-                         FExponent(FVar "z",2)),
-                    FMult(FNum -1.0,FVar "R"))
-  let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
-  let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
-  let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
-  let eR = FNum -1.0
-  let sphereSubst = List.fold subst sphere [("x",ex);("y",ey);("z",ez);("R",eR)]
-  let sphereSE = exprToSimpleExpr sphereSubst
-  (("TestSphere01",sphereSubst,FAdd (FAdd (FAdd (FExponent (FAdd (FVar "px",FMult (FVar "t",FVar "dx")),2),
-                                                 FExponent (FAdd (FVar "py",FMult (FVar "t",FVar "dy")),2)),
-                                           FExponent (FAdd (FVar "pz",FMult (FVar "t",FVar "dz")),2)),
-                                     FMult (FNum -1.0,FNum -1.0))),
-   ("TestSphere02",sphereSE,SE [[ANum 1.0];
-                                [ANum 2.0; AExponent ("dx",1); AExponent ("px",1); AExponent ("t",1)];
-                                [AExponent ("dx",2); AExponent ("t",2)];
-                                [ANum 2.0; AExponent ("dy",1); AExponent ("py",1); AExponent ("t",1)];
-                                [AExponent ("dy",2); AExponent ("t",2)];
-                                [ANum 2.0; AExponent ("dz",1); AExponent ("pz",1); AExponent ("t",1)];
-                                [AExponent ("dz",2); AExponent ("t",2)]; [AExponent ("px",2)];
-                                [AExponent ("py",2)]; [AExponent ("pz",2)]]))
-
-let t3 = ("TestSE01",simplifyAtomGroup [AExponent ("px",1); AExponent ("px",2); ANum -2.0; ANum -2.0],[ANum 4.0; AExponent ("px",3)])
-let t4 = ("TestSE02",
-          simplifySimpleExpr (SE [[ANum 3.0];[ANum 4.0];[AExponent("x",2);AExponent("y",3)];[AExponent("x",2); AExponent("y",3)]]),
-          SE [[ANum 7.0]; [ANum 2.0; AExponent ("x",2); AExponent ("y",3)]])
+//let (t1,t2) =
+//  let sphere = FAdd(FAdd(FAdd(FExponent(FVar "x",2),
+//                              FExponent(FVar "y",2)),
+//                         FExponent(FVar "z",2)),
+//                    FMult(FNum -1.0,FVar "R"))
+//  let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
+//  let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
+//  let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
+//  let eR = FNum -1.0
+//  let sphereSubst = List.fold subst sphere [("x",ex);("y",ey);("z",ez);("R",eR)]
+//  let sphereSE = exprToSimpleExpr sphereSubst
+//  (("TestSphere01",sphereSubst,FAdd (FAdd (FAdd (FExponent (FAdd (FVar "px",FMult (FVar "t",FVar "dx")),2),
+//                                                 FExponent (FAdd (FVar "py",FMult (FVar "t",FVar "dy")),2)),
+//                                           FExponent (FAdd (FVar "pz",FMult (FVar "t",FVar "dz")),2)),
+//                                     FMult (FNum -1.0,FNum -1.0))),
+//   ("TestSphere02",sphereSE,SE [[ANum 1.0];
+//                                [ANum 2.0; AExponent ("dx",1); AExponent ("px",1); AExponent ("t",1)];
+//                                [AExponent ("dx",2); AExponent ("t",2)];
+//                                [ANum 2.0; AExponent ("dy",1); AExponent ("py",1); AExponent ("t",1)];
+//                                [AExponent ("dy",2); AExponent ("t",2)];
+//                                [ANum 2.0; AExponent ("dz",1); AExponent ("pz",1); AExponent ("t",1)];
+//                                [AExponent ("dz",2); AExponent ("t",2)]; [AExponent ("px",2)];
+//                                [AExponent ("py",2)]; [AExponent ("pz",2)]]))
+//
+//let t3 = ("TestSE01",simplifyAtomGroup [AExponent ("px",1); AExponent ("px",2); ANum -2.0; ANum -2.0],[ANum 4.0; AExponent ("px",3)])
+//let t4 = ("TestSE02",
+//          simplifySimpleExpr (SE [[ANum 3.0];[ANum 4.0];[AExponent("x",2);AExponent("y",3)];[AExponent("x",2); AExponent("y",3)]]),
+//          SE [[ANum 7.0]; [ANum 2.0; AExponent ("x",2); AExponent ("y",3)]])
 
 let t5 = ("TestSimplify11", (parseStr >> exprToSimpleExpr >> simplifySimpleExpr >> ppSimpleExpr) "a*b+b*a", "2*a*b")
 
@@ -158,8 +158,8 @@ let doTest() =
   List.iter chk (test01() ::
                  test02() ::
                  test03() @ [t5] @ test04())
-  chk' t1
-  chk' t2
-  chk' t3
-  chk' t4
+//  chk' t1
+//  chk' t2
+//  chk' t3
+//  chk' t4
 
