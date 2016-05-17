@@ -143,22 +143,14 @@ module BasicShape =
             member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
-                            let pVector = mkPoint 0.0 0.0 0.0
+                            let dist = -(Point.getZ p) / (Vector.getZ d)
                             let n = mkVector 0.0 0.0 1.0 
-                            let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
-                            if(denom > 0.0000001) then
-                                let v = Point.distance p pVector
-                                let result = (Vector.dotProduct v n) / denom
-                                let getMat a =
+                            let getMat a =
                                     let hp = Point.move p (a * d)
                                     let u = Point.getX hp
                                     let v = Point.getY hp
-                                 
                                     Texture.getMaterialAtPoint tex u v
-
-                                 
-                                if result >= 0.0 then Some (result, n, getMat result)
-                                else None
+                            if dist > 0.0 then Some(dist, n, getMat dist)
                             else None
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
