@@ -39,26 +39,26 @@ module ImplicitShape =
                                                
                         matchSign 0 values
         let sturm map = 
-
+                    //Computes all Polynomial long divisions of xs1 with xs2
                 let pLongDivisions xs1 xs2 = 
-
+                        //Single iteration of polynomial long division
                     let pLongDivision (n:Map<int,float>) (d:Map<int,float>) = 
-                        let degree x = fst (List.last (Map.toList  x))
+                        let degree x = fst (List.last (Map.toList  x)) //get largest degree of polynomial x
 
-                        let lead x = List.last (Map.toList x)
+                        let lead x = List.last (Map.toList x) //Get largest value for x
 
-                        let polyPlus (deg, t1) t2 =
+                        let polyPlus (deg, t1) t2 =         //For adding a segment of degree x to a polynomial
                                 Map.add deg t1 t2
 
-                        let polyMinus t1 t2 =
-                                let minus x1 x2 = 
+                        let polyMinus t1 t2 =               //Subtracting 2 polys.
+                                let minus x1 x2 =           
                                           match x1 with 
                                            |None ->  x2
                                            |Some t -> x2 - t
                                         
                                 let t1' = Map.toList t1
                                 List.map (fun (deg, t) -> let x = Map.tryFind deg t2 in (deg, minus x t) ) t1'
-                                |> Map.ofList     
+                                |> Map.ofList               
                             
 
                         let polyMult (deg, t1:float) t2 = 
@@ -67,25 +67,28 @@ module ImplicitShape =
                         let polyDivide (deg1, t1:float) (deg2 , t2:float) =
                                 (deg1 - deg2, t1/t2)
  
-                        let removeZero r =
-                            Map.filter (fun key value -> value <> 0.0) r
-
+                        let removeZero r =          //Remove if zero 
+                            let v = 0.0 + epsilon
+                            let k = Map.filter (fun key value -> ((abs value) > (epsilon)) ) r
+                            let s = "HEH"
+                            k
                         let q = Map.empty
                         let r = n
 
-                        let rec calcQR (q, (r:Map<int,float>)) d =
-                            match Map.isEmpty r with
+                        //The computation of kvotient and remainder
+                        let rec calcQR (q, (r:Map<int,float>)) d c =
+                            match Map.isEmpty r with    //Map empty
                             |true -> (q , r)
                             |_ -> if (degree r) >= (degree d) 
-                                  then 
+                                  then                                     
                                    let (deg,t) = polyDivide (lead r) (lead d)
                                    let q = polyPlus (deg, t) q
                                    let x = polyMult (deg, t) d
                                    let r' = polyMinus r x 
                                    let r'' = removeZero r'
-                                   calcQR (q,r'') d
+                                   calcQR (q,r'') d (c+1)
                                   else (q, r)
-                        calcQR (q,r) d
+                        calcQR (q,r) d (0)
 
                     let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) = 
                         Map.map (fun key value -> let m1v = Map.tryFind key m1
@@ -306,7 +309,6 @@ module ImplicitShape =
                                                                 
                                            
                                            let root = newtRaph (sturm floatMap)
-                                           
                                            if root = 0.0 || root < 0.0 then None
                                            else                                             
                                                let hitPoint = Point.move p (root*d)
