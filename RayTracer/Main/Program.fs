@@ -24,20 +24,22 @@ open Colour
 let main argv =
 
     let folder = "shapes"
-
     let render toScreen =
         (*******Light******)
-        let light = mkLight (mkPoint 0.0 10.0 5.0) (fromColor Color.White) 1.0 in
+        let light = mkLight (mkPoint 0.0 5.0 5.0) (fromColor Color.White) 1.0 in
+        let light2 = mkLight (mkPoint -10.0 30.0 0.0) (fromColor Color.White) 1.0 in
+        let light1 = mkLight (mkPoint 10.0 30.0 0.0) (fromColor Color.White) 1.0 in
+        let light3 = mkLight (mkPoint 0.0 5.0 25.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 5.0 50.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 10.0 50.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let plyFile = PlyParse.parsePly "C:\\Program Files\\ant.ply"
         let tm = mkTriangleMesh (mkPoint 0.0 0.0 0.0) plyFile
+        let tm' = transform tm (translate 0.0 10.0 0.0)
         let plane = mkPlane (Texture.mkMatTexture ((Material.mkMaterial (Colour.fromColor Color.Blue)) 0.0))
-
         (*******Scene******)
-        let scene = mkScene [tm] [light] ambientLight camera 0 in
+        let scene = mkScene [tm';plane] [light;light2;light1;light3] ambientLight camera 0 in
         if toScreen then
           Util.render scene None
         else

@@ -8,43 +8,101 @@ type Shape = BasicShape.Shape
 
 type TmKdtree =
     | Leaf of BasicShape.Triangle list * BoundingBox 
-    | Node of BasicShape.Triangle list * TmKdtree * TmKdtree * BoundingBox  
+    | Node of BasicShape.Triangle list * TmKdtree * TmKdtree * BoundingBox  * (string*Point)
 
 //Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
 let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
+    let epsilon = 0.00001
     let shapeX = List.map(fun x -> x:> Shape) shapes
     let sbbox = List.map (fun (c:Shape) -> c.getBounding()) shapeX
-    let max = List.maxBy (fun x -> (Point.getX x,Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox)
-    let min = List.minBy (fun x -> (Point.getX x, Point.getY x, Point.getZ x)) (List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox) 
-    {p1=min ; p2=max} 
+    let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
+    let bH = List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox
 
+    let minX = List.minBy (fun x -> Point.getX x) bL
+    let minY = List.minBy (fun x -> Point.getY x) bL
+    let minZ = List.minBy (fun x -> Point.getZ x) bL
+
+    let maxX = List.maxBy (fun x -> Point.getX x) bH
+    let maxY = List.maxBy (fun x -> Point.getY x) bH
+    let maxZ = List.maxBy (fun x -> Point.getZ x) bH
+    {p1=(mkPoint (Point.getX minX - epsilon) (Point.getY minY - epsilon) (Point.getZ minZ - epsilon) ) 
+                                     ; p2=(mkPoint (Point.getX maxX + epsilon) (Point.getY maxY + epsilon) (Point.getZ maxZ + epsilon) )}
+    
 
 //Get left node
 let getLeft s = 
     match s with
-    | Node(_,l,_,_) -> Some l
-    | Leaf(_,_) -> None
+    | Node(_,l,_,_,_) -> l
 
 let getRight s = 
     match s with
-    | Node(_,_,r,_) -> Some r
-    | Leaf(_,_) -> None
+    | Node(_,_,r,_,_) -> r
+
 
 
 //Get the triangle list
 let getShapes s = 
     match s with
-    | Node(b,_,_,_) -> b
+    | Node(b,_,_,_,_) -> b
     | Leaf(b,_) -> b
+
+let getAxis s =
+    match s with
+    | Node(_,_,_,_,a) -> a
+
 
 //Get bounding box
 let getBox s =
     match s with
-    | Node(_,_,_,b) -> b
+    | Node(_,_,_,b,_) -> b
     | Leaf(_,b) -> b
 
+let closestHit (triList : BasicShape.Triangle list) ray =
+    let sndRects = List.map(fun x -> x:> Shape) triList
+    let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
+    match min with
+    |[] -> None
+    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
 
-    
+let searchLeaf leaf ray t' =
+    match leaf with 
+    | Leaf(s,_) -> let hit = closestHit s ray
+                   match hit with
+                   |Some(f,_,_) when f<t' -> Some hit
+                   |Some(f,_,_) when f>t' -> None
+                   |None -> None
+
+let order(d, left, right) =
+    if d > 0.0
+    then (left, right)
+    else (right, left)
+
+let rec search node ray t t' =
+    match node with
+    |Leaf(_,_) -> searchLeaf node ray t'
+    |Node(_,_,_,_,a') -> 
+        let a = fst a'
+        let b = snd a'
+        if(Ray.getDirection ray a) = 0.0 then
+            if((Ray.getOrigin ray a) <= (Point.getFromAxis b a)) then search (getLeft node) ray t t'
+            else search (getRight node) ray t t' 
+        else 
+            let tHit = ((Point.getFromAxis b a) - (Ray.getOrigin ray a)) / Ray.getDirection ray a
+            let (fst, snd) = order((Ray.getDirection ray a),getLeft node, getRight node)
+            if tHit >= t || tHit < 0.0 then
+                search fst ray t t'
+            else if tHit <= t then
+                search snd ray t t'
+            else
+             match search fst ray t tHit with
+             |Some hit -> Some hit
+             | _ -> search snd ray tHit t'
+
+
+let traverse tree ray =
+    match(getBox tree).hit(ray) with
+    |Some(t,t') -> search tree ray t t'
+    |None -> None
     
 //Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
 let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
@@ -94,9 +152,10 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         for t in left do
             for k in right do 
                 if(t = k) then count <- count + 1 
+                
 
     if((float(count/left.Length) < 0.5) && float(count/right.Length) < 0.5) then 
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
-      Node(shapes,leftTree, rightTree, (mkKdBbox shapes))
+      Node(List.empty,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
     else Leaf(shapes, (mkKdBbox shapes))

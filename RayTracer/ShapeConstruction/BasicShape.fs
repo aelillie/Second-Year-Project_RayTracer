@@ -236,7 +236,6 @@ module BasicShape =
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
                                  then
-                                 printf("du er ramt")
                                  Some(t, vectorN v u, mat)
                                  else None
                               else None //gamma + beta is less than 0 or greater than 1

@@ -17,4 +17,5 @@ val move : Point -> Vector -> Point
 val distance : Point -> Point -> Vector
 val direction : Point -> Point -> Vector
 val round : Point -> int -> Point
+val getFromAxis : Point -> string -> float
 
