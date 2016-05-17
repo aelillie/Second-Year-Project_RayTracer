@@ -124,26 +124,33 @@ module AdvancedShape =
                         let v = List.item vi vertex
                         ((Point.mkPoint x y z), [(u,v)])
                 let num = faceCount plyList
-                
+                let q1, q2 = num / 4, num / 2
+                let q3 = q2+q1
 
-                let makeTriangles 
+                let makeTriangles bot top =
+                        let rec make c shapes vertices = function
+                        | Face([a;b;c])::rest->  
+                                       if c <> top //Doesn't make triangle for top index
+                                       then let (p1,l1) = mkVertex a vertices
+                                            let (p2,l2) = mkVertex b vertices
+                                            let (p3,l3) = mkVertex c vertices
+                                            
+                                            make (c+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
+                                       else shapes
+                        | _::rest -> make c shapes vertices rest
+                        | [] -> shapes //This should not happen
+                        make bot [] vertexList plyList  
+                let tasks = [async {return makeTriangles 0 q1};
+                             async {return makeTriangles q1 q2};
+                             async {return makeTriangles q2 q3}
+                             async {return makeTriangles q3 (num-1)}]  
+                Async.RunSynchronously (Async.Parallel tasks) |> List.concat 
             
-                let rec makeTriangles shapes vertices = function
-                     | Face([a;b;c])::rest->  
-                                    let (p1,l1) = mkVertex a vertices
-                                    let (p2,l2) = mkVertex b vertices
-                                    let (p3,l3) = mkVertex c vertices
-                                    
-                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
-                     | _::rest -> makeTriangles shapes vertices rest
-                     | [] -> printf "Triangles constructed\n";shapes
-                makeTriangles [] vertexList plyList
+               
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = 
-                                    let shapeX = List.map(fun x -> x:> Shape) triangles
-                                    bBoxFromList shapeX
+            member this.getBounding () = bBoxFromList triangles
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                                     let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id
