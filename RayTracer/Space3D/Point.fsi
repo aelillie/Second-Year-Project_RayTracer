@@ -5,7 +5,7 @@ type Vector = Vector.Vector
 type Point = 
     static member ( + ) : Point * float -> Point
     static member ( - ) : Point * float -> Point
-<<<<<<< HEAD
+    static member ( - ) : Point * Point -> Point
     static member ( / ) : Point * float -> Point
 =======
     static member ( + ) : Point * Point -> Point
