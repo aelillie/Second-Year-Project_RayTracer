@@ -10,7 +10,7 @@ open BasicShape
 
 module TransformedShape = 
 
-    let epsilon = 0.00001
+    let epsilon = 0.0000001
 
     type TransformedShape(s:Shape, tr) = 
         interface Shape with

@@ -15,7 +15,7 @@ type Scene =
   | S of Shape list * Light list * AmbientLight * Camera * int
 
 let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, ambientLight, camera, reflection)
-let epsilon = 0.00001
+let epsilon = 0.0000001
 
 
 let plusTripleFloat (a,b,c) (x,y,z) : (float * float * float) =
@@ -80,6 +80,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     //Moved point to the surface of the shape hit.
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
                     let p' = Point.move p (Vector.multScalar nV' epsilon)
+
                     let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
                     //Filter all shadowRays that don't hit out
                     let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes bBoxes l )) srays

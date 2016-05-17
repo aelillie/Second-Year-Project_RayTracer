@@ -117,8 +117,6 @@ module AdvancedShape =
                     let x = List.item 0 vertex
                     let y = List.item 1 vertex
                     let z = List.item 2 vertex
-                    let u = List.item 6 vertex
-                    let v = List.item 7 vertex
                     match textureIndexes plyList with
                     | None -> ((Point.mkPoint x y z), [])
                     | Some(ui, vi) -> 

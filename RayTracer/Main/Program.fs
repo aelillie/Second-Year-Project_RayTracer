@@ -26,6 +26,9 @@ let main argv =
     let pi = System.Math.PI
 
     let render toScreen =
+        (******Helper******)
+        let mkColourTexture c r = mkMatTexture (mkMaterial (fromColor c) r)
+
         (*******Light******)
         let sw = System.Diagnostics.Stopwatch.StartNew()
         let light = mkLight (mkPoint 1.0 1.0 4.0) (fromColor Color.White) 1.0
