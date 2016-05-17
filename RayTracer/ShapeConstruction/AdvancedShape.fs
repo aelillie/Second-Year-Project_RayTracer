@@ -8,9 +8,10 @@ open Transformation
 open BasicShape
 open TransformedShape
 open PlyParse
+open TmKdtree
 
 module AdvancedShape = 
-    
+    type TmKdtree = TmKdtree.TmKdtree
 
     type Box(low,high,front,back,top,bottom,left,right) = 
         let rects = 
@@ -99,7 +100,6 @@ module AdvancedShape =
                     let y = List.item 1 (List.item i list)
                     let z = List.item 2 (List.item i list)
                     Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
-                let rnd = System.Random()  
         
                 let vertexList = plyList |> List.collect collectVertices
                 let faceList = plyList |> List.collect collectFaces
@@ -112,18 +112,33 @@ module AdvancedShape =
                                     let p2 = mkPointFromIndex p (List.item 1 l) vList
                                     let p3 = mkPointFromIndex p (List.item 2 l) vList
                                     new Triangle (p1, p2, p3, (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
-    
-                makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
+                let triangles = makeTriangles vertexList faceList 
+                TmKdtree.mkTmKdtree triangles
+     
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = 
+                TmKdtree.getBox rects
+
+
+
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) = 
-                                    let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
-                                    match min with
-                                    |[] -> None
-                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+            member this.hit (R(p,d) as ray) =   let hitList (triList : BasicShape.Triangle list)=
+                                                    let sndRects = List.map(fun x -> x:> Shape) triList
+                                                    let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
+                                                    match min with
+                                                    |[] -> None
+                                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+                                                
 
+                                                let rec traverse tree =
+                                                    let bboxRay = (TmKdtree.getBox tree).hit(ray)
+                                                    match bboxRay with
+                                                    | None -> []
+                                                    | Some(_) -> match tree with
+                                                                    |Node(_,l,r,_) -> traverse l @ traverse r 
+                                                                    |Leaf(l,_) -> (TmKdtree.getShapes tree)
+                                                hitList (traverse rects)
 
-
+                                                

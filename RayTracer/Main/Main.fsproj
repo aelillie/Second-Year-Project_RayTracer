@@ -64,6 +64,11 @@
       <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
+      <Name>PlyParser</Name>
+      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SceneConstruction\SceneConstruction.fsproj">
       <Name>SceneConstruction</Name>
       <Project>{cb0d89de-1378-405c-94d3-fffa04e2e114}</Project>

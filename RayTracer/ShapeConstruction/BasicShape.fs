@@ -21,6 +21,49 @@ module BasicShape =
                         let (lx,ly,lz) = Point.getCoord b.p1
                         let (hx,hy,hz) = Point.getCoord b.p2
                         lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+        member b.getLongestAxis l h =
+                        let xdim = ((Point.getX h) - (Point.getX l), "x")
+                        let ydim = ((Point.getY h) - (Point.getY l), "y")
+                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+                        List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
+        member b.getH =
+                b.p2
+        member b.getL =
+                b.p1
+        member b.hit (R(p,d)) =
+                //Check intersection between bbox and ray 
+            let (ox,oy,oz) = Point.getCoord p
+            let (dx,dy,dz) = Vector.getCoord d
+            let ((hx,hy,hz), (lx,ly,lz)) = (Point.getCoord b.getH, Point.getCoord b.getL)    
+            let (tx,tx') = 
+                if dx >= 0.0 then
+                   (lx - ox)/dx,  
+                   (hx - ox)/dx 
+                else 
+                   (hx - ox)/dx, 
+                   (lx - ox)/dx
+
+            let (ty,ty') = 
+                if dy >= 0.0 then
+                    (ly - oy)/dy,  
+                    (hy - oy)/dy 
+                else 
+                    (hy - oy)/dy, 
+                    (ly - oy)/dy
+            let (tz,tz') = 
+                if dz >= 0.0 then
+                    (lz - oz)/dz,  
+                    (hz - oz)/dz 
+                else 
+                    (hz - oz)/dz, 
+                    (lz - oz)/dz
+            let t = List.max [tx;ty;tz]
+            let t'= List.min [tx';ty';tz']
+            if t < t' && t' > 0.0
+            then Some (t,t')
+            else None
+                        
+        
 
 
     type Shape = 
@@ -143,9 +186,11 @@ module BasicShape =
                             else None
 
     type Triangle(a,b,c,mat) = 
+        member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = 
+                        member this.getBounding () = 
                             let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
                             let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
@@ -158,7 +203,7 @@ module BasicShape =
             member this.hit (R(p,d)) = 
                             let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
                             let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
-
+                         
                             //Function to find the normal of the triangle
                             let vectorN a b = Vector.normalise (Vector.crossProduct a b)
 
@@ -192,7 +237,9 @@ module BasicShape =
   
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
-                                 then Some(t, vectorN v u, mat)
+                                 then
+                                 printf("du er ramt")
+                                 Some(t, vectorN v u, mat)
                                  else None
                               else None //gamma + beta is less than 0 or greater than 1
                             else None // Can't divide with zero

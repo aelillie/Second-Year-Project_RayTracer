@@ -51,5 +51,7 @@ module Shape =
     let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Texture) (top : Texture) (bottom : Texture) 
          = new SolidCylinder((mkPoint 0.0 0.0 0.0),r,h,t,top,bottom) |> moveShape c
 
-    //Triangle
+    //Triangle and meshes
     let mkTriangle a b c mat = new Triangle(a,b,c,mat)
+
+    let mkTriangleMesh p plyList = new TriangleMesh(p, plyList)
