@@ -129,9 +129,9 @@ module Texture =
 
 
   let render toScreen =
-    renderBox toScreen
-//    renderBunny toScreen
-    renderCylinder toScreen
-    renderEarth toScreen
-    renderPlane toScreen
-    renderSphere toScreen
+//    renderBox toScreen
+////    renderBunny toScreen
+//    renderCylinder toScreen
+//    renderEarth toScreen
+    renderPlane true
+//    renderSphere toScreen

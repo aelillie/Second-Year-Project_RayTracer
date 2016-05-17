@@ -37,7 +37,7 @@ let main argv =
         let unitBox p1 p2 t = mkBox p1 p2 t t t t t t
         let box = unitBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) 
                                 (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0))
-                                    
+          
         (*******Scene******)
 
         let scene = mkScene [box] [light] ambientLight camera 3
