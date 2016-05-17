@@ -12,6 +12,24 @@ open PlyParse
 module AdvancedShape = 
     
 
+    let bBoxFromList xs = 
+        let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) xs
+
+        let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
+        let bH = List.map (fun (b:BasicShape.BoundingBox) -> b.getH) sbbox
+
+        let minX = List.minBy (fun x -> Point.getX x) bL
+        let minY = List.minBy (fun x -> Point.getY x) bL
+        let minZ = List.minBy (fun x -> Point.getZ x) bL
+
+        let maxX = List.maxBy (fun x -> Point.getX x) bH
+        let maxY = List.maxBy (fun x -> Point.getY x) bH
+        let maxZ = List.maxBy (fun x -> Point.getZ x) bH
+        Some {p1=(mkPoint (Point.getX minX - (epsilon*2.0)) (Point.getY minY - (epsilon*2.0)) (Point.getZ minZ - (epsilon *2.0)) ) 
+        ; p2=(mkPoint (Point.getX maxX + (epsilon * 2.0)) (Point.getY maxY + (epsilon*2.0)) (Point.getZ maxZ + (epsilon * 2.0)) )}
+
+        
+
     type Box(low,high,front,back,top,bottom,left,right) = 
         let rects = 
                 let width = System.Math.Abs(Point.getX high - Point.getX low)
@@ -51,7 +69,7 @@ module AdvancedShape =
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = bBoxFromList rects
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = this.hit ray 
 
@@ -75,7 +93,8 @@ module AdvancedShape =
                                      let lowH, highH = cy-(h/2.0), cy+(h/2.0)
                                      ((x-cx)**2.0 + (z-cz)**2.0) < r**2.0
                                      && lowH < y && y < highH
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let cylinder = cyl.[0]
+                                         cylinder.getBounding()
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                             let hits = List.map(fun (x:Shape) -> x.hit ray) cyl
@@ -84,43 +103,47 @@ module AdvancedShape =
                             |[] -> None
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
-    type TriangleMesh (p,plyList) = 
-        let rects = 
-                let collectFaces = function
-                 |Face(x) -> [x]
-                 |_ -> []
+    type TriangleMesh (plyList, texture) = 
+        let triangles = 
 
-                let collectVertices = function
-                 |Vertex(floatList) -> [floatList]
-                 |_ -> []
+                let vertexList = 
+                    plyList |> 
+                    List.collect (fun x -> match x with
+                                           | Vertex(floatList) -> [floatList]
+                                           | _ -> [])
 
-                let mkPointFromIndex p i list =
-                    let x = List.item 0 (List.item i list)
-                    let y = List.item 1 (List.item i list)
-                    let z = List.item 2 (List.item i list)
-                    Point.mkPoint (x - Point.getX p) (y - Point.getY p) (z - Point.getZ p)
-                let rnd = System.Random()  
-        
-                let vertexList = plyList |> List.collect collectVertices
-                let faceList = plyList |> List.collect collectFaces
-    
-                let rec makeTriangles vList fList = 
-                    match fList with
-                     |[] -> []
-                     |l::fList' ->  
-                                    let p1 = mkPointFromIndex p (List.item 0 l) vList
-                                    let p2 = mkPointFromIndex p (List.item 1 l) vList
-                                    let p3 = mkPointFromIndex p (List.item 2 l) vList
-                                    new Triangle (p1, p2, p3, (Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0))::makeTriangles vList fList'
-    
-                makeTriangles vertexList faceList |> List.map (fun x -> x:> Shape)
+                let mkVertex i vertices =
+                    let vertex = List.item i vertices
+                    let x = List.item 0 vertex
+                    let y = List.item 1 vertex
+                    let z = List.item 2 vertex
+                    match textureIndexes plyList with
+                    | None -> ((Point.mkPoint x y z), [])
+                    | Some(ui, vi) -> 
+                        let u = List.item ui vertex
+                        let v = List.item vi vertex
+                        ((Point.mkPoint x y z), [(u,v)])
+            
+                let rec makeTriangles shapes vertices = function
+                     | Face([a;b;c])::rest->  
+                                    let (p1,l1) = mkVertex a vertices
+                                    let (p2,l2) = mkVertex b vertices
+                                    let (p3,l3) = mkVertex c vertices
+                                    
+                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
+                     | _::rest -> makeTriangles shapes vertices rest
+                     | [] -> shapes
+                printf "Triangles constructed\n"
+                makeTriangles [] vertexList plyList
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = 
+                                    let shapeX = List.map(fun x -> x:> Shape) triangles
+                                    bBoxFromList shapeX
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
-                                    let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
+                                    let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id
                                     match min with
                                     |[] -> None
                                     |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
