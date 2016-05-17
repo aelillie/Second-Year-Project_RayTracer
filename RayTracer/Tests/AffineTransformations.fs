@@ -195,27 +195,27 @@ module AffineTransformations =
   let render toScreen =
     obaseImage toScreen
     pbaseImage toScreen
-//    testRotateX 90.0 toScreen
-//    testRotateX 180.0 toScreen
-//    testRotateX 270.0 toScreen
-//    testRotateY 90.0 toScreen
-//    testRotateY 180.0 toScreen
-//    testRotateY 270.0 toScreen
-//    testRotateZ 90.0 toScreen
-//    testRotateZ 180.0 toScreen
-//    testRotateZ 270.0 toScreen
-//    testMirrorX toScreen
-//    testMirrorY toScreen
-//    testMirrorZ toScreen
-//    testScaleX 2.0 toScreen
-//    testScaleY 2.0 toScreen
-//    testScaleZ 2.0 toScreen
-//    testSheareXY 1.0 toScreen
-//    testSheareXZ 1.0 toScreen
-//    testSheareYX 1.0 toScreen
-//    testSheareYZ 1.0 toScreen
-//    testSheareZX 1.0 toScreen
-//    testSheareZY 1.0 toScreen
-//    testTranslateX 1.0 toScreen
-//    testTranslateY 1.0 toScreen
-//    testTranslateZ 1.0 toScreen
+    testRotateX 90.0 toScreen
+    testRotateX 180.0 toScreen
+    testRotateX 270.0 toScreen
+    testRotateY 90.0 toScreen
+    testRotateY 180.0 toScreen
+    testRotateY 270.0 toScreen
+    testRotateZ 90.0 toScreen
+    testRotateZ 180.0 toScreen
+    testRotateZ 270.0 toScreen
+    testMirrorX toScreen
+    testMirrorY toScreen
+    testMirrorZ toScreen
+    testScaleX 2.0 toScreen
+    testScaleY 2.0 toScreen
+    testScaleZ 2.0 toScreen
+    testSheareXY 1.0 toScreen
+    testSheareXZ 1.0 toScreen
+    testSheareYX 1.0 toScreen
+    testSheareYZ 1.0 toScreen
+    testSheareZX 1.0 toScreen
+    testSheareZY 1.0 toScreen
+    testTranslateX 1.0 toScreen
+    testTranslateY 1.0 toScreen
+    testTranslateZ 1.0 toScreen

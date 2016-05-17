@@ -70,9 +70,9 @@ module Light =
   
 
   let render toScreen =
-//    renderSphereFront toScreen;
-//    renderSphereTop toScreen;
-//    renderSphereFrontFar toScreen;
-//    renderSphereTopFar toScreen;
-//    renderSphereColour toScreen;
+    renderSphereFront toScreen;
+    renderSphereTop toScreen;
+    renderSphereFrontFar toScreen;
+    renderSphereTopFar toScreen;
+    renderSphereColour toScreen;
     renderShadow toScreen;
