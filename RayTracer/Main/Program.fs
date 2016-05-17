@@ -22,8 +22,11 @@ open System.Drawing
 let main argv =
 
     let folder = "shapes"
-
+     
     let render toScreen =
+        (******Helper******)
+        let mkColourTexture c r = mkMatTexture (mkMaterial (fromColor c) r)
+
         (*******Light******)
         let light = mkLight (mkPoint 2.0 1.0 4.0) (fromColor Color.White) 1.0
         let light1 = mkLight (mkPoint -2.0 1.0 4.0) (fromColor Color.White) 1.0
@@ -34,7 +37,6 @@ let main argv =
         let sc = mkSolidCylinder (mkPoint 0.0 0.0 0.0) 1.0 2.0 (mkMatTexture (mkMaterial (fromColor Color.Red) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Beige) 0.0)) (mkMatTexture (mkMaterial (fromColor Color.Beige) 0.0))
         let sc' = transform sc (rotateX (System.Math.PI / 4.0))
         
-
         (*******Scene******)
         let scene = mkScene [sc'] [light] ambientLight camera 3
         if toScreen then
