@@ -67,7 +67,7 @@ module BasicShape =
          abstract member hit : Ray -> (float * Vector * Material) option
          abstract member isInside : Point -> bool
          abstract member isSolid : unit -> bool
-         abstract member getBounding : unit -> BoundingBox
+         abstract member getBounding : unit -> BoundingBox option
     
 
     type Sphere(o:Point, r:float, tex:Texture) = 
@@ -84,7 +84,7 @@ module BasicShape =
                                         let hy = (Point.getY o) + r + epsilon
                                         let hz = (Point.getZ o) + r + epsilon 
                                         let h = mkPoint hx hy hz
-                                        {p1 = l; p2 = h}
+                                        Some {p1 = l; p2 = h}
 
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
@@ -140,7 +140,7 @@ module BasicShape =
     type Plane(tex:Texture) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = {p1= (mkPoint -1000.0 -1000.0 -1000.0); p2 = (mkPoint 1000.0 1000.0 1000.0)}
+            member this.getBounding () = failwith "Not implemented"
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0
@@ -193,7 +193,7 @@ module BasicShape =
 
                             let l = Point.mkPoint((List.min xlist) - epsilon) ((List.min ylist) - epsilon) ((List.min zlist) - epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
-                            {p1 = l; p2 = h}
+                            Some {p1 = l; p2 = h}
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 

@@ -30,20 +30,32 @@ let mkShadowRay (p:Point) (l:Light)  :Ray =
     let sr = Point.direction p (Light.getPoint l)
     Ray.mkRay p sr
 
+
+//Function for finding if shape is hit
+
+let hit r (b:BoundingBox option) (s:Shape) = 
+    match b with
+     |None -> s.hit r
+     |Some bBox -> match bBox.hit r with
+                    |Some _ -> s.hit r
+                    |None -> None
+
+
 //Returns true if a point is shaded from light for a given lightsource or not
-let rec isShaded (r:Ray) (xs:Shape list) (l:Light) =
+let rec isShaded (r:Ray) (xs:Shape list) (bx) (l:Light) =
         match xs with
         |[] -> false
-        | s::xs'  ->                            //Check if shape is hit with ray towards a light
-            match s.hit r with
-            |None   -> isShaded r xs' l        //Check all possible shapes.
-            |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) (Light.getPoint l) |> Vector.magnitude
+        | s::xs'  ->    let b = List.head bx                           //Check if shape is hit with ray towards a light
+                        match hit r b s with
+                        |None   -> isShaded r xs' (bx.Tail) l        //Check all possible shapes.
+                        |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) (Light.getPoint l) |> Vector.magnitude
   
-                             if t' > tlight     //Remember to check if shape is behind the lightsource.
-                             then 
-                              isShaded r xs' l 
-                             else
-                              true
+                                         if t' > tlight     //Remember to check if shape is behind the lightsource.
+                                         then 
+                                          isShaded r xs' (bx.Tail) l 
+                                         else
+                                          true
+
 
 
 // recursively casts rays to determine the color a given ray should register
@@ -55,10 +67,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
 
     //Cast a single ray into the scene
     let rec castRay (ray:Ray) reflNumber = 
-        let hitResults = List.map2 (fun (x:Shape) (b:BoundingBox) ->   match b.hit ray with
-                                                                        |None -> None
-                                                                        |Some _ ->
-                                                                                    x.hit(ray)) shapes bBoxes //Check which shape are hit by a fire
+        let hitResults = List.map2 (fun (x:Shape) (b:BoundingBox option) ->   hit ray b x) shapes bBoxes //Check which shape are hit by a fire
         
         let intersections = List.choose id hitResults //Sort all None options out.
 
@@ -73,7 +82,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     let p' = Point.move p (Vector.multScalar nV' epsilon)
                     let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
                     //Filter all shadowRays that don't hit out
-                    let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes l )) srays
+                    let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes bBoxes l )) srays
 
                     //Okay here calculate intensity for each colour value. 
                     let lightColourValue = List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r))) sraysHit //Angles calculated
