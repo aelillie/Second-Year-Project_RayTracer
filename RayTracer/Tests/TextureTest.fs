@@ -95,8 +95,8 @@ module Texture =
     let p = transform (mkPlane (mkMatTexture (mkMaterial (fromColor Color.Green) 0.5)))
               (rotateX (System.Math.PI/2.0))
     let c = mkCamera (mkPoint 4.0 8.0 16.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 4.0 4.0 4.0 1000 1000
-    let ambientLight = mkAmbientLight (fromColor Color.Green) 0.1
-    let scene = mkScene [p; affineBunny] [l1; l2; l3] ambientLight c 2
+    let ambientLight = mkAmbientLight (fromColor Color.Green) 0.8
+    let scene = mkScene [affineBunny] [] ambientLight c 2
     Util.render' scene (folder, "bunny.png") toScreen
 
 

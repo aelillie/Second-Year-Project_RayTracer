@@ -67,7 +67,7 @@ module BasicShape =
          abstract member hit : Ray -> (float * Vector * Material) option
          abstract member isInside : Point -> bool
          abstract member isSolid : unit -> bool
-         abstract member getBounding : unit -> BoundingBox
+         abstract member getBounding : unit -> BoundingBox option
     
 
     type Sphere(o:Point, r:float, tex:Texture) = 
@@ -84,7 +84,7 @@ module BasicShape =
                                         let hy = (Point.getY o) + r + epsilon
                                         let hz = (Point.getZ o) + r + epsilon 
                                         let h = mkPoint hx hy hz
-                                        {p1 = l; p2 = h}
+                                        Some {p1 = l; p2 = h}
 
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
@@ -140,7 +140,7 @@ module BasicShape =
     type Plane(tex:Texture) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
                             let pVector = mkPoint 0.0 0.0 0.0
@@ -163,7 +163,8 @@ module BasicShape =
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (Point.getX c - r - epsilon) (Point.getY c - r - epsilon ) (Point.getZ c - epsilon))
+                                              ; p2 = (mkPoint (Point.getX c + r + epsilon) (Point.getY c + r + epsilon ) (Point.getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -193,7 +194,7 @@ module BasicShape =
 
                             let l = Point.mkPoint((List.min xlist) - epsilon) ((List.min ylist) - epsilon) ((List.min zlist) - epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
-                            {p1 = l; p2 = h}
+                            Some {p1 = l; p2 = h}
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
@@ -250,7 +251,8 @@ module BasicShape =
     type Rectangle(c,w,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (getX c - (w/2.0) - epsilon ) (getY c - (h/2.0) - epsilon) (getZ c - epsilon)) 
+                                              ; p2 = (mkPoint (getX c + (w/2.0) + epsilon) (getY c + (h/2.0) + epsilon) (getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -275,7 +277,13 @@ module BasicShape =
     type HollowCylinder (center,r,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h/2.0)) (getZ center - r )
+                                         let pLow = pLow - epsilon
+                                         
+                                         let pHigh = mkPoint (getX center + r) (getY center + (h/2.0)) (getZ center + r)
+                                         let pHigh = pHigh + epsilon
+                                         Some {p1 = pLow; p2 = pHigh} 
+                                        
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
