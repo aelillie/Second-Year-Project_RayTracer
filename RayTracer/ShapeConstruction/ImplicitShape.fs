@@ -129,7 +129,7 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots 0.0 100.0 > 0 then  let mutable counter = 6 
+            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 6 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
                                                                                         if (nOfRoots s e) > 0 then
@@ -143,10 +143,11 @@ module ImplicitShape =
                                                                                                                                         
                                                                                        else (s,e)
                                                                                                                                   
-                                            let intv = getInterval 0.0 100.0
+                                            let intv = getInterval -1.0 100.0
                                             let iStart = fst intv
+                                            
                                             let iEnd = snd intv
-
+                                            let nR = nOfRoots iStart iEnd
                                             let fNorm = (Map.toList (List.item 0 sturmChain))
                                             let fPrime = (Map.toList (List.item 1 sturmChain))
                                                                                            
@@ -161,13 +162,14 @@ module ImplicitShape =
                                                                                         
                                             let rec calcGuess guess = if raphCount > 0 then
                                                                        
-                                                                        let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
+                                                                        let newGuess = guess - ((calcT fNorm guess)/(calcT fPrime guess))                                                                                                                   
                                                                         raphCount <- raphCount - 1
                                                                         calcGuess newGuess
 
                                                                       else guess
                                                                                           
-                                            calcGuess ((iEnd+iStart)/2.0)
+                                            let k = calcGuess ((iEnd+iStart)/2.0)
+                                            k
 
 
                                                                                          
@@ -270,37 +272,38 @@ module ImplicitShape =
                     //                            let result = Vector.dotProduct v n
             //                                    Some (result, n, mat)
             //                               else None
-                                    | 3 ->  let a = floatMap.Item 2
-
-                                            let b = floatMap.Item 1
-
-                                            let c = floatMap.Item 0
-
-                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
-                                
-                                            if(disc < 0.0) then None
-                                            else
-                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
-                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
-                                  
-                                                if answer1 < 0.0 && answer2 < 0.0 then None
-                                                else
-                                                    let answer = System.Math.Min(answer1,answer2)
-                                                    //normal vector point with minimum answer value
-                                                    let nvPointMin = Point.move p (answer * d)
-                                                    if answer < 0.0 
-                                                    then 
-                                                        let answer = System.Math.Max(answer1,answer2)
-                                                        //normal vector point with maximum answer value
-                                                        let nvPointMax = Point.move p (answer * d)
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
-
-                                                        Some (answer, Vector.normalise(nV),m) 
-                                                        
-                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                                    else
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
-                                                        Some (answer, Vector.normalise(nV),m) 
+                                    | 3 ->  findHit p d floatMap expr
+//                                            let a = floatMap.Item 2
+//
+//                                            let b = floatMap.Item 1
+//
+//                                            let c = floatMap.Item 0
+//
+//                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
+//                                
+//                                            if(disc < 0.0) then None
+//                                            else
+//                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
+//                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
+//                                  
+//                                                if answer1 < 0.0 && answer2 < 0.0 then None
+//                                                else
+//                                                    let answer = System.Math.Min(answer1,answer2)
+//                                                    //normal vector point with minimum answer value
+//                                                    let nvPointMin = Point.move p (answer * d)
+//                                                    if answer < 0.0 
+//                                                    then 
+//                                                        let answer = System.Math.Max(answer1,answer2)
+//                                                        //normal vector point with maximum answer value
+//                                                        let nvPointMax = Point.move p (answer * d)
+//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+//
+//                                                        Some (answer, Vector.normalise(nV),m) 
+//                                                        
+//                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
+//                                                    else
+//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+//                                                        Some (answer, Vector.normalise(nV),m) 
                                     | 4 -> findHit p d floatMap expr
 
                                     | 5 -> findHit p d floatMap expr
