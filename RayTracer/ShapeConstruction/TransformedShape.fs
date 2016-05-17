@@ -15,10 +15,35 @@ module TransformedShape =
     type TransformedShape(s:Shape, tr) = 
         interface Shape with
             member this.isInside p = s.isInside (transPoint (getInv tr) p)
-            member this.getBounding () = let b = s.getBounding ()
-                                         let p1' = transPoint (getT tr) b.Value.p1
-                                         let p2' = transPoint (getT tr) b.Value.p2
-                                         Some {p1 = p1'; p2 = p2'}
+            member this.getBounding () = match s.getBounding () with
+                                         | None -> None //E.g. a plane
+                                         | Some b ->
+                                            let (p1, p2) = b.getL, b.getH
+                                            let (x1, y1, z1), (x2, y2, z2) = getCoord p1, getCoord p2
+                                            //Bottom vertices:
+                                            let bx1 = p1 //left low (2D rectangle)
+                                            let bx2 = mkPoint x2 y1 z1 //right low
+                                            let bz1 = mkPoint x1 y1 z2 //left top
+                                            let bz2 = mkPoint x2 y1 z2 //right top
+                                            //Top vertices
+                                            let tx1 = mkPoint x1 y2 z1 //left low
+                                            let tx2 = mkPoint x2 y2 z1 //right low
+                                            let tz1 = mkPoint x1 y2 z2 //left top
+                                            let tz2 = p2 //right top
+                                            let vertices = [bx1;bx2;bz1;bz2;tx1;tx2;tz1;tz2]
+                                            let vertices' = List.map //Transform vertices
+                                                             (fun v -> transPoint (getT tr) v) vertices
+                                            //Bottom lowest coordinates
+                                            let minX = List.minBy (fun p -> getX p) vertices' |> getX
+                                            let minY = List.minBy (fun p -> getY p) vertices' |> getY
+                                            let minZ = List.minBy (fun p -> getZ p) vertices' |> getZ
+                                            //Top highest coordinates
+                                            let maxX = List.maxBy (fun p -> getX p) vertices' |> getX
+                                            let maxY = List.maxBy (fun p -> getY p) vertices' |> getY
+                                            let maxZ = List.maxBy (fun p -> getZ p) vertices' |> getZ
+                                            let p1' = mkPoint minX minY minZ
+                                            let p2' = mkPoint maxX maxY maxZ
+                                            Some {p1 = p1'; p2 = p2'}
             member this.isSolid () = s.isSolid()
             member this.hit (R(p,d)) = 
                                         let p' = transPoint (getInv tr) p //transformed Ray origin
