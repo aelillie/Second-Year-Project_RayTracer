@@ -21,16 +21,16 @@ module TransformedShape =
                                             let (p1, p2) = b.getL, b.getH
                                             let (x1, y1, z1), (x2, y2, z2) = getCoord p1, getCoord p2
                                             //Bottom vertices:
-                                            let bx1 = p1 //left low (2D rectangle)
-                                            let bx2 = mkPoint x2 y1 z1 //right low
-                                            let bz1 = mkPoint x1 y1 z2 //left top
-                                            let bz2 = mkPoint x2 y1 z2 //right top
+                                            let b = p1 //left low (2D rectangle)
+                                            let by = mkPoint x1 y2 z1 //right low
+                                            let bzy = mkPoint x1 y2 z2 //left top
+                                            let bz = mkPoint x1 y1 z2 //right top
                                             //Top vertices
-                                            let tx1 = mkPoint x1 y2 z1 //left low
-                                            let tx2 = mkPoint x2 y2 z1 //right low
-                                            let tz1 = mkPoint x1 y2 z2 //left top
-                                            let tz2 = p2 //right top
-                                            let vertices = [bx1;bx2;bz1;bz2;tx1;tx2;tz1;tz2]
+                                            let ty = mkPoint x2 y1 z2 //left low
+                                            let tzy = mkPoint x2 y1 z1 //right low
+                                            let tz = mkPoint x2 y2 z1 //left top
+                                            let t = p2 //right top
+                                            let vertices = [b;by;bzy;bz;ty;tzy;tz;t]
                                             let vertices' = List.map //Transform vertices
                                                              (fun v -> transPoint (getT tr) v) vertices
                                             //Bottom lowest coordinates
@@ -55,16 +55,20 @@ module TransformedShape =
     let transform s tr = new TransformedShape(s,tr)
 
     let makeBounding (s1:Shape) (s2:Shape) = 
+                             let min (x:float) (y:float) = System.Math.Min (x,y)
+                             let max (x:float) y = System.Math.Max (x,y)
                              let b1, b2 = (s1.getBounding ()).Value, (s2.getBounding ()).Value
                              let (lx1,ly1,lz1) = (Point.getCoord b1.p1) //Low point of s1
                              let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                              let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2
                              let (hx2,hy2,hz2) = (Point.getCoord b2.p2) //High point of s2
-                             let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
-                                            then b1.p1 else b2.p1
-                             let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
-                                             then b2.p2 else b1.p2
-                             {p1 = lowPoint; p2 = highPoint}
+                             let (lx,ly,lz) =  min lx1 lx2, min ly1 ly2, min lz1 lz2
+                                            
+                             let hx, hy, hz = max hx1 hx2, max hy1 hy2, max hz1 hz2
+
+
+                             
+                             {p1 = (mkPoint lx ly lz); p2 = (mkPoint hx hy hz)}
 
     type GroupShape(s1:Shape,s2:Shape) = 
         interface Shape with

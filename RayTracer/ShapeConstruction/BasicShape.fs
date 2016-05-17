@@ -277,10 +277,10 @@ module BasicShape =
     type HollowCylinder (center,r,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h/2.0)) (getZ center - r )
+            member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h)) (getZ center - r )
                                          let pLow = pLow - epsilon
                                          
-                                         let pHigh = mkPoint (getX center + r) (getY center + (h/2.0)) (getZ center + r)
+                                         let pHigh = mkPoint (getX center + r) (getY center + (h)) (getZ center + r)
                                          let pHigh = pHigh + epsilon
                                          Some {p1 = pLow; p2 = pHigh} 
                                         
