@@ -123,6 +123,10 @@ module AdvancedShape =
                         let u = List.item ui vertex
                         let v = List.item vi vertex
                         ((Point.mkPoint x y z), [(u,v)])
+                let num = faceCount plyList
+                
+
+                let makeTriangles 
             
                 let rec makeTriangles shapes vertices = function
                      | Face([a;b;c])::rest->  
@@ -132,8 +136,7 @@ module AdvancedShape =
                                     
                                     makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
                      | _::rest -> makeTriangles shapes vertices rest
-                     | [] -> shapes
-                printf "Triangles constructed\n"
+                     | [] -> printf "Triangles constructed\n";shapes
                 makeTriangles [] vertexList plyList
 
         interface Shape with 

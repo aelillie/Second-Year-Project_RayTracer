@@ -14,3 +14,4 @@ val parsePly : string -> Ply list
 //val print : Ply -> TextWriter -> unit
 
 val textureIndexes : _arg1:Ply list -> (int * int) option
+val faceCount : _arg1:Ply list -> int

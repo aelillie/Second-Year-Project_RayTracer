@@ -123,4 +123,9 @@ let rec textureIndexes = function
         | x::xs -> textureIndexes xs
         | [] -> failwith "No elements in PLY file"
 
+let rec faceCount = function
+      | Element(s, n, l) :: r when s = "face" -> n
+      | x::xs -> faceCount xs
+      | [] -> failwith "No elements in PLY file"
+
 
