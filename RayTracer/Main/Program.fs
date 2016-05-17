@@ -14,12 +14,13 @@ open Shapes
 open Texture
 open TransformedShape
 open Transformation
-
+open System
 open System.Drawing
 open Texture
 open Material
 open Colour
 
+[<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv =
 

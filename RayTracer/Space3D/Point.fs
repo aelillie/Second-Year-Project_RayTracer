@@ -29,6 +29,12 @@ let getFromAxis (P(x,y,z)) axis =
 type Point with
   static member ( + ) ((P(x,y,z)), f) = (P(x+f,y+f,z+f))
   static member ( - ) ((P(x,y,z)), f) = (P(x-f,y-f,z-f))
+<<<<<<< HEAD
+  static member ( / ) ((P(x,y,z)), f) = (P(x/f,y/f,z/f))
+
+        
+=======
  
   static member ( + ) (P(ux,uy,uz),P(vx,vy,vz)) = P(ux+vx, uy+vy, uz+vz)
   static member ( / ) (P(ux,uy,uz), f) = P(ux/f, uy/f, uz/f)            
+>>>>>>> e0a11971d68c0244eb7a1e03c70e15f8a561c969
