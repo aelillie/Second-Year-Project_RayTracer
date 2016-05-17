@@ -91,9 +91,8 @@ module BasicShape =
                             let makeNV a = Point.move p (a * d) |> Point.direction o
                        
                             let calculateMaterial answer = 
-//                                let hp = Point.move p (answer * d)
-                                let hp = makeNV answer
-                                let n = hp / r
+                                let nv = makeNV answer
+                                let n = nv / r
                                 let n = normalise n
                                 
                                 let theta = System.Math.Acos(Vector.getY n)
@@ -225,7 +224,8 @@ module BasicShape =
                                then 
                                  //Find material for the texture
                                  let mat = if List.isEmpty texCoordList //No texture in ply file
-                                           then Material.mkMaterial(Colour.fromColor System.Drawing.Color.Gray) 0.0
+                                           then let tu, tv = 0.5, 0.5 
+                                                getMaterialAtPoint tex tu tv
                                            else let (ua,va) = List.item 0 texCoordList //Vertex a
                                                 let (ub,vb) = List.item 1 texCoordList //Vertex b
                                                 let (uc,vc) = List.item 2 texCoordList //Vertex c
