@@ -61,7 +61,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     let i = Light.getAmbientI ambi
                     //Moved point to the surface of the shape hit.
                     let p = Point.move (Ray.getP ray) (Vector.multScalar (Ray.getD ray) t)  
-                    let p' = Point.move p (Vector.multScalar nV' 0.0001)
+                    let p' = Point.move p (Vector.multScalar nV' 0.0000001)
                     let srays = List.map (fun x -> (x, mkShadowRay p' x )) lights //Create rays towards each lightsource from point.
                     //Filter all shadowRays that don't hit out
                     let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes l )) srays
