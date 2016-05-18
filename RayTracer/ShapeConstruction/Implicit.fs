@@ -84,13 +84,13 @@ let mkNorm p expr : Vector =
     let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 then getNew (m) c
                                              else if not (m.ContainsKey(0)) then getNew m c
                                                   else 0.0
-    
-    let newX = checkMap derivPolyX x
-    let newY = checkMap derivPolyY y
-    let newZ = checkMap derivPolyZ z
+//    
+//    let newX = checkMap derivPolyX x
+//    let newY = checkMap derivPolyY y
+//    let newZ = checkMap derivPolyZ z
 
 
-    Vector.mkVector newX newY newZ
+    Vector.mkVector 0.0 0.0 1.0
 
 
 let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
