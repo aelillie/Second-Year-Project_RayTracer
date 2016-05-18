@@ -105,11 +105,12 @@ module AdvancedShape =
 
     type TriangleMesh (plyList, texture) = 
         let triangles = 
-                
-                let mkVertex i (vertices:float list list) =
+                let s = System.Diagnostics.Stopwatch.StartNew()
+                s.Start()
+                let mkVertex i vertices =
                         let vertex = List.item i vertices
                         match XYZIndexes plyList with 
-                        | None -> None 
+                        | None -> failwith "No x y z coordinates in ply file" 
                         | Some(xi, yi, zi) -> let x = List.item xi vertex
                                               let y = List.item yi vertex
                                               let z = List.item zi vertex
@@ -121,26 +122,33 @@ module AdvancedShape =
                                                                 (p, [(u,v)])
                 let num = faceCount plyList
                 let q1, q2 = num / 4, num / 2
-                let q3 = q2+q1
+                let q3, q4 = q2+q1, num-1
+
+                
 
                 let makeTriangles bot top =
                         let rec make i shapes vertices faces =
+                                if i = num then shapes else
                                 match List.item i faces with
-                                | [a;b;c] ->  if c <> top 
-                                              then let (p1,l1) = mkVertex a vertices
+                                | [a;b;c] ->  if c = top then shapes
+                                              else let (p1,l1) = mkVertex a vertices
                                                    let (p2,l2) = mkVertex b vertices
                                                    let (p3,l3) = mkVertex c vertices
                                                    
                                                    make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
-                                              else shapes //Doesn't make triangle for top index
                                 | [] -> shapes //This should not happen
+                                | _ -> failwith "Not a triangle mesh"
                         make bot [] (vertices plyList) (faces plyList)  
                 let tasks = [async {return makeTriangles 0 q1};
                              async {return makeTriangles q1 q2};
                              async {return makeTriangles q2 q3}
-                             async {return makeTriangles q3 (num-1)}]  
-                Async.RunSynchronously (Async.Parallel tasks) |> List.concat 
-            
+                             async {return makeTriangles q3 q4}]  
+                let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                printf "%i\n" t.Length
+                let t' = t |> Seq.distinctBy (fun elem -> elem.ToString())
+                printf "%i\n" (Seq.length t')
+                s.Stop();printf "%f" s.Elapsed.TotalMilliseconds
+                t
                
 
         interface Shape with 
