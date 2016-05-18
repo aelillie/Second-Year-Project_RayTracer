@@ -105,41 +105,36 @@ module AdvancedShape =
 
     type TriangleMesh (plyList, texture) = 
         let triangles = 
-
-                let vertexList = 
-                    plyList |> 
-                    List.collect (fun x -> match x with
-                                           | Vertex(floatList) -> [floatList]
-                                           | _ -> [])
-
-                let mkVertex i vertices =
-                    let vertex = List.item i vertices
-                    let x = List.item 0 vertex
-                    let y = List.item 1 vertex
-                    let z = List.item 2 vertex
-                    match textureIndexes plyList with
-                    | None -> ((Point.mkPoint x y z), [])
-                    | Some(ui, vi) -> 
-                        let u = List.item ui vertex
-                        let v = List.item vi vertex
-                        ((Point.mkPoint x y z), [(u,v)])
+                
+                let mkVertex i (vertices:float list list) =
+                        let vertex = List.item i vertices
+                        match XYZIndexes plyList with 
+                        | None -> None 
+                        | Some(xi, yi, zi) -> let x = List.item xi vertex
+                                              let y = List.item yi vertex
+                                              let z = List.item zi vertex
+                                              let p = Point.mkPoint x y z
+                                              match textureIndexes plyList with
+                                              | None -> (p, [])
+                                              | Some(ui, vi) -> let u = List.item ui vertex
+                                                                let v = List.item vi vertex
+                                                                (p, [(u,v)])
                 let num = faceCount plyList
                 let q1, q2 = num / 4, num / 2
                 let q3 = q2+q1
 
                 let makeTriangles bot top =
-                        let rec make c shapes vertices = function
-                        | Face([a;b;c])::rest->  
-                                       if c <> top //Doesn't make triangle for top index
-                                       then let (p1,l1) = mkVertex a vertices
-                                            let (p2,l2) = mkVertex b vertices
-                                            let (p3,l3) = mkVertex c vertices
-                                            
-                                            make (c+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
-                                       else shapes
-                        | _::rest -> make c shapes vertices rest
-                        | [] -> shapes //This should not happen
-                        make bot [] vertexList plyList  
+                        let rec make i shapes vertices faces =
+                                match List.item i faces with
+                                | [a;b;c] ->  if c <> top 
+                                              then let (p1,l1) = mkVertex a vertices
+                                                   let (p2,l2) = mkVertex b vertices
+                                                   let (p3,l3) = mkVertex c vertices
+                                                   
+                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
+                                              else shapes //Doesn't make triangle for top index
+                                | [] -> shapes //This should not happen
+                        make bot [] (vertices plyList) (faces plyList)  
                 let tasks = [async {return makeTriangles 0 q1};
                              async {return makeTriangles q1 q2};
                              async {return makeTriangles q2 q3}
