@@ -144,10 +144,11 @@ module AdvancedShape =
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
                 let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                s.Stop()
+                printf "%f\n" s.Elapsed.TotalMilliseconds
                 printf "%i\n" t.Length
                 let t' = t |> Seq.distinctBy (fun elem -> elem.ToString())
                 printf "%i\n" (Seq.length t')
-                s.Stop();printf "%f" s.Elapsed.TotalMilliseconds
                 t
                
 
