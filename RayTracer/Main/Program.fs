@@ -37,8 +37,8 @@ let main argv =
         (*******Camera******)
         let camera = mkCamera (mkPoint 1.0 1.0 10.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
-        let ply = mkPLY "../../../ply/ant.ply" false
-        let ant = transform (mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))) (scale 0.1 0.1 0.1)
+        let ply = mkPLY "../../../ply/bunny_textured.ply" false
+        let ant = transform (mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))) (scale 0.5 0.5 0.5)
           
         (*******Scene******)
 
