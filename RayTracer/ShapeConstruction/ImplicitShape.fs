@@ -129,7 +129,7 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots 0.0 100.0 > 0 then  let mutable counter = 6 
+            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 6 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
                                                                                         if (nOfRoots s e) > 0 then
@@ -143,10 +143,11 @@ module ImplicitShape =
                                                                                                                                         
                                                                                        else (s,e)
                                                                                                                                   
-                                            let intv = getInterval 0.0 100.0
+                                            let intv = getInterval -1.0 100.0
                                             let iStart = fst intv
+                                            
                                             let iEnd = snd intv
-
+                                            let nR = nOfRoots iStart iEnd
                                             let fNorm = (Map.toList (List.item 0 sturmChain))
                                             let fPrime = (Map.toList (List.item 1 sturmChain))
                                                                                            
@@ -161,13 +162,14 @@ module ImplicitShape =
                                                                                         
                                             let rec calcGuess guess = if raphCount > 0 then
                                                                        
-                                                                        let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
+                                                                        let newGuess = guess - ((calcT fNorm guess)/(calcT fPrime guess))                                                                                                                   
                                                                         raphCount <- raphCount - 1
                                                                         calcGuess newGuess
 
                                                                       else guess
                                                                                           
-                                            calcGuess ((iEnd+iStart)/2.0)
+                                            let k = calcGuess ((iEnd+iStart)/2.0)
+                                            k
 
 
                                                                                          

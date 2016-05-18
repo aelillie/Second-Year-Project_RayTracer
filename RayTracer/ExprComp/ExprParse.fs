@@ -140,6 +140,7 @@ and P ts =
     | _             -> raise Parseerror
 
 let parse ts = 
+  let r = E ts
   match E ts with
     ([], result) -> result
   | _ -> raise Parseerror
