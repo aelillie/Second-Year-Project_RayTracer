@@ -30,12 +30,11 @@ let main argv =
         let mkColourTexture c r = mkMatTexture (mkMaterial (fromColor c) r)
 
         (*******Light******)
-        let sw = System.Diagnostics.Stopwatch.StartNew()
         let light = mkLight (mkPoint 1.0 1.0 4.0) (fromColor Color.White) 1.0
         let light1 = mkLight (mkPoint -2.0 1.0 4.0) (fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 1.0 1.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 1.0 1.0 10.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let ply = mkPLY "../../../ply/ant.ply" false
         let ant = transform (mkShape ply (mkMatTexture (mkMaterial (fromColor Color.Gray) 0.0))) (scale 0.1 0.1 0.1)
