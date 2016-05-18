@@ -176,6 +176,7 @@ module BasicShape =
                             else None
 
     type Triangle(a,b,c,tex, texCoordList) = 
+        override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 

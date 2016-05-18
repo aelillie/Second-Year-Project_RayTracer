@@ -105,7 +105,8 @@ module AdvancedShape =
 
     type TriangleMesh (plyList, texture) = 
         let triangles = 
-
+                let s = System.Diagnostics.Stopwatch()
+                s.Start()
                 let vertexList = 
                     plyList |> 
                     List.collect (fun x -> match x with
@@ -133,8 +134,13 @@ module AdvancedShape =
                                     makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices rest
                      | _::rest -> makeTriangles shapes vertices rest
                      | [] -> shapes
-                printf "Triangles constructed\n"
-                makeTriangles [] vertexList plyList
+                let t = makeTriangles [] vertexList plyList
+                s.Stop()
+                printf "%f\n" s.Elapsed.TotalMilliseconds
+                printf "%i\n" t.Length
+                let t' = t |> Seq.distinctBy (fun elem -> elem.ToString())
+                printf "%i\n" (Seq.length t')
+                t
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
