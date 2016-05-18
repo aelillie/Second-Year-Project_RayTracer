@@ -124,8 +124,6 @@ module AdvancedShape =
                 let q1, q2 = num / 4, num / 2
                 let q3, q4 = q2+q1, num
 
-                let faces = faces plyList
-
                 let makeTriangles bot top =
                         let rec make i shapes vertices faces =
                                 if i = num then shapes else
@@ -138,20 +136,13 @@ module AdvancedShape =
                                                    make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
                                 | [] -> shapes //This should not happen
                                 | _ -> failwith "Not a triangle mesh"
-                        make bot [] (vertices plyList) faces  
+                        make bot [] (vertices plyList) (faces plyList)  
                 let tasks = [async {return makeTriangles 0 q1};
                              async {return makeTriangles q1 q2};
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
-                let t' = Async.RunSynchronously (Async.Parallel tasks) 
-                let t = List.concat t'
-                s.Stop()
-                printf "%f\n" s.Elapsed.TotalMilliseconds
-                printf "%i\n" t.Length
-//                let t' = t |> Seq.distinctBy (fun elem -> elem.ToString())
-//                printf "%i\n" (Seq.length t')
-                t
-               
+                Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
