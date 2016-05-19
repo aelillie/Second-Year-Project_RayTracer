@@ -32,7 +32,10 @@ module ImplicitShape =
                             |[] -> x
                             |n1::n2::ns' -> let n1Sign = System.Math.Sign (n1:float)
                                             let n2Sign = System.Math.Sign n2
-                                            if n1Sign <> n2Sign && (n1Sign <> 0 && n2Sign <> 0)
+                                            if n2Sign = 0
+                                            then
+                                             matchSign (x) (n1::ns')
+                                            elif n1Sign <> n2Sign
                                             then
                                              matchSign (x+1) (n2::ns')
                                             else 
@@ -79,9 +82,7 @@ module ImplicitShape =
                         let rec calcQR (q, (r:Map<int,float>)) d =
                             match Map.isEmpty r with    //Map empty
                             |true -> (q , r)
-                            |_ -> let rd = degree r 
-                                  let dd = degree d
-                                  if (degree r) >= (degree d) 
+                            |_ -> if (degree r) >= (degree d) 
                                   then                                     
                                    let (deg,t) = polyDivide (lead r) (lead d)
                                    let q = polyPlus (deg, t) q
@@ -141,10 +142,11 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 20 
+            if nOfRoots 0.0 100.0> 0  then  let mutable counter = 20 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
-                                                                                        if (nOfRoots s e) > 0 then
+                                                                                        let roots = nOfRoots s e
+                                                                                        if roots > 0 then
                                                                                                                 prev <- e   
                                                                                                                 counter <- counter-1                                                                                                                                  
                                                                                                                 getInterval s ((e+s)/2.0) 
@@ -155,7 +157,7 @@ module ImplicitShape =
                                                                                                                                         
                                                                                        else (s,e)
                                                                                                                                   
-                                            let intv = getInterval -1.0 100.0
+                                            let intv = getInterval 0.0 100.0
                                             let iStart = fst intv
                                             
                                             let iEnd = snd intv
@@ -312,7 +314,9 @@ module ImplicitShape =
 
                                     | 5 -> findHit p d floatMap expr
                                            
-                                    | _ -> findHit p d floatMap expr 
+                                    | _ -> let x = findHit p d floatMap expr 
+                                           let k = 1
+                                           x
 
                                 solveDegreePoly
                                            

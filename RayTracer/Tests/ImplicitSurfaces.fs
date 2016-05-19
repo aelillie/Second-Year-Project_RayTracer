@@ -151,7 +151,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
   let render toScreen =
-    heart toScreen
+//    heart toScreen
 //    sphere1 1.0 toScreen;
 //    sphere2 1.0 toScreen;
 //    planeX toScreen;
@@ -160,6 +160,6 @@ module ImplicitSurfaces =
 //    torus 1.5 0.5 toScreen;
 //    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
-    chmutov 2 toScreen;
+//    chmutov 2 toScreen;
 //    chmutov 4 toScreen;
-//    chmutov 6 toScreen
+    chmutov 6 toScreen
