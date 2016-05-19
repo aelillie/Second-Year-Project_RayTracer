@@ -40,9 +40,9 @@ let getExpr bs =
 let mkNorm p expr : Vector = 
 
     //get x,y,z from Point
-    let x = Point.getX p
-    let y = Point.getY p
-    let z = Point.getZ p
+    let x = 2.0//Point.getX p
+    let y = 2.0//Point.getY p
+    let z = 2.0//Point.getZ p
     
     //get derived polynomials with respect to x,y,z
     let derivPolyX = polyToMap (exprToPoly expr "x")
@@ -53,44 +53,51 @@ let mkNorm p expr : Vector =
 
     //make list of keys from polyMap
     let listFst m = List.map fst (Map.toList m)
+
+    
+
     //get power value as float
-    let firstFloat m = float(List.last (listFst m))
+    //let firstFloat m = float(List.last (listFst m))
 
     //make a list of values from polyMap
     let listSnd m = List.map snd (Map.toList m)
     //get multiplication value as float
-    let secondFloat (m:Map<int,simpleExpr>) = 
-                        let se = List.last (listSnd m)
+    let secondFloat se =                       
                         let ag = match se with |SE (ag,_) -> ag
                         if ag = [[]] then 1.0
                         else 
                              match se with
                                 |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
-                                                let ANumDLast = List.last ag |> List.last        
+                                                let ANumDLast = List.last agd |> List.last        
                                                 match ANumLast with 
                                                 |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
                                                            f/d
                                                 |_ -> failwith "Expected to be ANum"
                        
-                               
+                    
                          
-    let getNew m c = 
-                     let x = firstFloat m
-                     let k = Map.toList m |> List.map snd
-                     let k = secondFloat m 
-                     if (firstFloat m)>1.0 then (secondFloat m)*(firstFloat m)*c 
-                     else (secondFloat m)*(firstFloat m)
+    let getNew x y c = if x > 1.0 then (y*x)*(pow(c,x-1.0))
+                       else (x*y)
 
-    let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 then getNew (m) c
-                                             else if not (m.ContainsKey(0)) then getNew m c
-                                                  else 0.0
-//    
-//    let newX = checkMap derivPolyX x
-//    let newY = checkMap derivPolyY y
-//    let newZ = checkMap derivPolyZ z
+    let eleListWithZero m c = List.map2 (fun x y -> getNew x y c) ((List.map (fun x -> float x) (listFst m)).Tail) (List.map (fun x -> secondFloat x) ((listSnd m).Tail)) 
+
+    let eleListNoZero m c = List.map2 (fun x y -> getNew x y c) (List.map (fun x -> float x) (listFst m)) (List.map (fun x -> secondFloat x) (listSnd m)) 
+
+    let folder1 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListWithZero m c)
+    let folder2 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListNoZero m c)
+                               
+
+    let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 && not (m.ContainsKey(0)) then folder2 m c                                           
+                                             else if m.Count>1 && m.ContainsKey(0) then folder1 m c
+                                                  else if m.Count<1 && not (m.ContainsKey(0)) then folder2 m c
+                                                       else 0.0
+    
+    let newX = checkMap derivPolyX x
+    let newY = checkMap derivPolyY y
+    let newZ = checkMap derivPolyZ z
 
 
-    Vector.mkVector 0.0 0.0 1.0
+    Vector.mkVector newX newY newZ
 
 
 let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
