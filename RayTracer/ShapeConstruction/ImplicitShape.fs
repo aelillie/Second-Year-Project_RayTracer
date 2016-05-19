@@ -68,10 +68,9 @@ module ImplicitShape =
                                 (deg1 - deg2, t1/t2)
  
                         let removeZero r =          //Remove if zero 
-                            let v = 0.0 + epsilon
-                            let k = Map.filter (fun key value -> ((abs value) > (epsilon)) ) r
-                            let s = "HEH"
-                            k
+                           
+                            Map.filter (fun key value -> ((abs value) > (epsilon)) ) r
+                           
                         let q = Map.empty
                         let r = n
 
@@ -125,7 +124,65 @@ module ImplicitShape =
                 List.filter (fun x -> not (Map.isEmpty x)) sturmChain
 
         
-         
+        let newtRaph sturmChain = 
+            let nOfRoots iStart iEnd = let positive = evalInterval sturmChain iEnd
+                                       let negative = evalInterval sturmChain iStart
+                                       negative-positive
+                                           
+            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 6 
+                                            let mutable prev = 0.0                                   
+                                            let rec getInterval s e : (float*float) = if counter > 0 then
+                                                                                        if (nOfRoots s e) > 0 then
+                                                                                                                prev <- e   
+                                                                                                                counter <- counter-1                                                                                                                                  
+                                                                                                                getInterval s ((e+s)/2.0) 
+                                                                                                                                                            
+                                                                                        else counter <- counter-1
+                                                                                             getInterval e prev
+                                                                                                                                             
+                                                                                                                                        
+                                                                                       else (s,e)
+                                                                                                                                  
+                                            let intv = getInterval -1.0 100.0
+                                            let iStart = fst intv
+                                            
+                                            let iEnd = snd intv
+                                            let nR = nOfRoots iStart iEnd
+                                            let fNorm = (Map.toList (List.item 0 sturmChain))
+                                            let fPrime = (Map.toList (List.item 1 sturmChain))
+                                                                                           
+                                            let mutable raphCount = 13 //(int iEnd)-(int iStart)
+
+
+                                            let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
+                                                                                                then 
+                                                                                                acc + System.Math.Pow(value*i,(float deg))
+                                                                                                else 
+                                                                                                acc + value) 0.0 l 
+                                                                                        
+                                            let rec calcGuess guess = if raphCount > 0 then
+                                                                       
+                                                                        let newGuess = guess - ((calcT fNorm guess)/(calcT fPrime guess))                                                                                                                   
+                                                                        raphCount <- raphCount - 1
+                                                                        calcGuess newGuess
+
+                                                                      else guess
+                                                                                          
+                                            let k = calcGuess ((iEnd+iStart)/2.0)
+                                            k
+
+
+                                                                                         
+
+            else 0.0   
+        
+        let findHit (p:Point) (d:Vector) floatmap e = let root = newtRaph (sturm floatmap)
+                                           
+                                                      if root = 0.0 || root < 0.0 then None
+                                                      else                                             
+                                                        let hitPoint = Point.move p (root*d)
+
+                                                        Some (root, Vector.normalise(mkNorm hitPoint e), m)  
         
                  
         interface Shape with
@@ -215,169 +272,46 @@ module ImplicitShape =
                     //                            let result = Vector.dotProduct v n
             //                                    Some (result, n, mat)
             //                               else None
-                                    | 3 ->  let a = floatMap.Item 2
+                                    | 3 ->  findHit p d floatMap expr
+//                                            let a = floatMap.Item 2
+//
+//                                            let b = floatMap.Item 1
+//
+//                                            let c = floatMap.Item 0
+//
+//                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
+//                                
+//                                            if(disc < 0.0) then None
+//                                            else
+//                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
+//                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
+//                                  
+//                                                if answer1 < 0.0 && answer2 < 0.0 then None
+//                                                else
+//                                                    let answer = System.Math.Min(answer1,answer2)
+//                                                    //normal vector point with minimum answer value
+//                                                    let nvPointMin = Point.move p (answer * d)
+//                                                    if answer < 0.0 
+//                                                    then 
+//                                                        let answer = System.Math.Max(answer1,answer2)
+//                                                        //normal vector point with maximum answer value
+//                                                        let nvPointMax = Point.move p (answer * d)
+//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+//
+//                                                        Some (answer, Vector.normalise(nV),m) 
+//                                                        
+//                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
+//                                                    else
+//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+//                                                        Some (answer, Vector.normalise(nV),m) 
+                                    | 4 -> findHit p d floatMap expr
 
-                                            let b = floatMap.Item 1
-
-                                            let c = floatMap.Item 0
-
-                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
-                                
-                                            if(disc < 0.0) then None
-                                            else
-                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
-                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
-                                  
-                                                if answer1 < 0.0 && answer2 < 0.0 then None
-                                                else
-                                                    let answer = System.Math.Min(answer1,answer2)
-                                                    //normal vector point with minimum answer value
-                                                    let nvPointMin = Point.move p (answer * d)
-                                                    if answer < 0.0 
-                                                    then 
-                                                        let answer = System.Math.Max(answer1,answer2)
-                                                        //normal vector point with maximum answer value
-                                                        let nvPointMax = Point.move p (answer * d)
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
-
-                                                        Some (answer, Vector.normalise(nV),m) 
-                                                        
-                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                                    else
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
-                                                        Some (answer, Vector.normalise(nV),m) 
-                                    | 4 -> let sturmChain = sturm (floatMap) 
-                                           let x = sturmChain
-                                               
-                                           let positive = evalInterval sturmChain intervalSize
-                                           let negative = evalInterval sturmChain (-intervalSize)
+                                    | 5 -> findHit p d floatMap expr
                                            
-                                            
-                                           let numberOfRoots = negative - positive 
-                                            
-                                           failwith "3rd degree"
-
-                                    | 5 -> let newtRaph sturmChain = 
-                                                          let nOfRoots iStart iEnd = let positive = evalInterval sturmChain iEnd
-                                                                                     let negative = evalInterval sturmChain iStart
-                                                                                     negative-positive
-                                           
-                                                          if nOfRoots 0.0 1000.0 > 0 then let mutable counter = 6 
-                                                                                          let mutable prev = 0.0                                   
-                                                                                          let rec getInterval s e : (float*float) = if counter > 0 then
-                                                                                                                                        if (nOfRoots s e) > 0 then
-                                                                                                                                                            prev <- e   
-                                                                                                                                                            counter <- counter-1                                                                                                                                  
-                                                                                                                                                            getInterval s ((e+s)/2.0) 
-                                                                                                                                                            
-                                                                                                                                        else counter <- counter-1
-                                                                                                                                             getInterval e prev
-                                                                                                                                             
-                                                                                                                                        
-                                                                                                                                    else (s,e)
-                                                                                                                                  
-                                                                                          let intv = getInterval 0.0 100.0
-                                                                                          let iStart = fst intv
-                                                                                          let iEnd = snd intv
-
-                                                                                          let fNorm = (Map.toList (List.item 0 sturmChain))
-                                                                                          let fPrime = (Map.toList (List.item 1 sturmChain))
-                                                                                           
-                                                                                          let mutable raphCount = 13 //(int iEnd)-(int iStart)
-
-
-                                                                                          let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                                                                                             then 
-                                                                                                                                              acc + System.Math.Pow(value*i,(float deg))
-                                                                                                                                             else 
-                                                                                                                                              acc + value) 0.0 l 
-                                                                                        
-                                                                                          let rec calcGuess guess = if raphCount > 0 then
-                                                                                                                        let lol = (calcT fNorm guess)
-                                                                                                                        let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
-                                                                                                                        raphCount <- raphCount - 1
-                                                                                                                        calcGuess newGuess
-
-                                                                                                                    else guess
-                                                                                          
-                                                                                          calcGuess ((iEnd+iStart)/2.0)
-
-
-                                                                                         
-
-                                                          else 0.0                    
-                                                                
-                                           
-                                           let root = newtRaph (sturm floatMap)
-                                           if root = 0.0 || root < 0.0 then None
-                                           else                                             
-                                               let hitPoint = Point.move p (root*d)
-
-                                               Some (root, Vector.normalise(mkNorm hitPoint expr), m)
-                                           
-                                    | _ -> 
-                                           
-                                          
-                                           
-                                           let newtRaph sturmChain = 
-                                                          let nOfRoots iStart iEnd = let positive = evalInterval sturmChain iEnd
-                                                                                     let negative = evalInterval sturmChain iStart
-                                                                                     negative-positive
-                                           
-                                                          if nOfRoots 0.0 100.0 > 0 then let mutable counter = 6 
-                                                                                         let mutable prev = 0.0                                   
-                                                                                         let rec getInterval s e : (float*float) = if counter > 0 then
-                                                                                                                                        if (nOfRoots s e) > 0 then
-                                                                                                                                                            prev <- e   
-                                                                                                                                                            counter <- counter-1                                                                                                                                  
-                                                                                                                                                            getInterval s ((e+s)/2.0) 
-                                                                                                                                                            
-                                                                                                                                        else counter <- counter-1
-                                                                                                                                             getInterval e prev
-                                                                                                                                             
-                                                                                                                                        
-                                                                                                                                    else (s,e)
-                                                                                                                                  
-
-                                                                                         let iStart = fst (getInterval 0.0 100.0)
-                                                                                         let iEnd = snd (getInterval 0.0 100.0)
-
-                                                                                         let fNorm = (Map.toList (List.item 0 sturmChain))
-                                                                                         let fPrime = (Map.toList (List.item 1 sturmChain))
-
-                                                                                         let mutable raphCount = (int iEnd)-(int iStart)
-
-
-                                                                                         let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                                                                                            then 
-                                                                                                                                             acc + System.Math.Pow(value*i,(float deg))
-                                                                                                                                            else 
-                                                                                                                                             acc + value) 0.0 l 
-                                                                                        
-                                                                                         let rec calcGuess guess = if raphCount > 0 then
-                                                                                                                        let newGuess = (calcT fNorm guess)/(calcT fPrime guess)                                                                                                                   
-                                                                                                                        raphCount <- raphCount - 1
-                                                                                                                        calcGuess newGuess
-
-                                                                                                                    else guess
-                                                                                         calcGuess iStart
-
-
-                                                                                         
-
-                                                          else failwith "no roots. no shape"                      
-                                                                
-                                           
-                                           let root = newtRaph (sturm floatMap)                                             
-
-                                           let hitPoint = Point.move p (root*d)
-
-                                           Some (root, Vector.normalise(mkNorm hitPoint expr), m)
-                                           
-                                               
-                                        
+                                    | _ -> findHit p d floatMap expr 
 
                                 solveDegreePoly
-
+                                           
+                               
         
 
