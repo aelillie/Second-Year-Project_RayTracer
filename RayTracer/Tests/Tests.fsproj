@@ -64,6 +64,7 @@
     <Compile Include="Texture.fs" />
     <Compile Include="CSG.fs" />
     <Compile Include="Light.fs" />
+    <Compile Include="ImplicitTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
