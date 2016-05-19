@@ -100,8 +100,6 @@ let rec search node ray t t' =
              |_ -> search snd ray tHit t'
 
 
-
-
 let traverse tree ray =
     match(getBox tree).Value.hit(ray) with
     |Some(t,t') ->  search tree ray t t'  
@@ -131,6 +129,8 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
                     let mpZ = (Point.getZ axisMidPoint)
                     if z1>=mpZ || z2>=mpZ ||z3>=mpZ  then Some elem else None) xs
         results
+
+
     let rec lessThanSplit (xs:BasicShape.Triangle list) = 
         let results = List.choose(fun (elem:BasicShape.Triangle) ->
             match axis with
@@ -144,22 +144,6 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
                     let mpZ = (Point.getZ axisMidPoint)
                     if z1<=mpZ || z2<=mpZ ||z3<=mpZ  then Some elem else None) xs
         results
-    (*let rec largerThanSplit (xs:BasicShape.Triangle list) = 
-        match xs with
-        |[] -> []
-        |x::xs' -> match axis with
-                   |"x" -> if Point.getX (x.getMidPoint()) >= Point.getX axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs'
-                   |"y" -> if Point.getY (x.getMidPoint()) >= Point.getY axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs' 
-                   |"z" -> if Point.getZ (x.getMidPoint()) >= Point.getZ axisMidPoint then x :: largerThanSplit xs' else largerThanSplit xs' 
-        
-    
-    let rec lessThanSplit (xs:BasicShape.Triangle list) = 
-        match xs with
-        |[] -> []
-        |x::xs' -> match axis with
-                   |"x" -> if Point.getX (x.getMidPoint()) <= Point.getX axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs'
-                   |"y" -> if Point.getY (x.getMidPoint()) <= Point.getY axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' 
-                   |"z" -> if Point.getZ (x.getMidPoint()) <= Point.getZ axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' *)
          
     //Creating the left and right list from the above 
     let rightTest = largerThanSplit shapes
@@ -169,35 +153,10 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
     let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
     let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
-   (* let rec findMatches acc one two =
-        match one with
-        |x::xs ->   match two with
-                    |y::ys -> if(x=y) then 
-                                    findMatches (acc+1) one ys
-                                else findMatches acc one ys
-                    |[] -> findMatches acc xs two
-        |[] -> acc 
-        *)
-
-    
-    //printfn("%s %i %i %i %f") "SAMMENLIGN" left.Length right.Length shapes.Length (float(left.Length+right.Length-shapes.Length)/float(shapes.Length))
-    (*let mutable count2 = 0
-    let findmatches2 =   
-            for t in left do
-                for k in right do 
-                    if(t = k) then count2 <- count2 + 1   
-    printfn("%s %i %i") "Result" left.Length right.Length*)
-    //let count = findMatches 0 left right
-    
-
+    //Check for duplicates among the lists. 
     if(((float(left.Length+right.Length-shapes.Length)/float(shapes.Length)) < 0.4) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
-      //printfn("%s") "jeg har lavet et node din fucking lort"
-      //Node(List.empty, (mkTmKdtree left), (mkTmKdtree right), (mkKdBbox shapes), (axis,axisMidPoint))
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
-      //printfn("%s") "NODE"
       Node(List.empty,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
       
-    else 
-    //printfn("%s") "LEAF"
-    Leaf(shapes, (mkKdBbox shapes))
+    else Leaf(shapes, (mkKdBbox shapes))
