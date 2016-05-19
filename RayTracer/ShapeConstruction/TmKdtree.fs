@@ -181,16 +181,24 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         *)
 
     
-    let mutable count2 = 0
+    printfn("%s %i %i") "SAMMENLIGN" left.Length right.Length
+    (*let mutable count2 = 0
     let findmatches2 =   
             for t in left do
                 for k in right do 
                     if(t = k) then count2 <- count2 + 1   
-        
-    let count = findMatches 0 left right
+    printfn("%s %i %i") "Result" left.Length right.Length*)
+    //let count = findMatches 0 left right
+    let boolbi = if((left.Length+right.Length)/shapes.Length
 
-    if((float(count/left.Length) < 0.5) && float(count/right.Length) < 0.5) then 
+    if((float(count2/left.Length) < 0.5) && float(count2/right.Length) < 0.5) then 
+      //printfn("%s") "jeg har lavet et node din fucking lort"
+      //Node(List.empty, (mkTmKdtree left), (mkTmKdtree right), (mkKdBbox shapes), (axis,axisMidPoint))
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
+      printfn("%s") "NODE"
       Node(List.empty,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
-    else Leaf(shapes, (mkKdBbox shapes))
+      
+    else 
+    printfn("%s") "LEAF"
+    Leaf(shapes, (mkKdBbox shapes))
