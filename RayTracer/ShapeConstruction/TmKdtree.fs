@@ -92,7 +92,7 @@ let rec search node ray t t' =
             let (fst, snd) = order(direction,getLeft node, getRight node)
             if tHit <= t || tHit < 0.0 then
                 search snd ray t t'
-            else if tHit >= t then
+            else if tHit >= t' then
                 search fst ray t t'
             else
              match search fst ray t tHit with
@@ -180,7 +180,7 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         *)
 
     
-    printfn("%s %i %i %i %f") "SAMMENLIGN" left.Length right.Length shapes.Length (float(left.Length+right.Length-shapes.Length)/float(shapes.Length))
+    //printfn("%s %i %i %i %f") "SAMMENLIGN" left.Length right.Length shapes.Length (float(left.Length+right.Length-shapes.Length)/float(shapes.Length))
     (*let mutable count2 = 0
     let findmatches2 =   
             for t in left do
@@ -195,9 +195,9 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
       //Node(List.empty, (mkTmKdtree left), (mkTmKdtree right), (mkKdBbox shapes), (axis,axisMidPoint))
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
-      printfn("%s") "NODE"
+      //printfn("%s") "NODE"
       Node(List.empty,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
       
     else 
-    printfn("%s") "LEAF"
+    //printfn("%s") "LEAF"
     Leaf(shapes, (mkKdBbox shapes))
