@@ -68,8 +68,7 @@ let searchLeaf leaf ray t' =
     match leaf with 
     | Leaf(s,_) -> let hit = closestHit s ray
                    match hit with
-                   |Some(f,_,_) when f<t' -> Some hit
-                   |Some(f,_,_) when f>t' -> None
+                   |Some(f,_,_) -> if (f<t') then Some hit else None
                    |None -> None
 
 let order(d, left, right) =
@@ -81,24 +80,24 @@ let rec search node ray t t' =
     match node with
     |Leaf(_,_) -> searchLeaf node ray t'
     |Node(_,_,_,_,a') -> 
-        let a = fst a'
-        let b = snd a'
-         
-        if(Ray.getDirection ray a) = 0.0 then
+        let direction = Ray.getDirection ray (fst a')
+        let origin = Ray.getOrigin ray (fst a')
+        let nodeValue = Point.getFromAxis (snd a') (fst a')
+        if(direction) = 0.0 then
             printfn("%s") "flatsite"
-            if((Ray.getOrigin ray a) <= (Point.getFromAxis b a)) then search (getLeft node) ray t t'
+            if(origin <= nodeValue) then search (getLeft node) ray t t'
             else search (getRight node) ray t t' 
         else 
-            let tHit = ((Point.getFromAxis b a) - (Ray.getOrigin ray a)) / Ray.getDirection ray a
-            let (fst, snd) = order((Ray.getDirection ray a),getLeft node, getRight node)
-            if tHit >= t || tHit < 0.0 then
-                search fst ray t t'
-            else if tHit <= t then
+            let tHit = (nodeValue - origin) / direction
+            let (fst, snd) = order(direction,getLeft node, getRight node)
+            if tHit <= t || tHit < 0.0 then
                 search snd ray t t'
+            else if tHit >= t then
+                search fst ray t t'
             else
              match search fst ray t tHit with
              |Some hit -> Some hit
-             | _ -> search snd ray tHit t'
+             |_ -> search snd ray tHit t'
 
 
 

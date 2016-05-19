@@ -63,27 +63,6 @@ module BasicShape =
             then Some (t,t')
             else None
                         
-        
-
-            let (ty,ty') = 
-                if dy >= 0.0 then
-                    (ly - oy)/dy,  
-                    (hy - oy)/dy 
-                else 
-                    (hy - oy)/dy, 
-                    (ly - oy)/dy
-            let (tz,tz') = 
-                if dz >= 0.0 then
-                    (lz - oz)/dz,  
-                    (hz - oz)/dz 
-                else 
-                    (hz - oz)/dz, 
-                    (lz - oz)/dz
-            let t = List.max [tx;ty;tz]
-            let t'= List.min [tx';ty';tz']
-            if t < t' && t' > 0.0
-            then Some (t,t')
-            else None
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option
@@ -208,7 +187,7 @@ module BasicShape =
                         member this.getBounding () = 
                             let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
-                            let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
+                            let zlist = [(Point.getZ a);(Point.getZ b);(Point.getZ c)]
 
                             let l = Point.mkPoint((List.min xlist) - epsilon) ((List.min ylist) - epsilon) ((List.min zlist) - epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
