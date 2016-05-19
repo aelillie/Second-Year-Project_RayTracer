@@ -77,7 +77,7 @@ module ImplicitShape =
                                 (deg1 - deg2, t1/t2)
  
                         let removeZero r =          //Remove if zero 
-                            Map.filter (fun key value -> ((abs value) > (epsilon)) ) r
+                            Map.filter (fun key value -> ((abs value) > 0.0000000000000001) ) r
                            
                         let q = Map.empty
                         let r = n
