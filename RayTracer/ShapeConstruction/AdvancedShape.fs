@@ -35,13 +35,13 @@ module AdvancedShape =
                 let width = System.Math.Abs(Point.getX high - Point.getX low)
                 let height = System.Math.Abs(Point.getY high - Point.getY low)
                 let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
-                let az = System.Math.Min(Point.getZ high, Point.getZ low)
+                let az = System.Math.Max(Point.getZ high, Point.getZ low)
 
                 let frontT = translate (Point.getX low) (Point.getY low) az 
-                let backT =   mergeTransformations [frontT;translate 0.0 0.0 depth]
-                let bottomT = mergeTransformations [rotateX (pi/2.0);frontT]
+                let backT =   mergeTransformations [frontT;translate 0.0 0.0 -depth]
+                let bottomT = mergeTransformations [rotateX (pi/(-2.0));frontT]
                 let topT =    mergeTransformations [bottomT;translate 0.0 height 0.0]
-                let leftT =   mergeTransformations [rotateY (-(pi/2.0));frontT]
+                let leftT =   mergeTransformations [rotateY ((pi/2.0));frontT]
                 let rightT =  mergeTransformations [leftT;translate width 0.0 0.0]
 
                 let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
