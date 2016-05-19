@@ -108,9 +108,9 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "testShape.png"))
   
   let heart toScreen =
-    let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 - 1)^3 - x^2 * z^3 - (9.0/80.0)*y^2*z^3"
+    let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 + -1)^3 + -x^2 * z^3 + -(9.0/80.0)*y^2*z^3"
     let s = mkShape is  (mkMaterial (fromColor Color.DarkRed) 0.0)
-    let camera = mkCamera (mkPoint 0.0 3.0 1.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 0.0 1.0) 2.0 4.0 4.0 500 500 in
+    let camera = mkCamera (mkPoint 0.0 3.0 1.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 -0.00000001 1.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
@@ -151,7 +151,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
   let render toScreen =
-//    heart toScreen
+    heart toScreen
 //    sphere1 1.0 toScreen;
 //    sphere2 1.0 toScreen;
 //    planeX toScreen;
@@ -160,6 +160,6 @@ module ImplicitSurfaces =
 //    torus 1.5 0.5 toScreen;
 //    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
-//    chmutov 2 toScreen;
+    chmutov 2 toScreen;
 //    chmutov 4 toScreen;
-    chmutov 6 toScreen
+//    chmutov 6 toScreen

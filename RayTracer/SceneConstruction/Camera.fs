@@ -25,6 +25,7 @@ let mkCamera pos look up zoom width height pwidth pheight =
 let getRes (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) = (pw,ph)
 
 let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
+    let up = up |> Vector.normalise
     let l = Point.direction p q //normalised direction vector
     let r = Vector.crossProduct l up //right direction vector
             |> Vector.normalise
