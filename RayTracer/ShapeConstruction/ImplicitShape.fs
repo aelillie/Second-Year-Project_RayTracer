@@ -22,7 +22,7 @@ module ImplicitShape =
         let evalInterval sc interval =
                         let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                             then 
-                                                                                             acc + System.Math.Pow(value*interval,(float deg))
+                                                                                             acc + (value * (System.Math.Pow(interval,(float deg))))
                                                                                             else 
                                                                                              acc + value) 0.0 (Map.toList m)) sc
                         let rec matchSign x=
@@ -156,7 +156,7 @@ module ImplicitShape =
 
                                             let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                                                 then 
-                                                                                                acc + System.Math.Pow(value*i,(float deg))
+                                                                                                acc + (value * System.Math.Pow(i,(float deg)))
                                                                                                 else 
                                                                                                 acc + value) 0.0 l 
                                                                                         

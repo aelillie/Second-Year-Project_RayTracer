@@ -42,7 +42,7 @@ let readLines (filePath:string) = seq {
 
 //Helper parsers
 let pNameString: Parser<_> = satisfy (fun c ->  System.Char.IsLetterOrDigit c)
-let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else failFatally "lol"
+let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else failFatally "List should not be of zero elements."
 
 
 // Set up parsers for each type  

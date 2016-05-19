@@ -160,9 +160,9 @@ module ImplicitSurfacesTest =
   
   
   let render toScreen =
-//        sphere1 1.0 toScreen;
-//        EllipsoidX 1.0 toScreen;
-//        OhGod 1.0 toScreen;
+        sphere1 1.0 toScreen;
+        EllipsoidX 1.0 toScreen;
+        OhGod 1.0 toScreen;
 //        sphere2 1.0 toScreen;
 //        planeX toScreen;
 //        planeY toScreen;
