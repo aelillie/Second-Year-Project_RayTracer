@@ -85,19 +85,47 @@ let mkNorm p expr : Vector =
 
     let folder1 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListWithZero m c)
     let folder2 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListNoZero m c)
-                               
-
+    
+    let Derive m = Map.fold (fun acc degree value -> if degree = 0
+                                                     then Map.add 0 0.0 acc 
+                                                     elif degree = 1
+                                                     then Map.add 0 value acc
+                                                     else Map.add (degree-1) (value * float degree) acc ) Map.empty m 
+                                                     
+     
+                                                     
+    let toFloat se = match se with
+                     |SE (agl,agd) -> let rec agF ag s =
+                                        match ag with
+                                         |[] -> s
+                                         |a::ag' -> let k = match a with
+                                                            |ANum f -> f * s
+                                                            |AExponent(e, n) when e = "x" -> pow (x, float n) * s
+                                                            |AExponent(e, n) when e = "y" -> pow (y, float n) * s
+                                                            |AExponent(e, n) when e = "z" -> pow (z, float n) * s
+                                                    agF ag' k
+                                      List.fold (fun acc x  -> acc + (agF x 1.0)) 0.0 agl
+                                                     
+                          
+    
     let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 && not (m.ContainsKey(0)) then folder2 m c                                           
                                              else if m.Count>1 && m.ContainsKey(0) then folder1 m c
                                                   else if m.Count<1 && not (m.ContainsKey(0)) then folder2 m c
                                                        else 0.0
     
-    let newX = checkMap derivPolyX x
-    let newY = checkMap derivPolyY y
-    let newZ = checkMap derivPolyZ z
+
+    let derivePoly c m = let k = Map.map (fun key value -> toFloat value) m |> Derive 
+                         Map.fold (fun acc key value -> acc + (value * pow(c,float key))) 0.0  k
+
+    let x' = derivePoly x derivPolyX
+    let y' = derivePoly y derivPolyY
+    let z' = derivePoly z derivPolyZ
+//    let newX = checkMap derivPolyX x
+//    let newY = checkMap derivPolyY y
+//    let newZ = checkMap derivPolyZ z
 
 
-    Vector.mkVector newX newY newZ
+    Vector.mkVector x' y' z'
 
 
 let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
