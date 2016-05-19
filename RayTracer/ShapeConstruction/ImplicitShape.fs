@@ -141,7 +141,7 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 10 
+            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 20 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
                                                                                         if (nOfRoots s e) > 0 then
@@ -163,7 +163,7 @@ module ImplicitShape =
                                             let fNorm = (Map.toList (List.item 0 sturmChain))
                                             let fPrime = (Map.toList (List.item 1 sturmChain))
                                                                                            
-                                            let mutable raphCount = 15 //(int iEnd)-(int iStart)
+                                            let mutable raphCount = 6 //(int iEnd)-(int iStart)
 
                                                                                         
                                             let rec calcGuess guess = if raphCount > 0 then                                                                      

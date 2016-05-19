@@ -98,7 +98,7 @@ module ImplicitSurfaces =
 
       
   let testShape toScreen =
-    let is = mkImplicit "(x - 2)^2(x+2)^2 + (y - 2)^2(y+2)^2 + (z - 2)^2(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z - 10(x^2 + y^2 + z^2) + 22"
+    let is = mkImplicit "(x + -2)^2*(x+2)^2 + (y + -2)^2(y+2)^2 + (z + -2)^2*(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z + -10(x^2 + y^2 + z^2) + 22"
     let s = mkShape is (mkMaterial (fromColor Color.Gold) 0.0)
     let camera = mkCamera (mkPoint 0.0 2.0 8.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
@@ -140,6 +140,7 @@ module ImplicitSurfaces =
 
   let chmutov degree toScreen =       
     let T x = strSum (degree / 2) (fun (k : int) -> (string (comb degree (2 * k))) + " * (" + x + "^2 + -1.0)^" + (string k) + " * " + x + "^" + (string (degree - (2 * k))))
+    let k = (T "x" + " + " + T "y" + " + " + T "z")
     let is = mkImplicit (T "x" + " + " + T "y" + " + " + T "z")
     let s = mkShape is  (mkMaterial (fromColor Color.Gold) 0.0)
     let camera = mkCamera (mkPoint 4.0 4.0 4.0) (mkPoint 0.0 -0.5 0.0) (mkVector 0.0 1.0 0.0) 4.0 4.0 4.0 500 500 in
@@ -159,6 +160,6 @@ module ImplicitSurfaces =
 //    torus 1.5 0.5 toScreen;
 //    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
-    chmutov 2 toScreen;
-    chmutov 4 toScreen;
+//    chmutov 2 toScreen;
+//    chmutov 4 toScreen;
     chmutov 6 toScreen
