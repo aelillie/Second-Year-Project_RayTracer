@@ -18,13 +18,15 @@ module ImplicitShape =
     
 
     type ImplicitShape (bs, m) = 
+        let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
+                                                                then 
+                                                                    acc + (value * (System.Math.Pow(x,(float deg))))
+                                                                else 
+                                                                    acc + value) 0.0 p
+
         let intervalSize = 100.0
-        let evalInterval sc interval =
-                        let values = List.map (fun m -> List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                                            then 
-                                                                                             acc + (value * (System.Math.Pow(interval,(float deg))))
-                                                                                            else 
-                                                                                             acc + value) 0.0 (Map.toList m)) sc
+        let evalInterval (sc:Map<int,float> list) interval =
+                        let values = List.map (fun l -> calcValue interval (Map.toList l) ) sc 
                         let rec matchSign x=
                          function 
                             |[] -> x
@@ -153,19 +155,11 @@ module ImplicitShape =
                                                                                            
                                             let mutable raphCount = 13 //(int iEnd)-(int iStart)
 
-
-                                            let calcT l i = List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                                                then 
-                                                                                                acc + (value * System.Math.Pow(i,(float deg)))
-                                                                                                else 
-                                                                                                acc + value) 0.0 l 
                                                                                         
-                                            let rec calcGuess guess = if raphCount > 0 then
-                                                                       
-                                                                        let newGuess = guess - ((calcT fNorm guess)/(calcT fPrime guess))                                                                                                                   
+                                            let rec calcGuess guess = if raphCount > 0 then                                                                      
+                                                                        let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
                                                                         raphCount <- raphCount - 1
                                                                         calcGuess newGuess
-
                                                                       else guess
                                                                                           
                                             let k = calcGuess ((iEnd+iStart)/2.0)
