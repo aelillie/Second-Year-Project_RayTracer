@@ -52,8 +52,12 @@ module ImplicitShape =
 
                         let lead x = List.last (Map.toList x) //Get largest value for x
 
-                        let polyPlus (deg, t1) t2 =         //For adding a segment of degree x to a polynomial
-                                Map.add deg t1 t2
+                        let polyPlus (deg, t1) t2 =
+                                match Map.tryFind deg t2 with
+                                |None ->  Map.add deg t1 t2
+                                |Some (x) -> Map.add deg (t1+x) t2
+
+                               
 
                         let polyMinus t1 t2 =               //Subtracting 2 polys.
                                 let minus x1 x2 =           
@@ -87,18 +91,19 @@ module ImplicitShape =
                                    let (deg,t) = polyDivide (lead r) (lead d)
                                    let q = polyPlus (deg, t) q
                                    let x = polyMult (deg, t) d
-                                   let r' = polyMinus r x 
-                                   let r'' = removeZero r'
-                                   calcQR (q,r'') d
+                                   let r' = polyMinus r x |> removeZero
+                                   calcQR (q,r') d
                                   else (q, r)
                         calcQR (q,r) d
 
                     let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) =
-                        let (m2', m1') = if m2.Count >= m1.Count then (m2,m1) else (m1,m2) 
-                        Map.map (fun key value -> let m1v = Map.tryFind key m1'
-                                                  match m1v with
-                                                  |None -> value
-                                                  |Some x -> x + value) m2'
+
+                        let merge a  b  =
+                            Map.fold (fun s k v ->
+                            match Map.tryFind k s with
+                            | Some v' -> Map.add k (v + v') s
+                            | None -> Map.add k v s) a b
+                        merge m1 m2
 
                     let negatePolyMaps m = 
                         Map.map (fun key value -> value * (-1.0)) m
@@ -314,9 +319,8 @@ module ImplicitShape =
 
                                     | 5 -> findHit p d floatMap expr
                                            
-                                    | _ -> let x = findHit p d floatMap expr 
-                                           let k = 1
-                                           x
+                                    | _ -> findHit p d floatMap expr 
+
 
                                 solveDegreePoly
                                            
