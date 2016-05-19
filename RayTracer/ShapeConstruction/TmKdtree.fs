@@ -119,13 +119,13 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
     let rec largerThanSplit (xs:BasicShape.Triangle list) = 
         let results = List.choose(fun (elem:BasicShape.Triangle) ->
             match axis with
-            |"x" -> let (x1,x2,x3) = elem.getXCoords()
+            |"x" -> let (x1,x2,x3) = elem.getCoords "x"
                     let mpX = (Point.getX axisMidPoint)
                     if x1>=mpX || x2>=mpX ||x3>=mpX  then Some elem else None
-            |"y" -> let (y1,y2,y3) = elem.getYCoords()
+            |"y" -> let (y1,y2,y3) = elem.getCoords "y"
                     let mpY = (Point.getY axisMidPoint)
                     if y1>=mpY || y2>=mpY ||y3>=mpY  then Some elem else None
-            |"z" -> let (z1,z2,z3) = elem.getZCoords()
+            |"z" -> let (z1,z2,z3) = elem.getCoords "z"
                     let mpZ = (Point.getZ axisMidPoint)
                     if z1>=mpZ || z2>=mpZ ||z3>=mpZ  then Some elem else None) xs
         results
@@ -134,13 +134,13 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
     let rec lessThanSplit (xs:BasicShape.Triangle list) = 
         let results = List.choose(fun (elem:BasicShape.Triangle) ->
             match axis with
-            |"x" -> let (x1,x2,x3) = elem.getXCoords()
+            |"x" -> let (x1,x2,x3) = elem.getCoords "x"
                     let mpX = (Point.getX axisMidPoint)
                     if x1<=mpX || x2<=mpX ||x3<=mpX  then Some elem else None
-            |"y" -> let (y1,y2,y3) = elem.getYCoords()
+            |"y" -> let (y1,y2,y3) = elem.getCoords "y"
                     let mpY = (Point.getY axisMidPoint)
                     if y1<=mpY || y2<=mpY ||y3<=mpY  then Some elem else None
-            |"z" -> let (z1,z2,z3) = elem.getZCoords()
+            |"z" -> let (z1,z2,z3) = elem.getCoords "z"
                     let mpZ = (Point.getZ axisMidPoint)
                     if z1<=mpZ || z2<=mpZ ||z3<=mpZ  then Some elem else None) xs
         results

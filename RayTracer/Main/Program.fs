@@ -33,10 +33,10 @@ let main argv =
         let light3 = mkLight (mkPoint 0.0 5.0 25.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 0.0 25.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 0.0 25.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 25.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let tm = mkPLY "C:\\Program Files\\ant.ply" false
+        let tm = mkPLY "/Users/Emma/Dropbox/Dokumenter/SWU/Andetårsprojekt/Ray-Tracer-Project/RayTracer/ply/bunny_textured.ply" false
         let tm' = mkShape tm (Texture.mkMatTexture ((Material.mkMaterial (Colour.fromColor Color.Green)) 0.0))
         let elapsed = stopWatch.Elapsed.TotalSeconds
         printfn("%f") elapsed

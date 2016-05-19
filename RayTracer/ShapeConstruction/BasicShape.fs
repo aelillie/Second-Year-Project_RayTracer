@@ -178,9 +178,11 @@ module BasicShape =
 
     type Triangle(a,b,c,tex, texCoordList) =
         member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
-        member this.getXCoords() = (Point.getX a,Point.getX b,Point.getX c)
-        member this.getYCoords() = (Point.getY a,Point.getY b,Point.getY c)
-        member this.getZCoords() = (Point.getZ a,Point.getZ b,Point.getZ c)
+        member this.getCoords s = 
+            match s with
+            | "x" -> (Point.getX a,Point.getX b,Point.getX c)
+            | "y" -> (Point.getY a,Point.getY b,Point.getY c)
+            | "z" -> (Point.getZ a,Point.getZ b,Point.getZ c)
          
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
