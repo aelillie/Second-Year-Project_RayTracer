@@ -70,43 +70,53 @@ module ImplicitShape =
                                 (deg1 - deg2, t1/t2)
  
                         let removeZero r =          //Remove if zero 
-                           
                             Map.filter (fun key value -> ((abs value) > (epsilon)) ) r
                            
                         let q = Map.empty
                         let r = n
 
                         //The computation of kvotient and remainder
-                        let rec calcQR (q, (r:Map<int,float>)) d c =
+                        let rec calcQR (q, (r:Map<int,float>)) d =
                             match Map.isEmpty r with    //Map empty
                             |true -> (q , r)
-                            |_ -> if (degree r) >= (degree d) 
+                            |_ -> let rd = degree r 
+                                  let dd = degree d
+                                  if (degree r) >= (degree d) 
                                   then                                     
                                    let (deg,t) = polyDivide (lead r) (lead d)
                                    let q = polyPlus (deg, t) q
                                    let x = polyMult (deg, t) d
                                    let r' = polyMinus r x 
                                    let r'' = removeZero r'
-                                   calcQR (q,r'') d (c+1)
+                                   calcQR (q,r'') d
                                   else (q, r)
-                        calcQR (q,r) d (0)
+                        calcQR (q,r) d
 
-                    let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) = 
-                        Map.map (fun key value -> let m1v = Map.tryFind key m1
+                    let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) =
+                        let (m2', m1') = if m2.Count >= m1.Count then (m2,m1) else (m1,m2) 
+                        Map.map (fun key value -> let m1v = Map.tryFind key m1'
                                                   match m1v with
                                                   |None -> value
-                                                  |Some x -> x + value) m2
+                                                  |Some x -> x + value) m2'
 
                     let negatePolyMaps m = 
                         Map.map (fun key value -> value * (-1.0)) m
+
+                    let onlyConstant (m:Map<_,_>) = 
+                        if m.Count = 1 && m.ContainsKey 0 
+                        then true
+                        else false
                                                 
                     let rec pLong p px xs = 
                         if Map.isEmpty px 
                         then
                          xs
+                        elif onlyConstant px
+                        then 
+                         xs
                         else
                          let (q, rem) = pLongDivision p px
-                         let px' = plusPolyMaps q rem |> negatePolyMaps
+                         let px' = negatePolyMaps rem
                          pLong px px' (px'::xs)
                           
                          
@@ -131,7 +141,7 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 6 
+            if nOfRoots -1.0 100.0> 0 then  let mutable counter = 10 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
                                                                                         if (nOfRoots s e) > 0 then
@@ -153,7 +163,7 @@ module ImplicitShape =
                                             let fNorm = (Map.toList (List.item 0 sturmChain))
                                             let fPrime = (Map.toList (List.item 1 sturmChain))
                                                                                            
-                                            let mutable raphCount = 13 //(int iEnd)-(int iStart)
+                                            let mutable raphCount = 15 //(int iEnd)-(int iStart)
 
                                                                                         
                                             let rec calcGuess guess = if raphCount > 0 then                                                                      
@@ -266,38 +276,38 @@ module ImplicitShape =
                     //                            let result = Vector.dotProduct v n
             //                                    Some (result, n, mat)
             //                               else None
-                                    | 3 ->  findHit p d floatMap expr
-//                                            let a = floatMap.Item 2
-//
-//                                            let b = floatMap.Item 1
-//
-//                                            let c = floatMap.Item 0
-//
-//                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
-//                                
-//                                            if(disc < 0.0) then None
-//                                            else
-//                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
-//                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
-//                                  
-//                                                if answer1 < 0.0 && answer2 < 0.0 then None
-//                                                else
-//                                                    let answer = System.Math.Min(answer1,answer2)
-//                                                    //normal vector point with minimum answer value
-//                                                    let nvPointMin = Point.move p (answer * d)
-//                                                    if answer < 0.0 
-//                                                    then 
-//                                                        let answer = System.Math.Max(answer1,answer2)
-//                                                        //normal vector point with maximum answer value
-//                                                        let nvPointMax = Point.move p (answer * d)
-//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
-//
-//                                                        Some (answer, Vector.normalise(nV),m) 
-//                                                        
-//                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-//                                                    else
-//                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
-//                                                        Some (answer, Vector.normalise(nV),m) 
+                                    | 3 ->  
+                                            let a = floatMap.Item 2
+
+                                            let b = floatMap.Item 1
+
+                                            let c = floatMap.Item 0
+
+                                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
+                                
+                                            if(disc < 0.0) then None
+                                            else
+                                                let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
+                                                let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
+                                  
+                                                if answer1 < 0.0 && answer2 < 0.0 then None
+                                                else
+                                                    let answer = System.Math.Min(answer1,answer2)
+                                                    //normal vector point with minimum answer value
+                                                    let nvPointMin = Point.move p (answer * d)
+                                                    if answer < 0.0 
+                                                    then 
+                                                        let answer = System.Math.Max(answer1,answer2)
+                                                        //normal vector point with maximum answer value
+                                                        let nvPointMax = Point.move p (answer * d)
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+
+                                                        Some (answer, Vector.normalise(nV),m) 
+                                                        
+                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
+                                                    else
+                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+                                                        Some (answer, Vector.normalise(nV),m) 
                                     | 4 -> findHit p d floatMap expr
 
                                     | 5 -> findHit p d floatMap expr

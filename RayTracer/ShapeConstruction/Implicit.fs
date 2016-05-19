@@ -40,9 +40,9 @@ let getExpr bs =
 let mkNorm p expr : Vector = 
 
     //get x,y,z from Point
-    let x = 2.0//Point.getX p
-    let y = 2.0//Point.getY p
-    let z = 2.0//Point.getZ p
+    let x = Point.getX p
+    let y = Point.getY p
+    let z = Point.getZ p
     
     //get derived polynomials with respect to x,y,z
     let derivPolyX = polyToMap (exprToPoly expr "x")
