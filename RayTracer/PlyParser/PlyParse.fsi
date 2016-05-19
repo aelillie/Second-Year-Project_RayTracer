@@ -14,3 +14,7 @@ val parsePly : string -> Ply list
 //val print : Ply -> TextWriter -> unit
 
 val textureIndexes : _arg1:Ply list -> (int * int) option
+val XYZIndexes : _arg1:Ply list -> (int * int * int) option //TODO: Should be generic function
+val faceCount : _arg1:Ply list -> int
+val vertices : p:Ply list -> float list list
+val faces : p:Ply list -> int list list
