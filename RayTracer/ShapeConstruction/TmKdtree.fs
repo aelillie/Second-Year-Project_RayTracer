@@ -83,7 +83,9 @@ let rec search node ray t t' =
     |Node(_,_,_,_,a') -> 
         let a = fst a'
         let b = snd a'
+         
         if(Ray.getDirection ray a) = 0.0 then
+            printfn("%s") "flatsite"
             if((Ray.getOrigin ray a) <= (Point.getFromAxis b a)) then search (getLeft node) ray t t'
             else search (getRight node) ray t t' 
         else 
@@ -99,25 +101,51 @@ let rec search node ray t t' =
              | _ -> search snd ray tHit t'
 
 
+
+
 let traverse tree ray =
     match(getBox tree).Value.hit(ray) with
-    |Some(t,t') -> search tree ray t t'
+    |Some(t,t') ->  search tree ray t t'  
     |None -> None
     
 //Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
 let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
      //Finding biggest dimension in the shapes list
     let box = mkKdBbox shapes
-    let axis = snd (box.getLongestAxis box.getL box.getH)
+    let axis = snd (box.getLongestAxis)
     let axisMidPoint = 
-        let mutable midPoint = Point.mkPoint 0.0 0.0 0.0
-        for (triangle:BasicShape.Triangle) in shapes do
-            midPoint <- midPoint + (triangle.getMidPoint())
+        let midPoint = List.fold (fun acc (ele:BasicShape.Triangle) -> (acc + ele.getMidPoint())) (Point.mkPoint 0.0 0.0 0.0) shapes
         let avgMid = midPoint / float(shapes.Length)
         avgMid 
 
     //Splitting the shape list in right & left 
     let rec largerThanSplit (xs:BasicShape.Triangle list) = 
+        let results = List.choose(fun (elem:BasicShape.Triangle) ->
+            match axis with
+            |"x" -> let (x1,x2,x3) = elem.getXCoords()
+                    let mpX = (Point.getX axisMidPoint)
+                    if x1>=mpX || x2>=mpX ||x3>=mpX  then Some elem else None
+            |"y" -> let (y1,y2,y3) = elem.getYCoords()
+                    let mpY = (Point.getY axisMidPoint)
+                    if y1>=mpY || y2>=mpY ||y3>=mpY  then Some elem else None
+            |"z" -> let (z1,z2,z3) = elem.getZCoords()
+                    let mpZ = (Point.getZ axisMidPoint)
+                    if z1>=mpZ || z2>=mpZ ||z3>=mpZ  then Some elem else None) xs
+        results
+    let rec lessThanSplit (xs:BasicShape.Triangle list) = 
+        let results = List.choose(fun (elem:BasicShape.Triangle) ->
+            match axis with
+            |"x" -> let (x1,x2,x3) = elem.getXCoords()
+                    let mpX = (Point.getX axisMidPoint)
+                    if x1<=mpX || x2<=mpX ||x3<=mpX  then Some elem else None
+            |"y" -> let (y1,y2,y3) = elem.getYCoords()
+                    let mpY = (Point.getY axisMidPoint)
+                    if y1<=mpY || y2<=mpY ||y3<=mpY  then Some elem else None
+            |"z" -> let (z1,z2,z3) = elem.getZCoords()
+                    let mpZ = (Point.getZ axisMidPoint)
+                    if z1<=mpZ || z2<=mpZ ||z3<=mpZ  then Some elem else None) xs
+        results
+    (*let rec largerThanSplit (xs:BasicShape.Triangle list) = 
         match xs with
         |[] -> []
         |x::xs' -> match axis with
@@ -132,27 +160,34 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         |x::xs' -> match axis with
                    |"x" -> if Point.getX (x.getMidPoint()) <= Point.getX axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs'
                    |"y" -> if Point.getY (x.getMidPoint()) <= Point.getY axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' 
-                   |"z" -> if Point.getZ (x.getMidPoint()) <= Point.getZ axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' 
+                   |"z" -> if Point.getZ (x.getMidPoint()) <= Point.getZ axisMidPoint then x :: lessThanSplit xs' else lessThanSplit xs' *)
          
     //Creating the left and right list from the above 
-    let mutable right = largerThanSplit shapes
-    let mutable left = lessThanSplit shapes
+    let rightTest = largerThanSplit shapes
+    let leftTest = lessThanSplit shapes
 
     //If one of the trees are empty, we add make left and right equivelant. 
-    if(left.IsEmpty && right.Length > 0) then left <- right
-    if(right.IsEmpty && left.Length > 0) then right <- left
+    let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
+    let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
-    (*
-    let count = 0
-    let checking = List.fold (List.fold *)
-      
+   (* let rec findMatches acc one two =
+        match one with
+        |x::xs ->   match two with
+                    |y::ys -> if(x=y) then 
+                                    findMatches (acc+1) one ys
+                                else findMatches acc one ys
+                    |[] -> findMatches acc xs two
+        |[] -> acc 
+        *)
 
-    let mutable count = 0 
-    let leftMap = 
-        for t in left do
-            for k in right do 
-                if(t = k) then count <- count + 1 
-                
+    
+    let mutable count2 = 0
+    let findmatches2 =   
+            for t in left do
+                for k in right do 
+                    if(t = k) then count2 <- count2 + 1   
+        
+    let count = findMatches 0 left right
 
     if((float(count/left.Length) < 0.5) && float(count/right.Length) < 0.5) then 
       let leftTree = mkTmKdtree left 

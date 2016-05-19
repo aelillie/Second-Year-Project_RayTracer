@@ -21,10 +21,10 @@ module BasicShape =
                         let (lx,ly,lz) = Point.getCoord b.p1
                         let (hx,hy,hz) = Point.getCoord b.p2
                         lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
-        member b.getLongestAxis l h =
-                        let xdim = ((Point.getX h) - (Point.getX l), "x")
-                        let ydim = ((Point.getY h) - (Point.getY l), "y")
-                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+        member b.getLongestAxis =
+                        let xdim = ((Point.getX b.getH) - (Point.getX b.getL), "x")
+                        let ydim = ((Point.getY b.getH) - (Point.getY b.getL), "y")
+                        let zdim = ((Point.getZ b.getH) - (Point.getZ b.getL), "z") 
                         List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
         member b.getH =
                 b.p2
@@ -199,6 +199,9 @@ module BasicShape =
 
     type Triangle(a,b,c,tex, texCoordList) =
         member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+        member this.getXCoords() = (Point.getX a,Point.getX b,Point.getX c)
+        member this.getYCoords() = (Point.getY a,Point.getY b,Point.getY c)
+        member this.getZCoords() = (Point.getZ a,Point.getZ b,Point.getZ c)
          
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"

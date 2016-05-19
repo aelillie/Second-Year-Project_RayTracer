@@ -27,3 +27,4 @@ let getOrigin (R(p,d)) axis =
     |"x" -> Point.getX p
     |"y" -> Point.getY p
     |"z" -> Point.getZ p
+

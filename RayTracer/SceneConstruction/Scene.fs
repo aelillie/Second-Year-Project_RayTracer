@@ -109,7 +109,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     else Some c'    //Else return own color.    
     //Mapping the rays to colours for each pixel.
     let t = System.Diagnostics.Stopwatch.StartNew()
-    let pixelplane = List.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
+    let pixelplane = Array.Parallel.map (fun (r, (x,y)) ->(x,y, castRay r 0)) rays
     printf "%f" t.Elapsed.TotalSeconds
     //Map from colour to color.
     List.map (fun (x,y,c) -> x,y, sort c |> toColorFromList) (List.ofArray pixelplane)

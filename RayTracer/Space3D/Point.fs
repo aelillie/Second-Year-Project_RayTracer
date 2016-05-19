@@ -1,5 +1,4 @@
 module Point
-
 type Vector = Vector.Vector
 type Point =
   | P of float * float * float
@@ -25,6 +24,7 @@ let getFromAxis (P(x,y,z)) axis =
     |"x" -> x
     |"y" -> y
     |"z" -> z
+
 
 type Point with
   static member ( + ) ((P(x,y,z)), f) = (P(x+f,y+f,z+f))
