@@ -32,7 +32,7 @@ let renderAll toScreen =
 //  printf "shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
-    ImplicitSurfacesTest.render toScreen
+    ImplicitSurfaces.render toScreen
     printf "ImplicitSurfaces rendered"
 //  //Meshes.render toScreen
 //  printf "Meshes rendered"
