@@ -15,6 +15,7 @@ open System.IO
 open TestSuite
 open ExprParse
 open ExprToPoly
+open ImplicitTest
 
 let testAll = ()
 //    PointTest.doTest ()
@@ -46,15 +47,7 @@ let renderAll toScreen =
 [<EntryPoint>]
 let main argv = 
 //    testall
-//    let expr  = ExprParse.parseStr "((1 + 3 * 4)/2)*x^2"
-//    let expr2 = parseStr "-(x/4)*x^2 + 30*y^1"
-//    let ppe = ppExpr expr  
-//    let simpleexpr = exprToSimpleExpr expr
-//    let simpleexpr2 = exprToSimpleExpr expr2
-//
-//    let s = ppSimpleExpr simpleexpr
-//    let s2 = ppSimpleExpr simpleexpr2
-//    printf "%s" s2
-//    printf "%s" s 
+//    ImplicitTest.doTest() 
     renderAll false
+    System.Console.ReadKey() |> ignore
     0 // return an integer exit code

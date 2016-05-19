@@ -30,5 +30,5 @@ let tests =
      ] 
 
 let doTest() =
-  printf "TransformationTest\n"
-  List.iter chk tests
+      printf "TransformationTest\n"
+      List.iter chk tests
