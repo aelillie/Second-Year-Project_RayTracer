@@ -36,7 +36,7 @@ let main argv =
         let camera = mkCamera (mkPoint 0.0 0.0 25.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let tm = mkPLY "C:\\Program Files\\ant.ply" false
+        let tm = mkPLY "C:\\Program Files\\bunny_textured.ply" false
         let tm' = mkShape tm (Texture.mkMatTexture ((Material.mkMaterial (Colour.fromColor Color.Green)) 0.0))
         let elapsed = stopWatch.Elapsed.TotalSeconds
         printfn("%f") elapsed
