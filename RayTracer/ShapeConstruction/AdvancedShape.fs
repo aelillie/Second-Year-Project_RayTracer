@@ -134,9 +134,10 @@ module AdvancedShape =
                                     makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3))::shapes) vertices rest
                      | _::rest -> makeTriangles shapes vertices rest
                      | [] -> shapes
-                printf "Triangles constructed\n"
-                TmKdtree.mkTmKdtree (makeTriangles [] vertexList plyList)
-                
+ 
+                let list = (makeTriangles [] vertexList plyList)
+                TmKdtree.mkTmKdtree (list)
+
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
@@ -150,23 +151,5 @@ module AdvancedShape =
                                                 |Some x -> x
                                                 |None -> None
 
-            (*let hitList (triList : BasicShape.Triangle list)=
-                                                    let sndRects = List.map(fun x -> x:> Shape) triList
-                                                    let min = List.map(fun (x:Shape) -> x.hit ray) sndRects |> List.choose id
-                                                    match min with
-                                                    |[] -> None
-                                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
-                                                
-
-                                                let rec traverse tree =
-                                                    let bboxRay = (TmKdtree.getBox tree).hit(ray)
-                                                    match bboxRay with
-                                                    | None -> []
-                                                    | Some(_) -> match tree with
-                                                                    |Node(_,l,r,_,_) -> traverse l @ traverse r 
-                                                                    |Leaf(l,_) -> (TmKdtree.getShapes tree)
-                                                let k = traverse rects
-                                                printfn"%i" (k.Length)
-                                                hitList (k)*)
 
                                                 
