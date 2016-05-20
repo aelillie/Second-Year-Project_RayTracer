@@ -9,7 +9,7 @@ open Utilities
 open Vector
 open Material
 open Shape
-
+open System
 open System.Drawing
 open PlyParse
 
@@ -27,7 +27,7 @@ let main argv =
         (*******Camera******)
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
-        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (Texture.mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) in
 
         (*******Scene******)
         let scene = mkScene [sphere] [light] ambientLight camera 0 in

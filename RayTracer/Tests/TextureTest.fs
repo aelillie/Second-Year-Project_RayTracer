@@ -70,11 +70,12 @@ module Texture =
     let light = mkLight (mkPoint 0.0 1.0 4.0) (fromColor Color.White) 1.0 in
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
     let camera = mkCamera (mkPoint 0.0 1.0 30.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 20.0 2.0 2.0 1000 1000 in
-    let box = transform (mkBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) 
+    let box =  (mkBox (mkPoint -1.0 -1.0 -1.0) (mkPoint 1.0 1.0 1.0) 
                         (mkColor Color.Blue) (mkColor Color.Red) (mkColor Color.Green) 
                         (mkColor Color.Yellow) (mkColor Color.Purple) (mkColor Color.White)) 
-                        (mergeTransformations [rotateY (System.Math.PI/4.0);rotateX (Math.PI/4.0)])
-    let scene = mkScene [box] [light] ambientLight camera 3 in
+                        
+    let box' = transform box (rotateY (Util.degrees_to_radians 180.0))
+    let scene = mkScene [box'] [light] ambientLight camera 3 in
     Util.render' scene (folder, "box.png") toScreen
 
 
@@ -131,7 +132,7 @@ module Texture =
   let render toScreen =
     renderBox toScreen
 //    renderBunny toScreen
-    renderCylinder toScreen
-    renderEarth toScreen
-    renderPlane toScreen
-    renderSphere toScreen
+//    renderCylinder toScreen
+//    renderEarth toScreen
+//    renderPlane toScreen
+//    renderSphere toScreen

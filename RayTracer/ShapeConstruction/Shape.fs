@@ -18,6 +18,7 @@ module Shape =
 
     type BaseShape =
         | PLY of Ply list
+        | Bs of poly*expr
 
     let getPly (PLY(l)) = l
 
@@ -64,7 +65,9 @@ module Shape =
     //Make baseshape for a ply file
     let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename)
 
-    let mkShape (b : BaseShape) (t : Texture) = 
+
+    let mkImplicit s = Bs(mkPoly s)
+    let mkShape (b : BaseShape) (t : Texture) : Shape= 
         match b with
-        | PLY(plyList) -> new TriangleMesh(plyList, t)
-        | _ -> failwith "Not implemented"
+        | PLY(plyList) -> (new TriangleMesh(plyList, t)) :> Shape
+        | Bs(p,e) -> (new ImplicitShape(p,e, t)) :> Shape

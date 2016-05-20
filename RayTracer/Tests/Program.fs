@@ -6,6 +6,7 @@ open Colour
 //open BoundingBox 
 open Camera
 open Drawing
+open Texture
 open Light
 open System.Drawing
 open System
@@ -17,31 +18,31 @@ open ExprParse
 open ExprToPoly
 open ImplicitTest
 
-let testAll = ()
+let testAll =()
 //    PointTest.doTest ()
 //    VectorTest.doTest ()
 //    ExprParseTest.doTest ()
 //    ExprToPolyTest.doTest ()
-//    BoundingBoxTest.doTest ()
+////    BoundingBoxTest.doTest ()
 //    TransformationTest.doTest ()
-//    //ImplicitSurfacesTest.doTest ()
+
 
 let renderAll toScreen =
 
 //  Shapes.render toScreen
-//  printf "shapes rendered"
+//  printf "Shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
-    ImplicitSurfaces.render toScreen
-    printf "ImplicitSurfaces rendered"
-//  //Meshes.render toScreen
+//  ImplicitSurfaces.render toScreen
+//  printf "ImplicitSurfaces rendered"
+//  Meshes.render toScreen
 //  printf "Meshes rendered"
-//  //Texture.render toScreen
+//  Texture.render toScreen
 //  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
-//  CSG.render toScreen
-//  printf "CSG rendered"
+  CSG.render toScreen
+  printf "CSG rendered"
 
 
 [<EntryPoint>]
@@ -60,5 +61,4 @@ let main argv =
 //    testall
 //    ImplicitTest.doTest() 
     renderAll false
-    System.Console.ReadKey() |> ignore
     0 // return an integer exit code

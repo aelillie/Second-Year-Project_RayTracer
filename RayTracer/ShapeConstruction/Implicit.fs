@@ -18,8 +18,6 @@ open ExprToPoly
 type poly = ExprToPoly.poly
 type nVector = Vector.Vector
 
-type baseShape =
-  | Bs of poly*expr
 
 let pow (x, y) = System.Math.Pow(x, y)
 
@@ -28,13 +26,7 @@ let polyToMap p : Map<int,simpleExpr> =
     match p with
     |Po (x) -> x
 
-let getPoly bs =
-    match bs with
-    | Bs(p,_) -> p
 
-let getExpr bs =
-    match bs with
-    | Bs(_,e) -> e
 
 
 let mkNorm p expr : Vector = 
@@ -128,7 +120,7 @@ let mkNorm p expr : Vector =
     Vector.mkVector x' y' z'
 
 
-let mkImplicit (s : string) (*(constant:string*float)*) : baseShape = 
+let mkPoly (s : string) (*(constant:string*float)*)  = 
     let expr = parseStr s
    // let con = FNum (snd constant)
 
@@ -152,7 +144,7 @@ let mkImplicit (s : string) (*(constant:string*float)*) : baseShape =
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
     printfn "%s" print
     //simplify equation 
-    Bs ((exprToPoly polyExprSubbed "t"), expr)
+    (exprToPoly polyExprSubbed "t"), expr
 
     
 

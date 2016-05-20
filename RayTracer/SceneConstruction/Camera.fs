@@ -29,7 +29,7 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
     let l = Point.direction p q //normalised direction vector
     let r = Vector.crossProduct l up //right direction vector
             |> Vector.normalise
-    let d = -up //down direction vector
+    let d = Vector.crossProduct l r //down direction vector
             |> Vector.normalise
     //Move position to the top left corner of view plane
     let p' = Point.move p ( z * l) //to the center

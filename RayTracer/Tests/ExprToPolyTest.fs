@@ -9,6 +9,7 @@ open Material
 open System.Drawing
 open Vector
 open Point
+open Texture
 open Ray
 
 let chk (name,t,r) =
@@ -20,12 +21,12 @@ let chk' (name,t,r) =
 let test01() = 
     
     let bs = mkImplicit "2*x+2*y+2*z+0" 
-    let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+    let mat = mkMatTexture (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
     let p = mkPoint 1.0 2.0 3.0
     let v = mkVector 3.0 2.0 1.0
     let t = 2.0
     let ray = mkRay  p v
-    let is = mkShape bs mat :> Shape
+    let is = mkShape bs mat
    
     let letSee = is.hit ray
 
@@ -51,7 +52,7 @@ let test02() =
     let bs = mkImplicit "x^2+y^2+z^2+-1*2^2" 
    
   
-    let mat = (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
+    let mat = mkMatTexture (Material.mkMaterial (Colour.fromColor Color.Blue) 0.0)
     let p = mkPoint 1.0 2.0 3.0
     let v = mkVector 3.0 2.0 1.0
     let t = 2.0

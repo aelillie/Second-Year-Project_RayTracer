@@ -12,12 +12,12 @@ open PlyParse
 open ExprParse
 open ExprToPoly
 open Implicit
-
+open Texture
 
 module ImplicitShape =
     
 
-    type ImplicitShape (bs, m) = 
+    type ImplicitShape (pol, expr, t) = 
         let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                 then 
                                                                     acc + (value * (System.Math.Pow(x,(float deg))))
@@ -193,11 +193,11 @@ module ImplicitShape =
                                                       else                                             
                                                         let hitPoint = Point.move p (root*d)
 
-                                                        Some (root, Vector.normalise(mkNorm hitPoint e), m)  
+                                                        Some (root, Vector.normalise(mkNorm hitPoint e),(Texture.getMaterialAtPoint t 0.0 0.0))  
         
                  
         interface Shape with
-            member this.getBounding () = failwith "Not Imlemented"
+            member this.getBounding () = None
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = failwith "Not implemented"
             member this.hit (R(p,d) as ray) = 
@@ -205,10 +205,6 @@ module ImplicitShape =
                                     match s with
                                     | SE (ag, ags) -> (ag,ags)
 
-                               
-                  
-                                let pol = getPoly bs
-                                let expr = getExpr bs
 
                                 // map of SE to map of atomGroupList (atom list list)
                                 let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
@@ -270,7 +266,7 @@ module ImplicitShape =
 //                                                printfn "%f" res                              
                                                 if -denom<0.000001 then None
                                                 //else if res < 0.0 then None
-                                                else Some (res, nVector, m)
+                                                else Some (res, nVector, (Texture.getMaterialAtPoint t 0.0 0.0))
 
             //                               if(denom < 0.0) then none
             //                               else
@@ -309,12 +305,12 @@ module ImplicitShape =
                                                         let nvPointMax = Point.move p (answer * d)
                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
 
-                                                        Some (answer, Vector.normalise(nV),m) 
+                                                        Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
                                                         
                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
                                                     else
                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
-                                                        Some (answer, Vector.normalise(nV),m) 
+                                                        Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
                                     | 4 -> findHit p d floatMap expr
 
                                     | 5 -> findHit p d floatMap expr
