@@ -114,10 +114,6 @@ module TransformedShape =
             member this.isInside p = s1.isInside p && s2.isInside p
             member this.getBounding () = 
                 let b1, b2 = (s1.getBounding ()).Value, (s2.getBounding ()).Value
-                if not (b1.isInside (b2.p1 + epsilon)) && not (b1.isInside (b2.p2 - epsilon)) && //Check for intersection
-                   not (b2.isInside (b1.p1 + epsilon)) && not (b2.isInside (b1.p2 - epsilon))
-                then Some{p1 = (mkPoint 0.0 0.0 0.0); p2 = (mkPoint 0.0 0.0 0.0)}
-                else 
                 let (lx1,ly1,lz1) = (Point.getCoord b1.p1) //Low point of s1
                 let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                 let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2
