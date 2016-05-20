@@ -36,13 +36,13 @@ module AdvancedShape =
                 let width = System.Math.Abs(Point.getX high - Point.getX low)
                 let height = System.Math.Abs(Point.getY high - Point.getY low)
                 let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
-                let az = System.Math.Min(Point.getZ high, Point.getZ low)
+                let az = System.Math.Max(Point.getZ high, Point.getZ low)
 
                 let frontT = translate (Point.getX low) (Point.getY low) az 
-                let backT =   mergeTransformations [frontT;translate 0.0 0.0 depth]
-                let bottomT = mergeTransformations [rotateX (pi/2.0);frontT]
+                let backT =   mergeTransformations [frontT;translate 0.0 0.0 -depth]
+                let bottomT = mergeTransformations [rotateX (pi/(-2.0));frontT]
                 let topT =    mergeTransformations [bottomT;translate 0.0 height 0.0]
-                let leftT =   mergeTransformations [rotateY (-(pi/2.0));frontT]
+                let leftT =   mergeTransformations [rotateY ((pi/2.0));frontT]
                 let rightT =  mergeTransformations [leftT;translate width 0.0 0.0]
 
                 let transformations = [frontT; backT; bottomT; topT; leftT; rightT]
@@ -106,46 +106,48 @@ module AdvancedShape =
 
     type TriangleMesh (plyList, texture) = 
         let triangles = 
-
-                let vertexList = 
-                    plyList |> 
-                    List.collect (fun x -> match x with
-                                           | Vertex(floatList) -> [floatList]
-                                           | _ -> [])
-
+                let s = System.Diagnostics.Stopwatch.StartNew()
+                s.Start()
                 let mkVertex i vertices =
-                    let vertex = List.item i vertices
-                    let x = List.item 0 vertex
-                    let y = List.item 1 vertex
-                    let z = List.item 2 vertex
-                    match textureIndexes plyList with
-                    | None -> ((Point.mkPoint x y z), [])
-                    | Some(ui, vi) -> 
-                        let u = List.item ui vertex
-                        let v = List.item vi vertex
-                        ((Point.mkPoint x y z), [(u,v)])
-            
-                let rec makeTriangles (shapes:BasicShape.Triangle list) vertices = function
-                     | Face([a;b;c])::rest->  
-                                    let (p1,l1) = mkVertex a vertices
-                                    let (p2,l2) = mkVertex b vertices
-                                    let (p3,l3) = mkVertex c vertices
-                                    
-                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3))::shapes) vertices rest
-                     | _::rest -> makeTriangles shapes vertices rest
-                     | [] -> shapes
- 
-                let list = (makeTriangles [] vertexList plyList)
-                TmKdtree.mkTmKdtree (list)
+                        let vertex = List.item i vertices
+                        match XYZIndexes plyList with 
+                        | None -> failwith "No x y z coordinates in ply file" 
+                        | Some(xi, yi, zi) -> let x = List.item xi vertex
+                                              let y = List.item yi vertex
+                                              let z = List.item zi vertex
+                                              let p = Point.mkPoint x y z
+                                              match textureIndexes plyList with
+                                              | None -> (p, [])
+                                              | Some(ui, vi) -> let u = List.item ui vertex
+                                                                let v = List.item vi vertex
+                                                                (p, [(u,v)])
+                let num = faceCount plyList
+                let q1, q2 = num / 4, num / 2
+                let q3, q4 = q2+q1, num
 
+                let makeTriangles bot top =
+                        let rec make i shapes vertices faces =
+                                if i = num then shapes else
+                                match List.item i faces with
+                                | [a;b;c] ->  if i = top then shapes
+                                              else let (p1,l1) = mkVertex a vertices
+                                                   let (p2,l2) = mkVertex b vertices
+                                                   let (p3,l3) = mkVertex c vertices
+                                                   
+                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
+                                | [] -> shapes //This should not happen
+                                | _ -> failwith "Not a triangle mesh"
+                        make bot [] (vertices plyList) (faces plyList)  
+                let tasks = [async {return makeTriangles 0 q1};
+                             async {return makeTriangles q1 q2};
+                             async {return makeTriangles q2 q3}
+                             async {return makeTriangles q3 q4}]  
+                Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = 
-                TmKdtree.getBox triangles
-
-
-
+            member this.getBounding () = bBoxFromList triangles
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) =   match TmKdtree.traverse triangles ray with
                                                 |Some x -> x
