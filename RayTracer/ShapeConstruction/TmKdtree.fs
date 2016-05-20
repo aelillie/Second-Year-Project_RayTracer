@@ -12,7 +12,7 @@ type TmKdtree =
 
 //Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
 let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
-    let epsilon = 0.00001
+    let epsilon = 0.0000000001
     let shapeX = List.map(fun x -> x:> Shape) shapes
     let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) shapeX
     let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox
@@ -33,11 +33,12 @@ let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
 let getLeft s = 
     match s with
     | Node(_,l,_,_,_) -> l
+    | Leaf(_,_) as leaf -> leaf 
 
 let getRight s = 
     match s with
     | Node(_,_,r,_,_) -> r
-
+    | Leaf(_,_) as leaf -> leaf
 
 
 //Get the triangle list
@@ -49,6 +50,7 @@ let getShapes s =
 let getAxis s =
     match s with
     | Node(_,_,_,_,a) -> a
+    | Leaf(_,_) -> failwith "leaf ramt af axis"
 
 
 //Get bounding box
@@ -70,6 +72,7 @@ let searchLeaf leaf ray t' =
                    match hit with
                    |Some(f,_,_) -> if (f<t') then Some hit else None
                    |None -> None
+    | Node(_,_,_,_,_) -> failwith "Expected leaf"
 
 let order(d, left, right) =
     if d > 0.0
@@ -104,7 +107,9 @@ let traverse tree ray =
     match(getBox tree).Value.hit(ray) with
     |Some(t,t') ->  search tree ray t t'  
     |None -> None
-    
+
+let mutable countersvin = 0
+
 //Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
 let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
      //Finding biggest dimension in the shapes list
@@ -114,6 +119,9 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         let midPoint = List.fold (fun acc (ele:BasicShape.Triangle) -> (acc + ele.getMidPoint())) (Point.mkPoint 0.0 0.0 0.0) shapes
         let avgMid = midPoint / float(shapes.Length)
         avgMid 
+    
+    let counter = shapes.Length
+    printfn ("%i") counter
 
     //Splitting the shape list in right & left 
     let rec largerThanSplit (xs:BasicShape.Triangle list) = 
@@ -153,10 +161,16 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
     let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
     let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
+   
+
     //Check for duplicates among the lists. 
     if(((float(left.Length+right.Length-shapes.Length)/float(shapes.Length)) < 0.4) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
       let leftTree = mkTmKdtree left 
       let rightTree = mkTmKdtree right 
-      Node(List.empty,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
+      Node(shapes,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
+       
       
     else Leaf(shapes, (mkKdBbox shapes))
+
+
+      
