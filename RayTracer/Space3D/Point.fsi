@@ -2,7 +2,12 @@ module Point
 //[<Sealed>]
 
 type Vector = Vector.Vector
-type Point
+[<Sealed>]
+type Point = 
+    static member ( + ) : Point * float -> Point
+    static member ( - ) : Point * float -> Point
+    static member ( - ) : Point * Point -> Point
+    static member ( / ) : Point * float -> Point
 
 val mkPoint : float -> float -> float -> Point
 val getX : Point -> float

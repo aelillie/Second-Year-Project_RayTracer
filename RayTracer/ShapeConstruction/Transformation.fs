@@ -236,11 +236,7 @@ let transVectorParallel (m : float[,]) (v : Vector) =
 
 let mergeTransformations (tL : Transformation list) =
     let idM = Array2D.init<float> 4 4 (fun row col -> if row = col then 1.0 else 0.0)
-    let t = T(idM, idM) //initial state of multiplication
-    //Take care of order
-    List.fold (fun elem acc ->
-                    let m = matrixMult (getT acc) (getT elem) 
-                    let m' = matrixMult (getInv acc) (getInv elem)
-                    mkTMatrix m m'
-                    ) t tL
+    let m = List.foldBack (fun elem acc -> matrixMult acc (getT elem)) tL idM
+    let m' = List.fold (fun acc elem -> matrixMult acc (getInv elem)) idM tL
+    mkTMatrix m m'
 

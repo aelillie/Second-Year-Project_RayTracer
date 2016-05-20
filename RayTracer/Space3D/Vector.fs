@@ -7,6 +7,7 @@ type Vector =
       V(x,y,z) -> "["+x.ToString()+","+y.ToString()+","+z.ToString()+"]"
 
 let mkVector x y z = V (x, y, z)    
+let mkVectorFromPoint (x, y, z) = V (x, y, z)
 let getX (V(x,_,_)) = x
 let getY (V(_,y,_)) = y
 let getZ (V(_,_,z)) = z
@@ -27,3 +28,5 @@ type Vector with
   static member ( - ) (V(ux,uy,uz),V(vx,vy,vz)) = V(ux-vx, uy-vy, uz-vz)
   static member ( * ) (s, v) = multScalar v s
   static member ( * ) (u, v) = dotProduct u v
+  static member ( / ) ((V(x,y,z)), f) = (V(x/f,y/f,z/f))
+

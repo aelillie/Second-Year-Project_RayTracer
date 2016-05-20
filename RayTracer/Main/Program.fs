@@ -9,42 +9,28 @@ open Utilities
 open Vector
 open Material
 open Shape
-open Implicit
-open TransformedShape
-open Transformation
-open System
+
 open System.Drawing
+open PlyParse
 
 [<STAThreadAttribute>]
 [<EntryPoint>]
 let main argv =
 
     let folder = "shapes"
+    let pi = System.Math.PI
 
     let render toScreen =
-
-
-        
         (*******Light******)
         let light = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.White) 1.0 in
-        let ambientLight = mkAmbientLight (fromColor Color.White) 0.8 in
+        let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 2.0 8.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
-//        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
-//
-//        let implicitSphere (r:float) = mkShape (mkImplicit ("x^2+y^2+z^2+-1*" + (string (r)))) (mkMaterial (fromColor Color.Red) 0.0) in
-//        let implicitSphere2 (r:float) = mkShape (mkImplicit ("x^2+y^2+z^2+-1*" + (string (r)))) (mkMaterial (fromColor Color.Blue) 0.0) in
-//
-//
-//        let tSphere = transform (implicitSphere 1.0) (translate -1.0 1.0 0.0) 
-//        let t2 = transform (implicitSphere2 1.0) (translate 1.5 0.0 0.0)
-//        
-        let implicitPlane = mkShape (mkImplicit  "x^4+x^3+x+2y^4+z^3") (mkMaterial (fromColor Color.Blue) 0.0) in //(x + -2)^2(x+2)^2 + (y + -2)^2(y+2)^2 + (z + -2)^2(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z + -10(x^2 + y^2 + z^2) + 22
-//        let tPlane = transform (implicitPlane) (rotateX (System.Math.PI/2.0)) 
+        let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
 
         (*******Scene******)
-        let scene = mkScene [implicitPlane ] [light] ambientLight camera 0 in
+        let scene = mkScene [sphere] [light] ambientLight camera 0 in
         if toScreen then
           Util.render scene None
         else

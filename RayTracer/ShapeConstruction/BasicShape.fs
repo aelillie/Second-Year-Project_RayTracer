@@ -5,6 +5,7 @@ open Material
 open Vector
 open Point
 open Transformation
+open Texture
 
 
 module BasicShape = 
@@ -12,16 +13,64 @@ module BasicShape =
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
     
-    type BoundingBox = Point * Point
+    type BoundingBox = 
+        {p1 : Point; p2 : Point}
+        override b.ToString() = b.p1.ToString() + " " + b.p2.ToString()
+        member b.isInside p = 
+                        let (x,y,z) = Point.getCoord p
+                        let (lx,ly,lz) = Point.getCoord b.p1
+                        let (hx,hy,hz) = Point.getCoord b.p2
+                        lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
+        member b.getLongestAxis l h =
+                        let xdim = ((Point.getX h) - (Point.getX l), "x")
+                        let ydim = ((Point.getY h) - (Point.getY l), "y")
+                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+                        List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
+        member b.getH =
+                b.p2
+        member b.getL =
+                b.p1
+        member b.hit (R(p,d)) =
+                //Check intersection between bbox and ray 
+            let (ox,oy,oz) = Point.getCoord p
+            let (dx,dy,dz) = Vector.getCoord d
+            let ((hx,hy,hz), (lx,ly,lz)) = (Point.getCoord b.getH, Point.getCoord b.getL)    
+            let (tx,tx') = 
+                if dx >= 0.0 then
+                   (lx - ox)/dx,  
+                   (hx - ox)/dx 
+                else 
+                   (hx - ox)/dx, 
+                   (lx - ox)/dx
+
+            let (ty,ty') = 
+                if dy >= 0.0 then
+                    (ly - oy)/dy,  
+                    (hy - oy)/dy 
+                else 
+                    (hy - oy)/dy, 
+                    (ly - oy)/dy
+            let (tz,tz') = 
+                if dz >= 0.0 then
+                    (lz - oz)/dz,  
+                    (hz - oz)/dz 
+                else 
+                    (hz - oz)/dz, 
+                    (lz - oz)/dz
+            let t = List.max [tx;ty;tz]
+            let t'= List.min [tx';ty';tz']
+            if t < t' && t' > 0.0
+            then Some (t,t')
+            else None
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option
          abstract member isInside : Point -> bool
          abstract member isSolid : unit -> bool
-         abstract member getBounding : unit -> BoundingBox
+         abstract member getBounding : unit -> BoundingBox option
     
 
-    type Sphere(o:Point, r:float, m:Material) = 
+    type Sphere(o:Point, r:float, tex:Texture) = 
         interface Shape with
             member this.isInside p = let (x, y, z) = Point.getCoord p
                                      (x**2.0+y**2.0+z**2.0) < r**2.0
@@ -35,11 +84,26 @@ module BasicShape =
                                         let hy = (Point.getY o) + r + epsilon
                                         let hz = (Point.getZ o) + r + epsilon 
                                         let h = mkPoint hx hy hz
-                                        (l,h)
+                                        Some {p1 = l; p2 = h}
 
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction o
+    
+                            let calculateMaterial answer = 
+                                let nv = makeNV answer
+                                let n = nv / r
+                                let n = normalise n
+                                
+                                let theta = System.Math.Acos(Vector.getY n)
+                                let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+                                let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
+
+                                let u = phi / (2.0 * pi)
+                                let v = 1.0 - (theta/pi)
+                               
+                                let material = Texture.getMaterialAtPoint tex u v
+                                material
     
                             let a = (pow((Vector.getX d),2.0) +
                                         pow((Vector.getY d),2.0) +
@@ -64,34 +128,39 @@ module BasicShape =
                                 else
             
                                     let answer = System.Math.Min(answer1,answer2)
+                                    let material = calculateMaterial answer
                                     if answer < 0.0 
                                     then 
                                         let answer = System.Math.Max(answer1,answer2)
-                                        Some (answer, makeNV answer, m)
-                                    else Some (answer, makeNV answer, m)
+                                        let material = calculateMaterial answer
+                                        Some (answer, makeNV answer, material)
+                                    else Some (answer, makeNV answer, material)
 
-    type Plane(mat:Material) = 
+    type Plane(tex:Texture) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
-                            let pVector = mkPoint 0.0 0.0 0.0
-                            let n = mkVector 0.0 -1.0 0.0 
-                            let denom = Vector.dotProduct (Vector.normalise d) (Vector.normalise n)
-                            if(denom > 0.0000001) then
-                                let v = Point.distance p pVector
-                                let result = (Vector.dotProduct v n) / denom 
-                                if result >= 0.0 then Some (result, n, mat)
-                                else None
+                            let dist = -(Point.getZ p) / (Vector.getZ d)
+                            let n = mkVector 0.0 0.0 1.0 
+                            let getMat a =
+                                    let hp = Point.move p (a * d)
+                                    let u = Point.getX hp
+                                    let v = Point.getY hp
+                                    Texture.getMaterialAtPoint tex u v
+                            if dist > 0.0 then Some(dist, n, getMat dist)
                             else None
-    type Disc(c:Point, r:float, m:Material) =
+    type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (Point.getX c - r - epsilon) (Point.getY c - r - epsilon ) (Point.getZ c - epsilon))
+                                              ; p2 = (mkPoint (Point.getX c + r + epsilon) (Point.getY c + r + epsilon ) (Point.getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
+                            let px = Point.getX p
+                            let py = Point.getY p 
                             let pz = Point.getZ p
                             let distance = (-1.0 * pz) / dz
                             let p' = Point.move p (Vector.multScalar d distance)
@@ -99,11 +168,15 @@ module BasicShape =
 
                             if result <= (pow (r,2.0)) && distance > 0.0
                             then 
-                             Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
-                            else 
-                             None
+                                let (x, y, z) = Point.getCoord p'
+                                let u = (x+r)/2.0*r
+                                let v = (y+r)/2.0*r
+                                let material = Texture.getMaterialAtPoint tex u v
+                                Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
+                            else None
 
-    type Triangle(a,b,c,mat) = 
+    type Triangle(a,b,c,tex, texCoordList) = 
+        override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -111,17 +184,17 @@ module BasicShape =
                             let ylist = [(Point.getY a);(Point.getY b);(Point.getY c)]
                             let zlist = [(Point.getZ a);(Point.getZ b);(Point.getY c)]
 
-                            let l = Point.mkPoint((List.min xlist) + epsilon) ((List.min ylist)+epsilon) ((List.min zlist)+epsilon)
+                            let l = Point.mkPoint((List.min xlist) - epsilon) ((List.min ylist) - epsilon) ((List.min zlist) - epsilon)
                             let h = Point.mkPoint((List.max xlist) + epsilon) ((List.max ylist)+epsilon) ((List.max zlist)+epsilon)
-                            (l,h)
+                            Some {p1 = l; p2 = h}
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let u = Vector.mkVector ((Point.getX b) - (Point.getX a)) ((Point.getY b) - (Point.getY a)) ((Point.getZ b) - (Point.getZ a))
-                            let v = Vector.mkVector ((Point.getX c) - (Point.getX a)) ((Point.getY c) - (Point.getY a)) ((Point.getZ c) - (Point.getZ a))
+                            let u = mkVectorFromPoint (getCoord (b-a))
+                            let v = mkVectorFromPoint (getCoord (c-a))
 
                             //Function to find the normal of the triangle
-                            let vectorN a b = Vector.normalise (Vector.crossProduct a b)
+                            let n = crossProduct u v |> normalise
 
                             let a1 = (Point.getX a) - (Point.getX b)
                             let b1 = (Point.getX a) - (Point.getX c)
@@ -145,23 +218,34 @@ module BasicShape =
                             if (D <> 0.0)  then 
                               let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
                               let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
+                              let alfa = 1.0-beta-gamma
                               let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
              
                               if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
                                then 
-                                 let p' = Point.move a ((Vector.multScalar u beta) + (Vector.multScalar v gamma))
+                                 //Find material for the texture
+                                 let mat = if List.isEmpty texCoordList //No texture in ply file
+                                           then let tu, tv = 0.5, 0.5 
+                                                getMaterialAtPoint tex tu tv
+                                           else let (ua,va) = List.item 0 texCoordList //Vertex a
+                                                let (ub,vb) = List.item 1 texCoordList //Vertex b
+                                                let (uc,vc) = List.item 2 texCoordList //Vertex c
+                                                let tu = alfa*ua+beta*ub+gamma*uc
+                                                let tv = alfa*va+beta*vb+gamma*vc
+                                                getMaterialAtPoint tex tu tv
   
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
-                                 then Some(t, vectorN v u, mat)
+                                 then Some(t, n, mat)
                                  else None
                               else None //gamma + beta is less than 0 or greater than 1
                             else None // Can't divide with zero
 
-    type Rectangle(c,w,h,m) = 
+    type Rectangle(c,w,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = Some {p1 = (mkPoint (getX c - (w/2.0) - epsilon ) (getY c - (h/2.0) - epsilon) (getZ c - epsilon)) 
+                                              ; p2 = (mkPoint (getX c + (w/2.0) + epsilon) (getY c + (h/2.0) + epsilon) (getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
@@ -176,19 +260,39 @@ module BasicShape =
 
 
                             if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h) && distance > 0.0
-                            then Some(distance, Vector.mkVector 0.0 0.0 1.0, m)
+                            then 
+                                 let u = (px-ax)/w
+                                 let v = (py-ay)/h
+                                 let material = Texture.getMaterialAtPoint tex u v
+                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
 
-    type HollowCylinder (center,r,h,m) = 
+    type HollowCylinder (center,r,h,tex) = 
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
-            member this.getBounding () = failwith "Not implemented"
+            member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h)) (getZ center - r )
+                                         let pLow = pLow - epsilon
+                                         
+                                         let pHigh = mkPoint (getX center + r) (getY center + (h)) (getZ center + r)
+                                         let pHigh = pHigh + epsilon
+                                         Some {p1 = pLow; p2 = pHigh} 
+                                        
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
                             let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
                             let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
                             let dis = pow(b, 2.0) - (4.0 * a * c)
+
+                                //calculate material
+                            let calculateMaterial x y z h r tex =  
+                                let n = mkVector (x/r) (0.0) (z/r)
+                                let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
+                                let phi = if phi' < 0.0 then phi' + 2.0 * pi else phi'
+                                let u = phi/(2.0*pi)
+                                let v = (y/h) + 0.5
+                                let material = Texture.getMaterialAtPoint tex u v
+                                material
 
                             if dis < 0.0 
                             then None
@@ -203,12 +307,16 @@ module BasicShape =
                              then 
                                 let px = Point.getX p + tlittle * Vector.getX d
                                 let pz = Point.getZ p + tlittle * Vector.getZ d
-                                Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), m)
+                                let (x, y, z) = move p (tlittle * d) |> getCoord //Hit point coords
+                                let material = calculateMaterial x y z h r tex
+                                Some(tlittle, Vector.mkVector (px / r) 0.0 (pz / r), material)
                              elif (h / (-2.0)) <= pyt2 && pyt2 <= (h / 2.0) && tbig > 0.0
                              then
                                 let px = Point.getX p + tbig * Vector.getX d
                                 let pz = Point.getZ p + tbig * Vector.getZ d
-                                Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), m)
+                                let (x, y, z) = move p (tbig * d) |> getCoord //Hit point coords
+                                let material = calculateMaterial x y z h r tex
+                                Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), material)
                              else None
 
 

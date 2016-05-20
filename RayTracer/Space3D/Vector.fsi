@@ -6,8 +6,10 @@ type Vector =
   static member ( - ) : Vector * Vector -> Vector
   static member ( * ) : float * Vector -> Vector
   static member ( * ) : Vector * Vector -> float
+  static member ( / ) : Vector * float -> Vector
   
 val mkVector : x:float -> y:float -> z:float -> Vector
+val mkVectorFromPoint : float * float * float -> Vector
 val getX : Vector -> float
 val getY : Vector -> float
 val getZ : Vector -> float

@@ -105,9 +105,54 @@ let parsePly filePath =
     let body = List.filter (fun x -> not (isHeader x)) (List.map (fun x -> parse pPly2 x) lines)
     List.append header body  //Return complete list.
 
-    
-    
-    
+let rec textureIndexes = function
+        | Element(s, n, l) :: rest when s = "vertex" -> 
+            let rec checkEle e u v i = //i is index
+                    match e with
+                    | Property(s) :: r -> 
+                        if u <> 0 && v <> 0 then (u, v) //u and v found
+                        else match s with
+                             | "u"   -> checkEle r i v (i+1)
+                             | "v"   -> checkEle r u i (i+1)
+                             | s -> checkEle r u v (i+1)
+                    | x::xs -> failwith "No properties"
+                    | [] -> (u, v) //Return u and v index
+            let (u, v) = checkEle l 0 0 0
+            if u = 0 && v = 0 then None
+            else Some(u, v)
+        | x::xs -> textureIndexes xs
+        | [] -> failwith "No elements in PLY file"
 
+let rec XYZIndexes = function
+        | Element(s, n, l) :: rest when s = "vertex" -> 
+            let rec checkEle e x y z i = //i is index
+                    match e with
+                    | Property(s) :: r -> 
+                        if x <> 0 && y <> 0 && z <> 0 then (x, y, z) //u and v found
+                        else match s with
+                             | "x"   -> checkEle r i y z (i+1)
+                             | "y"   -> checkEle r x i z (i+1)
+                             | "z"   -> checkEle r x y i (i+1)
+                             | s -> checkEle r x y z (i+1)
+                    | x::xs -> failwith "No properties"
+                    | [] -> (x, y, z) //Return u and v index
+            let (x, y, z) = checkEle l 0 0 0 0
+            if x = 0 && y = 0 && z = 0 then None
+            else Some(x, y, z)
+        | x::xs -> XYZIndexes xs
+        | [] -> failwith "No elements in PLY file"
+
+let rec faceCount = function
+      | Element(s, n, l) :: r when s = "face" -> n
+      | x::xs -> faceCount xs
+      | [] -> failwith "No elements in PLY file"
+
+let faces (p:Ply list) = List.collect (fun x -> match x with
+                                                | Face(intList) -> [intList]
+                                                | _ -> []) <| p
+
+let vertices (p:Ply list) = List.collect (fun x -> match x with
+                                                   | Vertex(floatList) -> [floatList]
+                                                   | _ -> []) <| p
 
 

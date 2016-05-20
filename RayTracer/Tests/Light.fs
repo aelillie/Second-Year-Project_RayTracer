@@ -1,6 +1,5 @@
 ﻿namespace TestSuite
 
-//open Tracer.API
 open Shapes
 open Texture
 open Material
@@ -9,13 +8,14 @@ open Shape
 open Point
 open Vector
 open Light
+open Scene
 open Camera
 open TransformedShape
 open Transformation
-open Scene
-open Util
 open System
 open System.Drawing
+open Scene
+open Util
 
 module Light =
 
@@ -25,7 +25,7 @@ module Light =
     let light = mkLight lightPos (fromColor Color.White) 0.9 in
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
     let camera = mkCamera (mkPoint 0.0 0.0 12.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 10.0 2.0 2.0 500 500 in
-    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
+    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) in
     let scene = mkScene [sphere] [light] ambientLight camera 0 in
     Util.render' scene (folder, "sphere " + name + ".png") toScreen
 
@@ -43,7 +43,7 @@ module Light =
     
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.0 in
     let camera = mkCamera (mkPoint 0.0 0.0 12.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 10.0 2.0 2.0 500 500 in
-    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Orange) 0.0) in
+    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Orange) 0.0)) in
     let scene = mkScene [sphere] [lightLeft;lightRight;lightTop;lightBottom] ambientLight camera 0 in
     Util.render' scene (folder, "sphere colour.png") toScreen
 
@@ -53,9 +53,9 @@ module Light =
     let light2 = mkLight (mkPoint 0.0 0.0 4.0) (fromColor Color.Red) 0.6 in
     let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
     let camera = mkCamera (mkPoint 0.0 0.0 28.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 10.0 2.0 2.0 500 500 in
-    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMaterial (fromColor Color.Blue) 0.0) in
+    let sphere = mkSphere (mkPoint 0.0 0.0 0.0) 1.0 (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0)) in
     let redMat = mkMaterial (fromColor Color.Red) 0.0
-    let red = redMat
+    let red = mkMatTexture redMat
     let cylinder = mkSolidCylinder (mkPoint 1.0 -1.0 2.0) 0.3 0.8 red red red in
     let greenMat = mkMaterial (fromColor Color.Green) 0.0
     let checker x y =
@@ -63,9 +63,9 @@ module Light =
         if (int (abs' x) + int (abs' y)) % 2 = 0
         then redMat
         else greenMat
-//    let plane =  transform (mkPlane (mkTexture checker)) 
-//                  (mergeTransformations [rotateY (Math.PI/4.0);rotateX (Math.PI/4.0);(translate -4.0 0.0 -4.0)])
-    let scene = mkScene [sphere;cylinder] [light;light2] ambientLight camera 0 in
+    let plane =  transform (mkPlane (mkTexture checker)) 
+                  (mergeTransformations [rotateY (Math.PI/4.0);rotateX (Math.PI/4.0);(translate -4.0 0.0 -4.0)])
+    let scene = mkScene [sphere;cylinder;plane] [light;light2] ambientLight camera 0 in
     Util.render' scene (folder, "shadow.png") toScreen
   
 

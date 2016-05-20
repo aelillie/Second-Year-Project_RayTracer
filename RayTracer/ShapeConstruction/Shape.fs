@@ -10,10 +10,16 @@ open Implicit
 open Shapes.AdvancedShape
 open Shapes.BasicShape
 open Shapes.TransformedShape
+open Texture
 open Shapes.ImplicitShape
 
 module Shape = 
     type Shape = Shapes.BasicShape.Shape
+
+    type BaseShape =
+        | PLY of Ply list
+
+    let getPly (PLY(l)) = l
 
     ///Translate a shape to some point
     let moveShape p s = let (x,y,z) = Point.getCoord p in transform s (translate x y z)
@@ -30,30 +36,35 @@ module Shape =
     let subtraction s1 s2  = new SubtractionShape(s1,s2)
 
     //Plane
-    let mkPlane (material : Material) = new Plane(material)
+    let mkPlane (tex : Texture) = new Plane(tex)
 
     //Rectangle
-    let mkRectangle (corner : Point) (width : float) (height : float) (t : Material)
-        = new Rectangle((mkPoint 0.0 0.0 0.0), width, height, t) |> moveShape corner
+    let mkRectangle (corner : Point) (width : float) (height : float) (tex : Texture)
+        = new Rectangle((mkPoint 0.0 0.0 0.0), width, height, tex) |> moveShape corner
 
     //Box
-    let mkBox (low : Point) (high : Point) (front : Material) (back : Material) (top : Material) 
-                (bottom : Material) (left : Material) (right : Material) 
+    let mkBox (low : Point) (high : Point) (front : Texture) (back : Texture) (top : Texture) 
+                (bottom : Texture) (left : Texture) (right : Texture) 
           = new Box(low, high,front,back,top,bottom,left,right)
 
     //Sphere
-    let mkSphere (p : Point) (r : float) (m : Material) = new Sphere ((mkPoint 0.0 0.0 0.0),r,m) |> moveShape p
-    let mkSphereCenter r m = new Sphere (mkPoint 0.0 0.0 0.0,r,m)
+    let mkSphere (p : Point) (r : float) (tex : Texture) = 
+        new Sphere ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape p
+    let mkSphereCenter r tex = new Sphere (mkPoint 0.0 0.0 0.0,r,tex)
     //Cylinders and Discs
-    let mkHollowCylinder (c : Point) (r : float) (h : float) (t : Material) = 
-        new HollowCylinder((mkPoint 0.0 0.0 0.0),r,h,t) |> moveShape c
-    let mkDisc (c : Point) (r : float) (t : Material) = new Disc ((mkPoint 0.0 0.0 0.0),r,t) |> moveShape c
-    let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Material) (top : Material) (bottom : Material) 
+    let mkHollowCylinder (c : Point) (r : float) (h : float) (tex : Texture) = 
+        new HollowCylinder((mkPoint 0.0 0.0 0.0),r,h,tex) |> moveShape c
+    let mkDisc (c : Point) (r : float) (tex : Texture) = new Disc ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape c
+    let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Texture) (top : Texture) (bottom : Texture) 
          = new SolidCylinder((mkPoint 0.0 0.0 0.0),r,h,t,top,bottom) |> moveShape c
 
     //Triangle
-    let mkTriangle a b c mat = new Triangle(a,b,c,mat)
+    let mkTriangle a b c tex = new Triangle(a,b,c,tex, [])
 
+    //Make baseshape for a ply file
+    let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename)
 
-    //Implicit
-    let mkShape (bs:baseShape) (m:Material)  = ImplicitShape(bs,m)
+    let mkShape (b : BaseShape) (t : Texture) = 
+        match b with
+        | PLY(plyList) -> new TriangleMesh(plyList, t)
+        | _ -> failwith "Not implemented"
