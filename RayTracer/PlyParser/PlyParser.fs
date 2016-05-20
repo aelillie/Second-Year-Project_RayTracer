@@ -142,6 +142,25 @@ let rec XYZIndexes = function
         | x::xs -> XYZIndexes xs
         | [] -> failwith "No elements in PLY file"
 
+let rec normIndexes = function
+        | Element(s, n, l) :: rest when s = "vertex" -> 
+            let rec checkEle e nx ny nz i = //i is index
+                    match e with
+                    | Property(s) :: r -> 
+                        if nx <> 0 && ny <> 0 && nz <> 0 then (nx, ny, nz) //u and v found
+                        else match s with
+                             | "nx"   -> checkEle r i ny nz (i+1)
+                             | "ny"   -> checkEle r nx i nz (i+1)
+                             | "nz"   -> checkEle r nx ny i (i+1)
+                             | s -> checkEle r nx ny nz (i+1)
+                    | x::xs -> failwith "No properties"
+                    | [] -> (nx, ny, nz) //Return u and v index
+            let (nx, ny, nz) = checkEle l 0 0 0 0
+            if nx = 0 && ny = 0 && nz = 0 then None
+            else Some(nx, ny, nz)
+        | x::xs -> normIndexes xs
+        | [] -> failwith "No elements in PLY file"
+
 let rec faceCount = function
       | Element(s, n, l) :: r when s = "face" -> n
       | x::xs -> faceCount xs

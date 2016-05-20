@@ -103,23 +103,28 @@ module AdvancedShape =
                             |[] -> None
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
-    type TriangleMesh (plyList, texture) = 
+    type TriangleMesh (plyList, texture, bool) = 
         let triangles = 
                 let s = System.Diagnostics.Stopwatch.StartNew()
                 s.Start()
                 let mkVertex i vertices =
                         let vertex = List.item i vertices
+                        let get i = List.item i vertex
                         match XYZIndexes plyList with 
                         | None -> failwith "No x y z coordinates in ply file" 
                         | Some(xi, yi, zi) -> let x = List.item xi vertex
                                               let y = List.item yi vertex
                                               let z = List.item zi vertex
                                               let p = Point.mkPoint x y z
-                                              match textureIndexes plyList with
-                                              | None -> (p, [])
-                                              | Some(ui, vi) -> let u = List.item ui vertex
-                                                                let v = List.item vi vertex
-                                                                (p, [(u,v)])
+                                              let uv = match textureIndexes plyList with
+                                                       | None -> []
+                                                       | Some(ui, vi) ->    
+                                                            [(get ui, get vi)]
+                                              let norm = match normIndexes plyList with
+                                                         | None -> []
+                                                         | Some(nx, ny, nz) ->
+                                                               [mkVector (get nx) (get ny) (get nz)]
+                                              (p, uv, norm)
                 let num = faceCount plyList
                 let q1, q2 = num / 4, num / 2
                 let q3, q4 = q2+q1, num
@@ -129,11 +134,11 @@ module AdvancedShape =
                                 if i = num then shapes else
                                 match List.item i faces with
                                 | [a;b;c] ->  if i = top then shapes
-                                              else let (p1,l1) = mkVertex a vertices
-                                                   let (p2,l2) = mkVertex b vertices
-                                                   let (p3,l3) = mkVertex c vertices
+                                              else let (p1, l1, n1) = mkVertex a vertices
+                                                   let (p2, l2, n2) = mkVertex b vertices
+                                                   let (p3, l3, n3) = mkVertex c vertices
                                                    
-                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
+                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3), (n1@n2@n3)) :> Shape::shapes) vertices faces
                                 | [] -> shapes //This should not happen
                                 | _ -> failwith "Not a triangle mesh"
                         make bot [] (vertices plyList) (faces plyList)  
