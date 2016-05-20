@@ -58,7 +58,7 @@ module Shape =
          = new SolidCylinder((mkPoint 0.0 0.0 0.0),r,h,t,top,bottom) |> moveShape c
 
     //Triangle
-    let mkTriangle a b c tex = new Triangle(a,b,c,tex, [], [])
+    let mkTriangle a b c tex = new Triangle(a,b,c,tex, None, None)
 
     //Make baseshape for a ply file
     let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename, smooth)

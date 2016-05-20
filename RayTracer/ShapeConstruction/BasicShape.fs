@@ -175,7 +175,7 @@ module BasicShape =
                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
                             else None
 
-    type Triangle(a,b,c,tex, texCoordList, normList) = 
+    type Triangle(a,b,c,tex, texCoords, normals) = 
         let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
                              let (x2, y2, z2) = getCoord p2
                              (x1-x2,y1-y2,z1-z2)
@@ -225,24 +225,21 @@ module BasicShape =
                                then 
 
                                  //Calculate the normal 
-                                 let n = if List.isEmpty normList 
-                                         then this.getNormal
-                                         else let n1 = multScalar (List.item 0 normList) alpha
-                                              let n2 = multScalar (List.item 1 normList) beta
-                                              let n3 = multScalar (List.item 2 normList) gamma
-                                              n1+n2+n3
+                                 let n = match normals with
+                                         | Some(na, nb, nc) ->   
+                                                let n1 = multScalar na alpha
+                                                let n2 = multScalar nb beta
+                                                let n3 = multScalar nc gamma
+                                                n1+n2+n3 |> normalise
+                                         | _ -> this.getNormal
 
-                                 let n = n |> normalise
                                  //Find material for the texture
-                                 let mat = if List.isEmpty texCoordList //No texture in ply file
-                                           then let tu, tv = 0.5, 0.5 
-                                                getMaterialAtPoint tex tu tv
-                                           else let (ua,va) = List.item 0 texCoordList //Vertex a
-                                                let (ub,vb) = List.item 1 texCoordList //Vertex b
-                                                let (uc,vc) = List.item 2 texCoordList //Vertex c
+                                 let mat = match texCoords with //No texture in ply file
+                                           | Some((ua, va), (ub, vb), (uc, vc)) ->
                                                 let tu = alpha*ua+beta*ub+gamma*uc
                                                 let tv = alpha*va+beta*vb+gamma*vc
                                                 getMaterialAtPoint tex tu tv
+                                           | _ -> getMaterialAtPoint tex 0.5 0.5
 
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 

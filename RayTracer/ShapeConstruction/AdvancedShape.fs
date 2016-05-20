@@ -103,53 +103,64 @@ module AdvancedShape =
                             |[] -> None
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
-    type TriangleMesh (plyList, texture, bool) = 
-        let vertexNormal (l:Vector list) = List.fold (fun acc elem -> acc + elem) (List.head l) l
-                                           |> normalise
+
+
+    type TriangleMesh (plyList, texture, smooth) = 
+        let vertices = vertices plyList
+        let faces = faces plyList
+        let getCoord vi i = let vertex = List.item vi vertices in List.item i vertex
+        let uvCoords v = match textureIndexes plyList with
+                         | None -> None
+                         | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi)
+        let vertex vi = match XYZIndexes plyList with
+                        | None -> failwith "No x y z coordinates in PLY"
+                        | Some(xi, yi, zi) -> let x = getCoord vi xi
+                                              let y = getCoord vi yi
+                                              let z = getCoord vi zi
+                                              Some(Point.mkPoint x y z)
+        let nearestTriangles v = [mkVector 0.0 0.0 0.0] //TODO: Find nearest triangle normals
+        let vNormCalc (l:Vector list) = List.fold (fun acc elem -> acc + elem) (List.head l) l
+                                        |> normalise
+        let vNorm v = match normIndexes plyList with
+                      | None -> vNormCalc (nearestTriangles v)
+                      | Some(nx, ny, nz) -> 
+                         mkVector (getCoord v nx) (getCoord v ny) (getCoord v nz)
         let triangles = 
                 let s = System.Diagnostics.Stopwatch.StartNew()
                 s.Start()
-                let mkVertex i vertices =
-                        let vertex = List.item i vertices
-                        let get i = List.item i vertex
-                        match XYZIndexes plyList with 
-                        | None -> failwith "No x y z coordinates in ply file" 
-                        | Some(xi, yi, zi) -> let x = List.item xi vertex
-                                              let y = List.item yi vertex
-                                              let z = List.item zi vertex
-                                              let p = Point.mkPoint x y z
-                                              let uv = match textureIndexes plyList with
-                                                       | None -> []
-                                                       | Some(ui, vi) ->    
-                                                            [(get ui, get vi)]
-                                              let norm = match normIndexes plyList with
-                                                         | None -> []
-                                                         | Some(nx, ny, nz) ->
-                                                               [mkVector (get nx) (get ny) (get nz)]
-                                              (p, uv, norm)
+                
+                let makeTriangle a b c = 
+                    let p1,p2,p3 = (vertex a).Value, (vertex b).Value, (vertex c).Value
+                    let uv = if (uvCoords a).IsNone then None else
+                             Some((uvCoords a).Value, (uvCoords b).Value, (uvCoords c).Value)
+                    let ns = if smooth 
+                             then Some(vNorm a, vNorm b, vNorm c)
+                             else None
+                    new Triangle (p1, p2, p3, texture, uv, ns)                     
+
+
                 let num = faceCount plyList
                 let q1, q2 = num / 4, num / 2
                 let q3, q4 = q2+q1, num
 
                 let makeTriangles bot top =
-                        let rec make i shapes vertices faces =
+                        let rec iter i shapes =
                                 if i = num then shapes else
                                 match List.item i faces with
                                 | [a;b;c] ->  if i = top then shapes
-                                              else let (p1, l1, n1) = mkVertex a vertices
-                                                   let (p2, l2, n2) = mkVertex b vertices
-                                                   let (p3, l3, n3) = mkVertex c vertices
-                                                   
-                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3), (n1@n2@n3)) :> Shape::shapes) vertices faces
+                                              else iter (i+1) (makeTriangle a b c :> Shape::shapes) 
+                                                                    
                                 | [] -> shapes //This should not happen
                                 | _ -> failwith "Not a triangle mesh"
-                        make bot [] (vertices plyList) (faces plyList)  
+                        iter bot [] 
                 let tasks = [async {return makeTriangles 0 q1};
                              async {return makeTriangles q1 q2};
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
-                Async.RunSynchronously (Async.Parallel tasks) |> List.concat
-                
+                let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                s.Stop()
+                printf "Triangles constructed in %f sec\n" s.Elapsed.TotalSeconds
+                t
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
