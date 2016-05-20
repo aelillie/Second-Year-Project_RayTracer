@@ -12,7 +12,7 @@ type TmKdtree =
 
 //Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
 let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
-    let epsilon = 0.00001
+    let epsilon = 0.00000001
     let shapeX = List.map(fun x -> x:> Shape) shapes
     let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) shapeX
     let bL = List.map (fun (b:BasicShape.BoundingBox) -> b.getL) sbbox

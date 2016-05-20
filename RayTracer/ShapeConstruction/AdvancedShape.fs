@@ -131,7 +131,7 @@ module AdvancedShape =
                                     let (p2,l2) = mkVertex b vertices
                                     let (p3,l3) = mkVertex c vertices
                                     
-                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> BasicShape.Triangle::shapes) vertices rest
+                                    makeTriangles (new Triangle (p1, p2, p3, texture, (l1@l2@l3))::shapes) vertices rest
                      | _::rest -> makeTriangles shapes vertices rest
                      | [] -> shapes
                 printf "Triangles constructed\n"
