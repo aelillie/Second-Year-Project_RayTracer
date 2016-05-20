@@ -81,15 +81,15 @@ module ImplicitSurfaces =
 
   let torus2 (R : float) (r : float) toScreen =
     let rs1 = "(" + (string R) + "^2" + " + " + (string r) + "^2)"
-    let rs2 = "(" + (string R) + "^2" + " - " + (string r) + "^2)"
-    let sx = "x^4 + 2x^2*y^2 + 2x^2*z^2 - 2*" + rs1 + "*x^2"
+    let rs2 = "(" + (string R) + "^2" + " +- " + (string r) + "^2)"
+    let sx = "x^4 + 2x^2*y^2 + 2x^2*z^2 + -2*" + rs1 + "*x^2"
     let sy = "y^4 + 2y^2*z^2 + 2*" + rs2 + "*y^2"
-    let sz = "z^4 - 2*" + rs1 + "*z^2"
+    let sz = "z^4 + -2*" + rs1 + "*z^2"
     let sc = rs2 + "^2"
     let eqn = sx + " + " + sy + " + " + sz + " + " + sc 
     let _ = printf "torus equation %s\n" eqn
     let s = mkShape (mkImplicit eqn) (mkMaterial (fromColor Color.Blue) 0.0)
-    let camera = mkCamera (mkPoint 0.0 4.0 0.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 0.0 1.0) 2.0 4.0 4.0 500 500 in
+    let camera = mkCamera (mkPoint 0.0 8.0 0.0) (mkPoint 0.0000000001 0.0 0.0) (mkVector 0.00000001 0.0 1.0) 3.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
@@ -151,14 +151,14 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
   let render toScreen =
-    heart toScreen
+//    heart toScreen
 //    sphere1 1.0 toScreen;
 //    sphere2 1.0 toScreen;
 //    planeX toScreen;
 //    planeY toScreen;
 //    planeZ toScreen;
 //    torus 1.5 0.5 toScreen;
-//    torus2 1.5 0.5 toScreen;
+    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
 //    chmutov 2 toScreen;
 //    chmutov 4 toScreen;
