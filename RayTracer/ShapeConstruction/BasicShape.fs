@@ -176,7 +176,13 @@ module BasicShape =
                             else None
 
     type Triangle(a,b,c,tex, texCoordList, normList) = 
+        let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
+                             let (x2, y2, z2) = getCoord p2
+                             (x1-x2,y1-y2,z1-z2)
         override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
+        member t.getNormal = let u = mkVector1 (subPoint b a)
+                             let v = mkVector1 (subPoint c a)
+                             (crossProduct u v) |> normalise
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -190,9 +196,6 @@ module BasicShape =
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let u = mkVectorFromPoint (getCoord (b-a))
-                            let v = mkVectorFromPoint (getCoord (c-a))
-
                             let a1 = (Point.getX a) - (Point.getX b)
                             let b1 = (Point.getX a) - (Point.getX c)
                             let c1 = Vector.getX d
@@ -223,7 +226,7 @@ module BasicShape =
 
                                  //Calculate the normal 
                                  let n = if List.isEmpty normList 
-                                         then crossProduct u v 
+                                         then this.getNormal
                                          else let n1 = multScalar (List.item 0 normList) alpha
                                               let n2 = multScalar (List.item 1 normList) beta
                                               let n3 = multScalar (List.item 2 normList) gamma

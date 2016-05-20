@@ -104,6 +104,8 @@ module AdvancedShape =
                             |_ ->  Some(List.minBy (fun (di, nV, mat) -> di) min) 
 
     type TriangleMesh (plyList, texture, bool) = 
+        let vertexNormal (l:Vector list) = List.fold (fun acc elem -> acc + elem) (List.head l) l
+                                           |> normalise
         let triangles = 
                 let s = System.Diagnostics.Stopwatch.StartNew()
                 s.Start()
