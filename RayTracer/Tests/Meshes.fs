@@ -123,7 +123,7 @@ module Meshes =
    
 
   let render toScreen =
-    //renderBunny toScreen
+    renderBunny toScreen
     //renderDragon toScreen
     //renderHappy toScreen
     renderPorsche toScreen

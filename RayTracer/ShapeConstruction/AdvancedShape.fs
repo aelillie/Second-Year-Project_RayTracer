@@ -134,7 +134,7 @@ module AdvancedShape =
                                                    let (p2,l2) = mkVertex b vertices
                                                    let (p3,l3) = mkVertex c vertices
                                                    
-                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3)) :> Shape::shapes) vertices faces
+                                                   make (i+1) (new Triangle (p1, p2, p3, texture, (l1@l2@l3))::shapes) vertices faces
                                 | [] -> shapes //This should not happen
                                 | _ -> failwith "Not a triangle mesh"
                         make bot [] (vertices plyList) (faces plyList)  
@@ -142,14 +142,19 @@ module AdvancedShape =
                              async {return makeTriangles q1 q2};
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
-                Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                TmKdtree.mkTmKdtree t
+        let bBawx = let box = (TmKdtree.getBox triangles)
+                    match box with
+                    |Some b -> b
+                    |None -> failwith"expected the triangle mesh to have a bounding box"
                 
 
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = bBoxFromList triangles
+            member this.getBounding () = TmKdtree.getBox triangles
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) =   match TmKdtree.traverse triangles ray with
+            member this.hit (R(p,d) as ray) =   match TmKdtree.traverse triangles ray bBawx with
                                                 |Some x -> x
                                                 |None -> None
 

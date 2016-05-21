@@ -103,12 +103,11 @@ let rec search node ray t t' =
              |_ -> search snd ray tHit t'
 
 
-let traverse tree ray =
-    match(getBox tree).Value.hit(ray) with
+let traverse tree ray (bawx:BasicShape.BoundingBox) =
+    match(bawx).hit(ray) with
     |Some(t,t') ->  search tree ray t t'  
     |None -> None
 
-let mutable countersvin = 0
 
 //Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
 let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
@@ -120,8 +119,7 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
         let avgMid = midPoint / float(shapes.Length)
         avgMid 
     
-    let counter = shapes.Length
-    printfn ("%i") counter
+
 
     //Splitting the shape list in right & left 
     let rec largerThanSplit (xs:BasicShape.Triangle list) = 
