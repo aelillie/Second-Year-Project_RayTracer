@@ -15,9 +15,10 @@ open Implicit
 open Texture
 
 module ImplicitShape =
-    
+    type Poly = ExprToPoly.poly
 
-    type ImplicitShape (pol, expr, t) = 
+    type ImplicitShape (pol:Poly, expr, t) as this= 
+        
         let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                 then 
                                                                     acc + (value * (System.Math.Pow(x,(float deg))))
@@ -147,7 +148,7 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots 0.0 100.0> 0  then  let mutable counter = 20 
+            if nOfRoots 0.0 100.0> 0  then  let mutable counter = 15 
                                             let mutable prev = 0.0                                   
                                             let rec getInterval s e : (float*float) = if counter > 0 then
                                                                                         let roots = nOfRoots s e
@@ -194,12 +195,64 @@ module ImplicitShape =
                                                         let hitPoint = Point.move p (root*d)
 
                                                         Some (root, Vector.normalise(mkNorm hitPoint e),(Texture.getMaterialAtPoint t 0.0 0.0))  
+
+
         
                  
         interface Shape with
-            member this.getBounding () = None
+            member this.getBounding () = 
+                                         let this = this :> Shape
+                                         
+                                         let isPlane =
+                                                match pol with
+                                                |Po x -> x.Count = 2
+
+                                         let doesHit r = 
+                                                match this.hit r with
+                                                 |None -> false
+                                                 |Some (_) -> true
+
+                                         let rec findP cam p axis (n:float) c =
+                                            let nf = float n
+                                            if c = 20
+                                            then 
+                                                let x,y,z = Point.getCoord p
+                                                mkPoint (x-(10.0*nf)) (y-(10.0*nf)) (z-(10.0*nf))
+                                            else
+                                                
+                                                let x,y,z = Point.getCoord p
+                                                let p' = match axis with
+                                                        |"x" -> (mkPoint (x+nf) y z)
+                                                        |"y" -> (mkPoint (x) (y+nf) z)
+                                                        |"z" -> (mkPoint x y (z+nf))
+                                                        |_ -> failwith "Expected an axis"
+                                                let r = mkRay cam (Point.direction cam p')
+                                                match doesHit r with
+                                                |true  -> findP cam p' axis n 0
+                                                |false -> findP cam p' axis n (c+1)
+
+                                         if isPlane 
+                                         then 
+                                             None
+                                         else
+                                             let n = 0.1
+                                             let p = mkPoint 0.0 0.0 0.0
+                                             let plx = findP (mkPoint 0.0 0.0 100.0) p "x" -n 0
+                                             let ply = findP (mkPoint 0.0 0.0 100.0) p "y" -n 0
+                                             let plz = findP (mkPoint 100.0 0.0 0.0) p "z" -n 0
+                                             let phx = findP (mkPoint 0.0 0.0 100.0) p "x" n 0
+                                             let phy = findP (mkPoint 0.0 0.0 100.0) p "y" n 0
+                                             let phz = findP (mkPoint 100.0 0.0 0.0) p "z" n 0
+
+                                             Some ({p1 = (Point.mkPoint (Point.getX plx) (Point.getY ply) (Point.getZ plz)) ; p2 = (Point.mkPoint (Point.getX phx) (Point.getY phy) (Point.getZ phz)) })
+                                            
+//                                       
+
+                                       
+                                      
+                                        
             member this.isInside p = failwith "Not implemented"
-            member this.isSolid () = failwith "Not implemented"
+            member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                                 let getSEList s = 
                                     match s with
@@ -320,6 +373,6 @@ module ImplicitShape =
 
                                 solveDegreePoly
                                            
-                               
+               
         
 

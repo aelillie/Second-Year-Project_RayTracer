@@ -33,16 +33,16 @@ let renderAll toScreen =
 //  printf "Shapes rendered"
 //  AffineTransformations.render toScreen
 //  printf "AffineTransformations rendered"
-//  ImplicitSurfaces.render toScreen
-//  printf "ImplicitSurfaces rendered"
+  ImplicitSurfaces.render toScreen
+  printf "ImplicitSurfaces rendered"
 //  Meshes.render toScreen
 //  printf "Meshes rendered"
 //  Texture.render toScreen
 //  printf "Texture rendered"
 //  Light.render toScreen
 //  printf "Light rendered"
-  CSG.render toScreen
-  printf "CSG rendered"
+//  CSG.render toScreen
+//  printf "CSG rendered"
 
 
 [<EntryPoint>]
@@ -61,4 +61,5 @@ let main argv =
 //    testall
 //    ImplicitTest.doTest() 
     renderAll false
+    System.Console.ReadKey() |> ignore
     0 // return an integer exit code

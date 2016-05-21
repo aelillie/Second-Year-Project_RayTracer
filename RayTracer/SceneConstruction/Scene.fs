@@ -62,9 +62,10 @@ let rec isShaded (r:Ray) (xs:Shape list) (bx) (l:Light) =
 let renderScene (S(shapes, lights, ambi, cam, n)) =
     let rays = List.toArray (mkRays cam)  //Create rays from camera
     let maxRefl = n
-
+    let sw = System.Diagnostics.Stopwatch.StartNew()
     let bBoxes = List.map (fun (x:Shape) -> x.getBounding()) shapes
-
+    sw.Stop()
+    printf "%f\n" sw.Elapsed.TotalSeconds 
     //Cast a single ray into the scene
     let rec castRay (ray:Ray) reflNumber = 
         let hitResults = List.map2 (fun (x:Shape) (b:BoundingBox option) ->   hit ray b x) shapes bBoxes //Check which shape are hit by a fire

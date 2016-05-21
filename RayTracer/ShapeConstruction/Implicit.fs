@@ -95,6 +95,7 @@ let mkNorm p expr : Vector =
                                                             |AExponent(e, n) when e = "x" -> pow (x, float n) * s
                                                             |AExponent(e, n) when e = "y" -> pow (y, float n) * s
                                                             |AExponent(e, n) when e = "z" -> pow (z, float n) * s
+                                                            |_ -> failwith "Unexpected variable when finding normal vector"
                                                     agF ag' k
                                       List.fold (fun acc x  -> acc + (agF x 1.0)) 0.0 agl
                                                      
@@ -142,7 +143,7 @@ let mkPoly (s : string) (*(constant:string*float)*)  =
 
     let k = exprToPoly polyExprSubbed "t"
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
-    printfn "%s" print
+    printfn "%s\n" print
     //simplify equation 
     (exprToPoly polyExprSubbed "t"), expr
 

@@ -151,15 +151,41 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
   let render toScreen =
-    heart toScreen
+    
+    let sw = System.Diagnostics.Stopwatch.StartNew()
+    let time () = 
+              let t = sw.Elapsed.TotalSeconds
+              sw.Reset()
+              sw.Start()
+              t
+//    heart toScreen
+//    printf "%f\n" (time ())
     sphere1 1.0 toScreen;
+    printf "%f\n" (time ())
 //    sphere2 1.0 toScreen;
-    planeX toScreen;
-    planeY toScreen;
-    planeZ toScreen;
+//    printf "%f\n" (time ())
+//    planeX toScreen;
+//    printf "%f\n" (time ())
+//
+//    planeY toScreen;
+//    printf "%f\n" (time ())
+//
+//    planeZ toScreen;
+//    printf "%f\n" (time ())
+
 //    torus 1.5 0.5 toScreen;
-    torus2 1.5 0.5 toScreen;
+//    printf "%f\n" (time ())
+//    torus2 1.5 0.5 toScreen;
+//    printf "%f\n" (time ())
     testShape toScreen;
+    printf "%f\n" (time ())
+
     chmutov 2 toScreen;
+    printf "%f\n" (time ())
+
     chmutov 4 toScreen;
+    printf "%f\n" (time ())
+
     chmutov 6 toScreen
+    printf "%f\n" (time ())
+
