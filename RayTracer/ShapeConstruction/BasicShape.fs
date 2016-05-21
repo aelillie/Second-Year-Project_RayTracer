@@ -183,6 +183,9 @@ module BasicShape =
         member t.getNormal = let u = mkVector1 (subPoint b a)
                              let v = mkVector1 (subPoint c a)
                              (crossProduct u v) |> normalise
+        member t.getA = a
+        member t.getB = b
+        member t.getC = c
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 

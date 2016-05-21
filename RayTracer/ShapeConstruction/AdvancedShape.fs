@@ -125,17 +125,19 @@ module AdvancedShape =
                       | None -> vNormCalc (nearestTriangles v)
                       | Some(nx, ny, nz) -> 
                          mkVector (getCoord v nx) (getCoord v ny) (getCoord v nz)
+        let assignNormal t = failwith "To be implemented"
+        let rec assignNormals m tl tl' =
+                        match tl with
+                        |  t::rest -> assignNormals m rest (assignNormal t::tl')
+                        | [] -> tl'
         let triangles = 
-                let s = System.Diagnostics.Stopwatch.StartNew()
-                s.Start()
+                //s.Start()
                 
                 let makeTriangle a b c = 
                     let p1,p2,p3 = (vertex a).Value, (vertex b).Value, (vertex c).Value
                     let uv = if (uvCoords a).IsNone then None else
                              Some((uvCoords a).Value, (uvCoords b).Value, (uvCoords c).Value)
-                    let ns = if smooth 
-                             then Some(vNorm a, vNorm b, vNorm c)
-                             else None
+                    let ns = None
                     new Triangle (p1, p2, p3, texture, uv, ns)                     
 
 
@@ -143,21 +145,23 @@ module AdvancedShape =
                 let q1, q2 = num / 4, num / 2
                 let q3, q4 = q2+q1, num
 
+                let m = Map.empty
                 let makeTriangles bot top =
                         let rec iter i shapes =
                                 if i = num then shapes else
                                 match List.item i faces with
                                 | [a;b;c] ->  if i = top then shapes
                                               else iter (i+1) (makeTriangle a b c :> Shape::shapes) 
-                                                                    
                                 | [] -> shapes //This should not happen
                                 | _ -> failwith "Not a triangle mesh"
-                        iter bot [] 
-                let tasks = [async {return makeTriangles 0 q1};
-                             async {return makeTriangles q1 q2};
+                        iter bot []
+                let tasks = [async {return makeTriangles 0 q1}
+                             async {return makeTriangles q1 q2}
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
                 let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                let s = System.Diagnostics.Stopwatch.StartNew()
+                let m = List.fold (fun (m, c) elem -> (Map.add c elem m, (c+1)) ) (Map.empty, 0) t
                 s.Stop()
                 printf "Triangles constructed in %f sec\n" s.Elapsed.TotalSeconds
                 t
