@@ -2,6 +2,7 @@
 
 type Ply = 
          | Vertex of float list
+         | Vertices of Map<int,float list>
          | Property of string
          | Face of int list
          | Comment of string
@@ -17,5 +18,5 @@ val textureIndexes : _arg1:Ply list -> (int * int) option
 val XYZIndexes : _arg1:Ply list -> (int * int * int) option //TODO: Should be generic function
 val normIndexes : _arg1: Ply list -> (int * int * int) option
 val faceCount : _arg1:Ply list -> int
-val vertices : p:Ply list -> float list list
+val vertices : p:Ply list -> Map<int, float list>
 val faces : p:Ply list -> int list list

@@ -7,6 +7,7 @@ open System.IO
 type UserState = unit
 type Ply = 
          | Vertex of float list
+         | Vertices of Map<int, float list>
          | Property of string
          | Face of int list
          | Comment of string
@@ -43,7 +44,6 @@ let readLines (filePath:string) = seq {
 //Helper parsers
 let pNameString: Parser<_> = satisfy (fun c ->  System.Char.IsLetterOrDigit c)
 let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else failFatally "lol"
-
 
 // Set up parsers for each type  
 let pComment: Parser<_> =  pstring "comment" >>. restOfLine true |>> (fun x -> Comment x)
@@ -170,8 +170,9 @@ let faces (p:Ply list) = List.collect (fun x -> match x with
                                                 | Face(intList) -> [intList]
                                                 | _ -> []) <| p
 
-let vertices (p:Ply list) = List.collect (fun x -> match x with
-                                                   | Vertex(floatList) -> [floatList]
-                                                   | _ -> []) <| p
-
-
+let vertices (p:Ply list) = let rec mapV m c l =
+                                    match l with
+                                    | Vertex(v)::rest -> mapV (Map.add c v m) (c+1) rest
+                                    | x::xs -> mapV m c xs
+                                    | [] -> m
+                            mapV Map.empty 0 p

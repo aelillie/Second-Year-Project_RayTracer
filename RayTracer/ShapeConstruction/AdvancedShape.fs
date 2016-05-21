@@ -108,7 +108,7 @@ module AdvancedShape =
     type TriangleMesh (plyList, texture, smooth) = 
         let vertices = vertices plyList
         let faces = faces plyList
-        let getCoord vi i = let vertex = List.item vi vertices in List.item i vertex
+        let getCoord vi i = let vertex = vertices.Item vi in List.item i vertex
         let uvCoords v = match textureIndexes plyList with
                          | None -> None
                          | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi)
