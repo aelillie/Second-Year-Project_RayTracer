@@ -10,7 +10,7 @@ type TmKdtree =
     | Leaf of BasicShape.Triangle list * BoundingBox 
     | Node of BasicShape.Triangle list * TmKdtree * TmKdtree * BoundingBox  * (string*Point)
 
-let epsilon = 0.00000001
+let epsilon = 0.00001
 
 //Making a boundingbox for the KD-tree, by finding max H point in the boundingboxlist and min l point in the boundingbox list. 
 let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
@@ -32,15 +32,15 @@ let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
 
 let BoundingBoxL (bbox:BoundingBox) axis midp : BoundingBox = 
     match axis with
-    | "x" -> {p1 = bbox.getL; p2 = Point.mkPoint (Point.getX midp) (Point.getY (bbox.getH)) (Point.getZ (bbox.getH))}
-    | "y" -> {p1 = bbox.getL; p2 = Point.mkPoint (Point.getX (bbox.getH)) (Point.getY midp) (Point.getZ (bbox.getH))}
-    | "z" -> {p1 = bbox.getL; p2 = Point.mkPoint (Point.getX (bbox.getH)) (Point.getY (bbox.getH)) (Point.getZ midp)}
+    | "x" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint ((Point.getX midp)) ((Point.getY (bbox.getH))) ((Point.getZ (bbox.getH))) - epsilon}
+    | "y" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint (Point.getX (bbox.getH)) ((Point.getY midp)+epsilon) ((Point.getZ (bbox.getH))) - epsilon }
+    | "z" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint (Point.getX (bbox.getH)) (Point.getY (bbox.getH)) (Point.getZ midp) - epsilon}
 
 let BoundingBoxR (bbox:BoundingBox) axis midp : BoundingBox = 
     match axis with
-    | "x" -> {p1 = Point.mkPoint (Point.getX midp) (Point.getY (bbox.getL)) (Point.getZ (bbox.getL)); p2 = bbox.getH}
-    | "y" -> {p1 = Point.mkPoint (Point.getX (bbox.getL)) (Point.getY midp) (Point.getZ (bbox.getL)); p2 = bbox.getH}
-    | "z" -> {p1 = Point.mkPoint (Point.getX (bbox.getL)) (Point.getY (bbox.getL)) (Point.getZ midp); p2 = bbox.getH}
+    | "x" -> {p1 = (Point.mkPoint (Point.getX midp) (Point.getY (bbox.getL)) (Point.getZ (bbox.getL))) + epsilon; p2 = bbox.getH + epsilon}
+    | "y" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY midp) (Point.getZ (bbox.getL))) + epsilon; p2 = bbox.getH + epsilon}
+    | "z" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY (bbox.getL)) (Point.getZ midp)) + epsilon; p2 = bbox.getH + epsilon}
 
 
 //Get left node
@@ -124,9 +124,8 @@ let traverse tree ray (bawx:BasicShape.BoundingBox) =
 
 
 //Finding the midpoint in the triangles in Shapes-list - we do this (recursively) to find out what axis to split 
-let rec mkTmKdtree (shapes : BasicShape.Triangle list) =               
+let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingBox) =               
      //Finding biggest dimension in the shapes list
-    let box = mkKdBbox shapes
     let axis = snd (box.getLongestAxis)
     let axisMidPoint = 
         let midPoint = List.fold (fun acc (ele:BasicShape.Triangle) -> (acc + ele.getMidPoint())) (Point.mkPoint 0.0 0.0 0.0) shapes
@@ -177,12 +176,12 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) =
 
     //Check for duplicates among the lists. 
     if(((float(left.Length+right.Length-shapes.Length)/float(shapes.Length)) < 0.4) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
-      let leftTree = mkTmKdtree left 
-      let rightTree = mkTmKdtree right 
-      Node(shapes,leftTree, rightTree, (mkKdBbox shapes),(axis,axisMidPoint))
+      let leftTree = mkTmKdtree left (BoundingBoxL box axis axisMidPoint)
+      let rightTree = mkTmKdtree right (BoundingBoxR box axis axisMidPoint)
+      Node(shapes,leftTree, rightTree, (box),(axis,axisMidPoint))
        
       
-    else Leaf(shapes, (mkKdBbox shapes))
+    else Leaf(shapes, (box))
 
 
       

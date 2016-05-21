@@ -26,7 +26,7 @@ module AdvancedShape =
         let maxX = List.maxBy (fun x -> Point.getX x) bH
         let maxY = List.maxBy (fun x -> Point.getY x) bH
         let maxZ = List.maxBy (fun x -> Point.getZ x) bH
-        Some {p1=(mkPoint (Point.getX minX - (epsilon*2.0)) (Point.getY minY - (epsilon*2.0)) (Point.getZ minZ - (epsilon *2.0)) ) 
+        {p1=(mkPoint (Point.getX minX - (epsilon*2.0)) (Point.getY minY - (epsilon*2.0)) (Point.getZ minZ - (epsilon *2.0)) ) 
         ; p2=(mkPoint (Point.getX maxX + (epsilon * 2.0)) (Point.getY maxY + (epsilon*2.0)) (Point.getZ maxZ + (epsilon * 2.0)) )}
 
         
@@ -70,7 +70,7 @@ module AdvancedShape =
                                      let (lx,ly,lz) = Point.getCoord low
                                      let (hx,hy,hz) = Point.getCoord high
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
-            member this.getBounding () = bBoxFromList rects
+            member this.getBounding () = Some (bBoxFromList rects)
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = this.hit ray 
 
@@ -143,7 +143,7 @@ module AdvancedShape =
                              async {return makeTriangles q2 q3}
                              async {return makeTriangles q3 q4}]  
                 let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
-                TmKdtree.mkTmKdtree t
+                TmKdtree.mkTmKdtree t (bBoxFromList (List.map(fun x -> x:> Shape) t))
         let bBawx = let box = (TmKdtree.getBox triangles)
                     match box with
                     |Some b -> b

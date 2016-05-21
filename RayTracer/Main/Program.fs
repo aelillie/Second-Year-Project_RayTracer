@@ -30,7 +30,7 @@ let main argv =
         let light = mkLight (mkPoint 0.0 5.0 5.0) (fromColor Color.White) 1.0 in
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 1.5 1.5) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
+        let camera = mkCamera (mkPoint 0.0 1.5 1.5) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let stopWatch = System.Diagnostics.Stopwatch.StartNew()
         let tm = mkPLY "C:\\Program Files\\bunny_textured.ply" false
