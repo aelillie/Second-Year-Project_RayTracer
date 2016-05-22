@@ -15,7 +15,7 @@ type Scene =
   | S of Shape list * Light list * AmbientLight * Camera * int
 
 let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, ambientLight, camera, reflection)
-let epsilon = 0.0000001
+let epsilon = System.Double.Epsilon
 
 
 let plusTripleFloat (a,b,c) (x,y,z) : (float * float * float) =
