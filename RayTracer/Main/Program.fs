@@ -37,7 +37,7 @@ let main argv =
         let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let s = System.Diagnostics.Stopwatch.StartNew()
-        let ply = mkPLY "../../../ply/apple.ply" false
+        let ply = mkPLY "../../../ply/apple.ply" true
         s.Stop() ; printf "Ply parsed in %f seconds\n" s.Elapsed.TotalSeconds
         let tex = (mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png")
         let mat c = mkMatTexture (mkMaterial (fromColor c) 0.0)
