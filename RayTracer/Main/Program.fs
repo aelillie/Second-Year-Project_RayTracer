@@ -38,6 +38,7 @@ let main argv =
         (*******Shapes******)
         let s = System.Diagnostics.Stopwatch.StartNew()
         let ply = mkPLY "../../../ply/ant.ply" true
+
         s.Stop() ; printf "Ply parsed in %f seconds\n" s.Elapsed.TotalSeconds
         //let tex = (mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png")
         let mat c = mkMatTexture (mkMaterial (fromColor c) 0.0)
