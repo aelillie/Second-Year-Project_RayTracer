@@ -29,7 +29,7 @@ let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
     {p1=(mkPoint (Point.getX minX) (Point.getY minY) (Point.getZ minZ) ) 
                                      ; p2=(mkPoint (Point.getX maxX) (Point.getY maxY) (Point.getZ maxZ) )}
     
-
+//Splitting existing boundingbox according to left and right list of shapes
 let BoundingBoxL (bbox:BoundingBox) axis midp : BoundingBox = 
     match axis with
     | "x" -> {p1 = bbox.getL; p2 = Point.mkPoint ((Point.getX midp)) ((Point.getY (bbox.getH))) ((Point.getZ (bbox.getH)))}
@@ -172,15 +172,12 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
     //let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
    // let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
-   
-
     //Check for duplicates among the lists. 
     if(((float(left.Length+right.Length)/float(shapes.Length)) < 1.6) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
       let leftTree = mkTmKdtree left (BoundingBoxL box axis axisMidPoint)
       let rightTree = mkTmKdtree right (BoundingBoxR box axis axisMidPoint)
       Node(shapes,leftTree, rightTree, (box),(axis,axisMidPoint))
-       
-      
+
     else Leaf(shapes, (box))
 
 
