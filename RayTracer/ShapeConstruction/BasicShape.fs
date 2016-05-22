@@ -179,13 +179,7 @@ module BasicShape =
         let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
                              let (x2, y2, z2) = getCoord p2
                              (x1-x2,y1-y2,z1-z2)
-        override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
-        member t.getNormal = let u = mkVector1 (subPoint b a)
-                             let v = mkVector1 (subPoint c a)
-                             (crossProduct u v) |> normalise
-        member t.getA = a
-        member t.getB = b
-        member t.getC = c
+        //override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -234,7 +228,9 @@ module BasicShape =
                                                 let n2 = multScalar nb beta
                                                 let n3 = multScalar nc gamma
                                                 n1+n2+n3 |> normalise
-                                         | _ -> this.getNormal
+                                         | None -> let u = mkVector1 (subPoint b a)
+                                                   let v = mkVector1 (subPoint c a)
+                                                   (crossProduct u v) |> normalise 
 
                                  //Find material for the texture
                                  let mat = match texCoords with //No texture in ply file

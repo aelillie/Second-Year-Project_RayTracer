@@ -108,7 +108,7 @@ module AdvancedShape =
     type TriangleMesh (plyList, texture, smooth) = 
         let vertices = vertices plyList
         let faces = faces plyList
-        let getCoord vi i = let vertex = vertices.Item vi in List.item i vertex
+        let getCoord vi i = let vertex = vertices.[vi] in vertex.[i]
         let uvCoords v = match textureIndexes plyList with
                          | None -> None
                          | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi)
@@ -118,54 +118,71 @@ module AdvancedShape =
                                               let y = getCoord vi yi
                                               let z = getCoord vi zi
                                               Some(Point.mkPoint x y z)
-        let nearestTriangles v = [mkVector 0.0 0.0 0.0] //TODO: Find nearest triangle normals
         let vNormCalc (l:Vector list) = List.fold (fun acc elem -> acc + elem) (List.head l) l
                                         |> normalise
-        let vNorm v = match normIndexes plyList with
-                      | None -> vNormCalc (nearestTriangles v)
-                      | Some(nx, ny, nz) -> 
-                         mkVector (getCoord v nx) (getCoord v ny) (getCoord v nz)
-        let assignNormal t = failwith "To be implemented"
-        let rec assignNormals m tl tl' =
-                        match tl with
-                        |  t::rest -> assignNormals m rest (assignNormal t::tl')
-                        | [] -> tl'
-        let triangles = 
-                //s.Start()
-                
-                let makeTriangle a b c = 
+        let addToMap k v m = match Map.tryFind k m with
+                             | None -> Map.add k [v] m
+                             | Some(l) -> Map.add k ((v)::l) m
+        let mapVtoNorms () = let s = System.Diagnostics.Stopwatch.StartNew()
+                             let faceNum = faceCount plyList 
+                             let rec buildMap m i = 
+                                 if i = faceNum then m else
+                                 match faces.[i] with
+                                 | [|a;b;c|] -> 
+                                       let norm = let (xa, ya, za) = (getCoord a 0, getCoord a 1, getCoord a 2) //TODO: Right indexes?
+                                                  let (xb, yb, zb) = (getCoord b 0, getCoord b 1, getCoord b 2)
+                                                  let (xc, yc, zc) = (getCoord c 0, getCoord c 1, getCoord c 2)
+                                                  let u = mkVector1 (xb-xa,yb-ya, zb-za) //b-a
+                                                  let v = mkVector1 (xc-xa,yc-ya,zc-za) //c-a
+                                                  (crossProduct u v) |> normalise
+                                       let mapA = addToMap a norm m //Map vertex a to this face's normal vector
+                                       let mapB = addToMap b norm mapA
+                                       let mapC = addToMap c norm mapB
+                                       buildMap mapC (i+1)
+                                 | [||] -> m //This should not happen
+                                 | _ -> failwith "Not a triangle mesh"
+                             let m = buildMap Map.empty 0
+                             s.Stop() ; printf "Built map in %f seconds\n" s.Elapsed.TotalSeconds
+                             m
+        let m = if (normIndexes plyList).IsNone && smooth then mapVtoNorms () else Map.empty
+        let vNorm a b c = match normIndexes plyList with
+                          | None -> let na = vNormCalc (Map.find a m)
+                                    let nb = vNormCalc (Map.find b m)
+                                    let nc = vNormCalc (Map.find c m)
+                                    Some(na,nb,nc)
+                          | Some(nx, ny, nz) -> 
+                                    let na =  mkVector (getCoord a nx) (getCoord a ny) (getCoord a nz)
+                                    let nb =  mkVector (getCoord b nx) (getCoord b ny) (getCoord b nz)
+                                    let nc = mkVector (getCoord c nx) (getCoord c ny) (getCoord c nz)
+                                    Some(na,nb,nc)
+        let makeTriangle a b c n = 
                     let p1,p2,p3 = (vertex a).Value, (vertex b).Value, (vertex c).Value
                     let uv = if (uvCoords a).IsNone then None else
                              Some((uvCoords a).Value, (uvCoords b).Value, (uvCoords c).Value)
-                    let ns = None
-                    new Triangle (p1, p2, p3, texture, uv, ns)                     
-
-
-                let num = faceCount plyList
-                let q1, q2 = num / 4, num / 2
-                let q3, q4 = q2+q1, num
-
-                let m = Map.empty
-                let makeTriangles bot top =
-                        let rec iter i shapes =
-                                if i = num then shapes else
-                                match List.item i faces with
-                                | [a;b;c] ->  if i = top then shapes
-                                              else iter (i+1) (makeTriangle a b c :> Shape::shapes) 
-                                | [] -> shapes //This should not happen
-                                | _ -> failwith "Not a triangle mesh"
-                        iter bot []
-                let tasks = [async {return makeTriangles 0 q1}
-                             async {return makeTriangles q1 q2}
-                             async {return makeTriangles q2 q3}
-                             async {return makeTriangles q3 q4}]  
-                let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
-                let s = System.Diagnostics.Stopwatch.StartNew()
-                let m = List.fold (fun (m, c) elem -> (Map.add c elem m, (c+1)) ) (Map.empty, 0) t
-                s.Stop()
-                printf "Triangles constructed in %f sec\n" s.Elapsed.TotalSeconds
-                t
-
+                    new Triangle (p1, p2, p3, texture, uv, n)
+        let triangles =  let c = faceCount plyList
+                         let q1, q2 = c / 4, c / 2
+                         let q3 = q2+q1
+                         let s = System.Diagnostics.Stopwatch.StartNew()
+                         let makeTriangles bot top =
+                                 let rec iter i shapes =
+                                         if i = c then shapes else
+                                         match faces.[i] with
+                                         | [|a;b;c|] ->  if i = top then shapes
+                                                         else if smooth 
+                                                              then let norms = vNorm a b c
+                                                                   iter (i+1) (makeTriangle a b c norms :> Shape::shapes) 
+                                                              else iter (i+1) (makeTriangle a b c None :> Shape::shapes)              
+                                         | [||] -> shapes //This should not happen
+                                         | _ -> failwith "Not a triangle mesh"
+                                 iter bot [] 
+                         let tasks = [async {return makeTriangles 0 q1}
+                                      async {return makeTriangles q1 q2}
+                                      async {return makeTriangles q2 q3}
+                                      async {return makeTriangles q3 c}]  
+                         let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
+                         s.Stop() ; printf "Built triangles in %f seconds\n" s.Elapsed.TotalSeconds
+                         t
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
             member this.getBounding () = bBoxFromList triangles
@@ -175,6 +192,3 @@ module AdvancedShape =
                                     match min with
                                     |[] -> None
                                     |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
-
-
-

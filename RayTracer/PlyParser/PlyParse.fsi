@@ -1,10 +1,9 @@
 ﻿module PlyParse
 
 type Ply = 
-         | Vertex of float list
-         | Vertices of Map<int,float list>
+         | Vertex of float []
          | Property of string
-         | Face of int list
+         | Face of int []
          | Comment of string
          | DummyData of string
          | Element of string * int * Ply list
@@ -18,5 +17,5 @@ val textureIndexes : _arg1:Ply list -> (int * int) option
 val XYZIndexes : _arg1:Ply list -> (int * int * int) option //TODO: Should be generic function
 val normIndexes : _arg1: Ply list -> (int * int * int) option
 val faceCount : _arg1:Ply list -> int
-val vertices : p:Ply list -> Map<int, float list>
-val faces : p:Ply list -> int list list
+val vertices : p:Ply list -> float [] array
+val faces : p:Ply list -> int [] array
