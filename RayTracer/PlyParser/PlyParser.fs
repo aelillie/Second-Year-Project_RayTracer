@@ -6,10 +6,9 @@ open System.IO
 
 type UserState = unit
 type Ply = 
-         | Vertex of float list
-         | Vertices of Map<int, float list>
+         | Vertex of float []
          | Property of string
-         | Face of int list
+         | Face of int []
          | Comment of string
          | DummyData of string
          | Element of string * int * Ply list
@@ -48,8 +47,8 @@ let pList n : Parser<_> = if n > 0 then (parray n (pint32 .>> spaces)) else fail
 // Set up parsers for each type  
 let pComment: Parser<_> =  pstring "comment" >>. restOfLine true |>> (fun x -> Comment x)
 let pEndHeader: Parser<_> = pstring "end_header" .>> skipRestOfLine true |>> (fun _ -> Endheader)
-let pVertex: Parser<_> = spaces >>. many1 (pfloat .>> spaces) .>> spaces |>> (fun x -> Vertex x)
-let pFace: Parser<_> = pint32 .>>? spaces1 >>=? pList |>> (fun x -> Face (Array.toList x))
+let pVertex: Parser<_> = spaces >>. many1 (pfloat .>> spaces) .>> spaces |>> (fun x -> Vertex (List.toArray x))
+let pFace: Parser<_> = pint32 .>>? spaces1 >>=? pList |>> (fun x -> Face (x))
 let pDummyData: Parser<_> = restOfLine true |>> (fun x -> DummyData x)
 let pElement: Parser<_> = pstring "element" >>. spaces >>. (many1Chars pNameString) .>> spaces .>>.  pint32 |>> (fun (x,f) -> Element (x,f,List.empty))
 let pProperty: Parser<_> = pstring "property" >>. spaces >>. (many1Chars pNameString) .>> spaces >>.  restOfLine false |>> (fun x -> Property x)
@@ -154,25 +153,37 @@ let rec normIndexes = function
                              | "nz"   -> checkEle r nx ny i (i+1)
                              | s -> checkEle r nx ny nz (i+1)
                     | x::xs -> failwith "No properties"
-                    | [] -> (nx, ny, nz) //Return u and v index
+                    | [] -> (nx, ny, nz) 
             let (nx, ny, nz) = checkEle l 0 0 0 0
             if nx = 0 && ny = 0 && nz = 0 then None
             else Some(nx, ny, nz)
         | x::xs -> normIndexes xs
         | [] -> failwith "No elements in PLY file"
 
+
+let rec vertexCount = function
+      | Element(s, n, l) :: r when s = "vertex" -> n
+      | x::xs -> vertexCount xs
+      | [] -> failwith "No elements in PLY file"
+
 let rec faceCount = function
       | Element(s, n, l) :: r when s = "face" -> n
       | x::xs -> faceCount xs
       | [] -> failwith "No elements in PLY file"
 
-let faces (p:Ply list) = List.collect (fun x -> match x with
-                                                | Face(intList) -> [intList]
-                                                | _ -> []) <| p
-
-let vertices (p:Ply list) = let rec mapV m c l =
+let faces (p:Ply list) = let rec iter (a:array<int []>) c l =
                                     match l with
-                                    | Vertex(v)::rest -> mapV (Map.add c v m) (c+1) rest
-                                    | x::xs -> mapV m c xs
-                                    | [] -> m
-                            mapV Map.empty 0 p
+                                    | Face(f)::rest -> a.[c] <- f
+                                                       iter a (c+1) rest
+                                    | x::xs -> iter a c xs
+                                    | [] -> a
+                         iter (Array.create<int []> (faceCount p) [||]) 0 p
+
+let vertices (p:Ply list) = let rec iter (a:array<float []>) c l =
+                                    match l with
+                                    | Vertex(v)::rest -> a.[c] <- v
+                                                         iter a (c+1) rest
+                                    | Face(f)::rest -> a //Faces usually appear after vertices
+                                    | x::xs -> iter a c xs
+                                    | [] -> a
+                            iter (Array.create<float []> (vertexCount p) [||]) 0 p
