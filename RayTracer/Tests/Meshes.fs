@@ -20,13 +20,14 @@ module Meshes =
 
 
   let renderBunny toScreen =
-    let baseBunny = mkPLY "../../../ply/bunny_textured.ply" true
+    let baseBunny = mkPLY "../../../ply/bunny.ply" true
     let t = mergeTransformations
               [rotateY (Math.PI / 4.0);
                scale 40.0 40.0 40.0;
                translate 0.0 -1.5 0.0] in
     let white = fromColor Color.White
-    let bunny = mkShape baseBunny (mkMatTexture (mkMaterial white 0.0))
+    let black = fromColor Color.Black
+    let bunny = mkShape baseBunny (mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg")
     let affineBunny = transform bunny t in
     let t' = scale 0.5 0.5 0.5
     let l1 = mkLight (mkPoint 6.0 2.0 6.0) white 0.5
@@ -127,4 +128,4 @@ module Meshes =
     //renderDragon toScreen
     //renderHappy toScreen
     renderPorsche toScreen
-    renderHorse toScreen 
+    //renderHorse toScreen 

@@ -6,10 +6,11 @@ open Vector
 open Point
 open Transformation
 open Texture
+open Colour
 
 
 module BasicShape = 
-    let epsilon = 0.000000001
+    let epsilon = 0.000001
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
     
@@ -59,7 +60,7 @@ module BasicShape =
                     (lz - oz)/dz
             let t = List.max [tx;ty;tz]
             let t'= List.min [tx';ty';tz']
-            if t < t' && t' > 0.0
+            if t <= t' && t' >= 0.0
             then Some (t,t')
             else None
                         
@@ -197,6 +198,37 @@ module BasicShape =
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
+                            (*let V1 = a
+                            let V2 = b
+                            let V3 = c
+
+                            let e1 = mkVectorFromPoint (getCoord (V3-V1))
+                            let e2 = mkVectorFromPoint (getCoord (V2-V1))
+                            let P = crossProduct D e2
+                            let det = dotProduct e1 P
+                            if(det> -epsilon && det < epsilon) then None else
+                            let inv_det = 1.0/det
+                            let T = mkVectorFromPoint (getCoord(O - V1))
+                            let u = (dotProduct T P) * inv_det
+                            if(u < 0.0 || u > 1.0) then None else                   Möller-trombore algorithm, can't get it to work properly, but saving it for reference.
+                            let Q = crossProduct T e1                               remember to rename p,d to O,D
+                            let v = (dotProduct D Q) * inv_det
+                            if(v < 0.0 || (u+v) > 1.0) then None else
+                            let t = (dotProduct e2 Q) * inv_det
+                            if(t>epsilon) then
+                                (*//Find material for the texture
+                                let mat =   if List.isEmpty texCoordList //No texture in ply file
+                                            then    let tu, tv = 0.5, 0.5 
+                                                    getMaterialAtPoint tex tu tv
+                                            else    let (ua,va) = List.item 0 texCoordList //Vertex a
+                                                    let (ub,vb) = List.item 1 texCoordList //Vertex b
+                                                    let (uc,vc) = List.item 2 texCoordList //Vertex c
+                                                    let tu = alfa*ua+beta*ub+gamma*uc
+                                                    let tv = alfa*va+beta*vb+gamma*vc
+                                                    getMaterialAtPoint tex tu tv*)
+                                let n = crossProduct e1 e2 |> normalise
+                                Some(t,n,(((Material.mkMaterial (Colour.fromColor System.Drawing.Color.Green)) 0.5)))
+                            else None*)
                             let u = mkVectorFromPoint (getCoord (b-a))
                             let v = mkVectorFromPoint (getCoord (c-a))
 

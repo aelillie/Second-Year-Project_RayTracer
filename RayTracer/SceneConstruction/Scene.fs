@@ -15,7 +15,7 @@ type Scene =
   | S of Shape list * Light list * AmbientLight * Camera * int
 
 let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, ambientLight, camera, reflection)
-let epsilon = 0.000001
+let epsilon = 0.00000001
 
 
 let plusTripleFloat (a,b,c) (x,y,z) : (float * float * float) =
@@ -54,7 +54,11 @@ let rec isShaded (r:Ray) (xs:Shape list) (bx) (l:Light) =
                                          then 
                                           isShaded r xs' (bx.Tail) l 
                                          else
-                                          true
+                                          if t' < epsilon
+                                          then 
+                                           isShaded r xs' (bx.Tail) l
+                                          else 
+                                           true
 
 
 

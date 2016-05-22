@@ -26,21 +26,21 @@ let mkKdBbox (shapes : BasicShape.Triangle list) : BoundingBox =
     let maxX = List.maxBy (fun x -> Point.getX x) bH
     let maxY = List.maxBy (fun x -> Point.getY x) bH
     let maxZ = List.maxBy (fun x -> Point.getZ x) bH
-    {p1=(mkPoint (Point.getX minX - epsilon) (Point.getY minY - epsilon) (Point.getZ minZ - epsilon) ) 
-                                     ; p2=(mkPoint (Point.getX maxX + epsilon) (Point.getY maxY + epsilon) (Point.getZ maxZ + epsilon) )}
+    {p1=(mkPoint (Point.getX minX) (Point.getY minY) (Point.getZ minZ) ) 
+                                     ; p2=(mkPoint (Point.getX maxX) (Point.getY maxY) (Point.getZ maxZ) )}
     
 
 let BoundingBoxL (bbox:BoundingBox) axis midp : BoundingBox = 
     match axis with
-    | "x" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint ((Point.getX midp)) ((Point.getY (bbox.getH))) ((Point.getZ (bbox.getH))) - epsilon}
-    | "y" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint (Point.getX (bbox.getH)) ((Point.getY midp)+epsilon) ((Point.getZ (bbox.getH))) - epsilon }
-    | "z" -> {p1 = bbox.getL - epsilon; p2 = Point.mkPoint (Point.getX (bbox.getH)) (Point.getY (bbox.getH)) (Point.getZ midp) - epsilon}
+    | "x" -> {p1 = bbox.getL; p2 = Point.mkPoint ((Point.getX midp)) ((Point.getY (bbox.getH))) ((Point.getZ (bbox.getH)))}
+    | "y" -> {p1 = bbox.getL; p2 = Point.mkPoint (Point.getX (bbox.getH)) ((Point.getY midp)) ((Point.getZ (bbox.getH)))}
+    | "z" -> {p1 = bbox.getL; p2 = Point.mkPoint (Point.getX (bbox.getH)) (Point.getY (bbox.getH)) (Point.getZ midp)}
 
 let BoundingBoxR (bbox:BoundingBox) axis midp : BoundingBox = 
     match axis with
-    | "x" -> {p1 = (Point.mkPoint (Point.getX midp) (Point.getY (bbox.getL)) (Point.getZ (bbox.getL))) + epsilon; p2 = bbox.getH + epsilon}
-    | "y" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY midp) (Point.getZ (bbox.getL))) + epsilon; p2 = bbox.getH + epsilon}
-    | "z" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY (bbox.getL)) (Point.getZ midp)) + epsilon; p2 = bbox.getH + epsilon}
+    | "x" -> {p1 = (Point.mkPoint (Point.getX midp) (Point.getY (bbox.getL)) (Point.getZ (bbox.getL))); p2 = bbox.getH}
+    | "y" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY midp) (Point.getZ (bbox.getL))); p2 = bbox.getH}
+    | "z" -> {p1 = (Point.mkPoint (Point.getX (bbox.getL)) (Point.getY (bbox.getL)) (Point.getZ midp)); p2 = bbox.getH}
 
 
 //Get left node
@@ -165,17 +165,17 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
         results
          
     //Creating the left and right list from the above 
-    let rightTest = largerThanSplit shapes
-    let leftTest = lessThanSplit shapes
+    let right = largerThanSplit shapes
+    let left = lessThanSplit shapes
 
     //If one of the trees are empty, we add make left and right equivelant. 
-    let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
-    let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
+    //let left = if(leftTest.IsEmpty && rightTest.Length > 0) then rightTest else leftTest
+   // let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
    
 
     //Check for duplicates among the lists. 
-    if(((float(left.Length+right.Length-shapes.Length)/float(shapes.Length)) < 0.4) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
+    if(((float(left.Length+right.Length)/float(shapes.Length)) < 1.6) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
       let leftTree = mkTmKdtree left (BoundingBoxL box axis axisMidPoint)
       let rightTree = mkTmKdtree right (BoundingBoxR box axis axisMidPoint)
       Node(shapes,leftTree, rightTree, (box),(axis,axisMidPoint))
