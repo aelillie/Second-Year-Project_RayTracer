@@ -48,13 +48,12 @@ let renderAll toScreen =
 [<EntryPoint>]
 let main argv = 
 //
-//    let rs1 = "(" + (string 1.5) + "^2" + " + " + (string 0.5) + "^2)"
-//    let rs2 = "(" + (string 1.5) + "^2" + " +- " + (string 0.5) + "^2)"
-//    let sx = "x^4 + 2x^2*y^2 + 2x^2*z^2 + -2*" + rs1 + "*x^2"
-//    let sy = "y^4 + 2y^2*z^2 + 2*" + rs2 + "*y^2"
-//    let sz = "z^4 + -2*" + rs1 + "*z^2"
-//    let sc = rs2 + "^2"
-//    let eqn = sx + " + " + sy + " + " + sz + " + " + sc
+//    let s = "(x^2 + y^2 + z^2)_2 + -2"
+//    let ex = parseStr s
+//    printf "%s\n" (ppExpr ex)
+//    let se = exprToSimpleExpr ex
+//    let pp = ppSimpleExpr se
+//    printf "%s" pp
 //    printf "%s\n" eqn
 //    let expr = parseStr eqn
 //    printf "\n%s" (ppExpr expr)

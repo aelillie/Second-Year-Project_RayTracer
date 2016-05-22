@@ -27,49 +27,6 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FDiv(e1,e2) -> FDiv(subst e1 (x,ex), subst e2 (x,ex))
 
 
- 
-//let rec Derivative x : expr =
-//    match x with
-//    | FNum c -> FNum 0.0
-//    | FVar s -> FNum 1.0
-//    | FAdd(e1, e2) -> FAdd(Derivative(e1), Derivative(e2))
-//    | FExponent(FNum c, n) -> FNum 0.0
-//    | FMult(e1, e2) -> FAdd(FMult(Derivative(e1), e2), FMult(e1, Derivative(e2))) 
-//    | FExponent(e, n) -> FMult(FNum (float(n)), FExponent(e, n-1))
- 
-    
-//let rec exprsToDivs = function
-//    | FNum c -> FNum c
-//    | FVar s -> FVar s
-//    | FAdd(e1,e2) -> FAdd(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-//    | FMult(e1,e2) -> FMult(FDiv(exprsToDivs e1,FNum 1.0), FDiv(exprsToDivs e2, FNum 1.0))
-//    | FDiv(e1,e2) -> FDiv(exprsToDivs e1, exprsToDivs e2)
-
-        
-//let rec exprsToDivs = function
-//    | FNum c -> FDiv(FNum c, FNum 1.0)
-//    | FVar s -> FDiv(FVar s, FNum 1.0)
-//    | FAdd(e1,e2) -> FAdd(exprsToDivs e1, exprsToDivs e2)
-//    | FMult(e1,e2) -> FMult(exprsToDivs e1, exprsToDivs e2)
-//    | FExponent(e,n) -> FDiv(FExponent(exprsToDivs e,n),FNum 1.0)
-//    | FRoot(e,n) -> FDiv(FRoot(exprsToDivs e,n),FNum 1.0)
-//    | FDiv(e1,e2) -> FDiv(exprsToDivs e1,exprsToDivs e2)
-
-//let rec simpDivs = function
-//    | FNum c -> FNum c
-//    | FVar s -> FVar s
-//    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) when e2 = e4 -> FDiv(FAdd(e1,e2),e3) 
-//    | FMult(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e3),FMult(simpDivs e2, simpDivs e4))
-//    | FAdd(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FAdd(FMult(simpDivs e1,simpDivs e4),FMult(simpDivs e3, simpDivs e2)),FMult(simpDivs e2,simpDivs e4))
-//    | FDiv(FDiv(e1,e2),FDiv(e3,e4)) -> FDiv(FMult(simpDivs e1, simpDivs e4),FMult(simpDivs e3, simpDivs e2))
-//    | FAdd(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-//    | FMult(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-//    | FDiv(e1,e2) -> FDiv(simpDivs e1, simpDivs e2)
-//    | FExponent(e,n) -> FExponent(simpDivs e,n)
-//    | FRoot(e,n) -> failwith "Should only be Adds, Mults and Divs"
-// 
- 
-
 
     
 //a number or a variable to some power
@@ -96,27 +53,7 @@ let rec combine xss = function
   | [] -> []
   | ys::yss -> List.map ((@) ys) xss @ combine xss yss
 
-
-
-
-//let rec combDivide xss = function
-//    | [] -> []
-//    | ys::yss -> List.map ( fun xs -> ADivision(ys,xs)) xss @ combDivide xss yss
-
-//Simplify an expression into a simpleExpr (Use table on p. 2)
-//let rec simplify = function
-//  | FNum c          -> [[ADiv([[ANum c]],[[ANum 1.0]])] ]
-//  | FVar s          -> [[ADiv([[AExponent(s,1)]],[[ANum 1.0]])]]
-//  | FAdd(FNum c, FNum c2) -> [[ADiv([[ANum (c+c2)]],[[ANum 1.0]])]]
-//  | FAdd(e1,e2)     -> simplify e1 @ simplify e2
-//  | FMult(e1,e2)    -> combine (simplify e1) (simplify e2)
-//  | FExponent(e1,0) -> [[ADiv([[ANum 1.0]],[[ANum 1.0]])]]
-//  | FExponent(e1,1) -> [[ADiv(simplify e1,[[ANum 1.0]])]]
-//  | FExponent(e1,n) -> [[ADiv(simplify (FMult(e1, FExponent(e1, n-1))),[[ANum 1.0]])]]
-//  | FDiv(e1,e2) -> [[ADiv(simplify e1, simplify e2)]]
-  //| FRoot(e,n) -> simplify (FExponent(e,1/n))
-  //| FExponent(e1,n) when n < 0 -> [[ADiv(simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
-
+//Simplifies an expr to a simple expression. Ignoring divisions
 let rec simplify = function
   | FNum c          -> [[ANum c]] 
   | FVar s          -> [[AExponent(s,1)]]
@@ -132,7 +69,7 @@ let rec simplify = function
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
   | FDiv(e1, e2) -> simplify e1
 
-
+//Handles division.
 let rec simplifyDivisor = function
   | FDiv(FNum x, FNum y) -> [[ANum y]]
   | FDiv(FVar s, FNum c) -> [[ANum c]]
@@ -148,10 +85,21 @@ let rec simplifyDivisor = function
   | FExponent(e1,1) -> simplifyDivisor e1
   | FExponent(e1,n) when n < 0 -> simplifyDivisor (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplifyDivisor (FMult(e1, FExponent(e1, n-1)))
-  | FRoot(_,_) -> failwith "Not implemented"
+  | FRoot(_,_) -> failwith "Should not reach"
 
 
+let rec containsRoot = function
+  |FDiv(e1,e2) -> (containsRoot e1 || containsRoot e2)
+  |FAdd(e1,e2) -> (containsRoot e1 || containsRoot e2)
+  |FMult(e1,e2)-> (containsRoot e1 || containsRoot e2)
+  |FExponent(e1,n) -> containsRoot e1
+  |FRoot(_,_) -> true
+  |FNum c -> false
+  |FVar x -> false
+                  
+               
 
+ 
 
 
 //reduces duplication, so x*x becomes x^2
@@ -217,7 +165,12 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
   if agConst.Head = ANum (0.0) then SE (agS, agD) //dispose 0s
   else SE (agConst :: agS, [ANum 1.0] :: agD) 
 
-let exprToSimpleExpr e = simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
+let exprToSimpleExpr e = if (containsRoot e)
+                         then
+                          failwith "Can't handle root"
+                          //removeRoot e
+                         else
+                          simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
 
 type poly = Po of Map<int,simpleExpr>
 

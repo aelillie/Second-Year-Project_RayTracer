@@ -7,6 +7,9 @@ open Point
 open Vector
 open Drawing
 open Colour
+open Shapes.Shape
+open Texture
+open Material
 
 type BoundingBox = Shapes.BasicShape.BoundingBox
 type Shape = Shapes.BasicShape.Shape
@@ -62,8 +65,13 @@ let rec isShaded (r:Ray) (xs:Shape list) (bx) (l:Light) =
 let renderScene (S(shapes, lights, ambi, cam, n)) =
     let rays = List.toArray (mkRays cam)  //Create rays from camera
     let maxRefl = n
+    let t = mkMatTexture (mkMaterial (fromColor System.Drawing.Color.Red) 0.0)
     let sw = System.Diagnostics.Stopwatch.StartNew()
     let bBoxes = List.map (fun (x:Shape) -> x.getBounding()) shapes
+//    let shapes = List.map (fun (b:BoundingBox option) -> match b with
+//                                                            |Some bBox -> mkBox bBox.getL bBox.getH t t t t t t
+//                                                            |None -> failwith "Should have bb") bBoxes
+//                 |> List.map (fun b -> b:>Shape) 
     sw.Stop()
     printf "%f\n" sw.Elapsed.TotalSeconds 
     //Cast a single ray into the scene

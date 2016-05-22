@@ -18,14 +18,15 @@ module ImplicitShape =
     type Poly = ExprToPoly.poly
 
     type ImplicitShape (pol:Poly, expr, t) as this= 
-        
+        //Given a values computes the resulat of a polynomial p given the value x as the value for the variable.
         let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                 then 
                                                                     acc + (value * (System.Math.Pow(x,(float deg))))
                                                                 else 
                                                                     acc + value) 0.0 p
-
-        let intervalSize = 100.0
+        
+        let intervalSize = 100.0    //Arbitrary size.
+        //Returns the number of times the sign (+,-) changes through the sturm chain using the interval value.
         let evalInterval (sc:Map<int,float> list) interval =
                         let values = List.map (fun l -> calcValue interval (Map.toList l) ) sc 
                         let rec matchSign x=
@@ -45,15 +46,15 @@ module ImplicitShape =
                                                
                         matchSign 0 values
         let sturm map = 
-                    //Computes all Polynomial long divisions of xs1 with xs2
+                //Computes all Polynomial long divisions of xs1 with xs2
                 let pLongDivisions xs1 xs2 = 
-                        //Single iteration of polynomial long division
+                    //Single iteration of polynomial long division
                     let pLongDivision (n:Map<int,float>) (d:Map<int,float>) = 
                         let degree x = fst (List.last (Map.toList  x)) //get largest degree of polynomial x
 
                         let lead x = List.last (Map.toList x) //Get largest value for x
 
-                        let polyPlus (deg, t1) t2 =
+                        let polyPlus (deg, t1) t2 =           //add a term to the polynomial
                                 match Map.tryFind deg t2 with
                                 |None ->  Map.add deg t1 t2
                                 |Some (x) -> Map.add deg (t1+x) t2
@@ -70,14 +71,15 @@ module ImplicitShape =
                                 List.map (fun (deg, t) -> let x = Map.tryFind deg t2 in (deg, minus x t) ) t1'
                                 |> Map.ofList               
                             
-
+                        //Multiply a polynomial with a term
                         let polyMult (deg, t1:float) t2 = 
                                 Map.fold (fun acc key value -> (Map.add (key+deg) (value*t1) acc)) Map.empty t2
-
+                        
+                        //Divide to terms
                         let polyDivide (deg1, t1:float) (deg2 , t2:float) =
                                 (deg1 - deg2, t1/t2)
  
-                        let removeZero r =          //Remove if zero 
+                        let removeZero r =          //Remove if zero (Or really close to!)
                             Map.filter (fun key value -> ((abs value) > 0.0000000000000001) ) r
                            
                         let q = Map.empty
@@ -85,18 +87,19 @@ module ImplicitShape =
 
                         //The computation of kvotient and remainder
                         let rec calcQR (q, (r:Map<int,float>)) d =
-                            match Map.isEmpty r with    //Map empty
+                            match Map.isEmpty r with    //Map empty meaning Quotient and remainder has been found
                             |true -> (q , r)
-                            |_ -> if (degree r) >= (degree d) 
+                            |_ -> if (degree r) >= (degree d) //If criteria is met, follow the algorithm for finde Q and R
                                   then                                     
                                    let (deg,t) = polyDivide (lead r) (lead d)
                                    let q = polyPlus (deg, t) q
                                    let x = polyMult (deg, t) d
                                    let r' = polyMinus r x |> removeZero
-                                   calcQR (q,r') d
+                                   calcQR (q,r') d //Recursively find Q and R
                                   else (q, r)
                         calcQR (q,r) d
-
+                    
+                    //Addition of 2 polynomials represented as maps
                     let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) =
 
                         let merge a  b  =
@@ -108,12 +111,13 @@ module ImplicitShape =
 
                     let negatePolyMaps m = 
                         Map.map (fun key value -> value * (-1.0)) m
-
+                    
+                    //Check if only contains constants.
                     let onlyConstant (m:Map<_,_>) = 
                         if m.Count = 1 && m.ContainsKey 0 
                         then true
                         else false
-                                                
+                    //Creates the list of Remainders from doing polynomial long division on 2 polynomials                            
                     let rec pLong p px xs = 
                         if Map.isEmpty px 
                         then
@@ -130,15 +134,15 @@ module ImplicitShape =
                     pLong xs1 xs2 List.empty
 
 
-
+                //Derives a polynomial
                 let derive (m:Map<int,float>) : Map<int,float> =
                     let m' =  (List.tail (Map.toList m))
                     let m' = List.map (fun (d, n) -> (d-1, n * (float d))) m'
                     Map.ofList m' 
-                
+                //Create the 2 first sequences of the chain separately
                 let p0 = map
                 let p1 = derive map
-                
+
                 let sturmChain = List.append [p0;p1] (List.rev (pLongDivisions p0 p1)) 
                 List.filter (fun x -> not (Map.isEmpty x)) sturmChain
 
@@ -202,7 +206,7 @@ module ImplicitShape =
         interface Shape with
             member this.getBounding () = 
                                          let this = this :> Shape
-                                         
+                                         //If map only contains 1st degree then it is a plane
                                          let isPlane =
                                                 match pol with
                                                 |Po x -> x.Count = 2
@@ -211,9 +215,9 @@ module ImplicitShape =
                                                 match this.hit r with
                                                  |None -> false
                                                  |Some (_) -> true
-
-                                         let rec findP cam p axis (n:float) c =
-                                            let nf = float n
+                                        
+                                         let rec findBoundary cam p axis (n:float) c =  //Recursively find the boundary point for a given axis.
+                                            let nf = float n    
                                             if c = 20
                                             then 
                                                 let x,y,z = Point.getCoord p
@@ -228,8 +232,8 @@ module ImplicitShape =
                                                         |_ -> failwith "Expected an axis"
                                                 let r = mkRay cam (Point.direction cam p')
                                                 match doesHit r with
-                                                |true  -> findP cam p' axis n 0
-                                                |false -> findP cam p' axis n (c+1)
+                                                |true  -> findBoundary cam p' axis n 0
+                                                |false -> findBoundary cam p' axis n (c+1)
 
                                          if isPlane 
                                          then 
@@ -237,12 +241,12 @@ module ImplicitShape =
                                          else
                                              let n = 0.1
                                              let p = mkPoint 0.0 0.0 0.0
-                                             let plx = findP (mkPoint 0.0 0.0 100.0) p "x" -n 0
-                                             let ply = findP (mkPoint 0.0 0.0 100.0) p "y" -n 0
-                                             let plz = findP (mkPoint 100.0 0.0 0.0) p "z" -n 0
-                                             let phx = findP (mkPoint 0.0 0.0 100.0) p "x" n 0
-                                             let phy = findP (mkPoint 0.0 0.0 100.0) p "y" n 0
-                                             let phz = findP (mkPoint 100.0 0.0 0.0) p "z" n 0
+                                             let plx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" -n 0
+                                             let ply = findBoundary (mkPoint 0.0 0.0 100.0) p "y" -n 0
+                                             let plz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" -n 0
+                                             let phx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" n 0
+                                             let phy = findBoundary (mkPoint 0.0 0.0 100.0) p "y" n 0
+                                             let phz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" n 0
 
                                              Some ({p1 = (Point.mkPoint (Point.getX plx) (Point.getY ply) (Point.getZ plz)) ; p2 = (Point.mkPoint (Point.getX phx) (Point.getY phy) (Point.getZ phz)) })
                                             
@@ -315,23 +319,10 @@ module ImplicitShape =
                                                 let hitPoint = Point.move p (res*d)
                                                 let nVector = Vector.normalise(mkNorm hitPoint expr)
                                                 let denom = Vector.dotProduct  d nVector 
-//                                                printfn "%f" denom
-//                                                printfn "%f" res                              
                                                 if -denom<0.000001 then None
                                                 //else if res < 0.0 then None
                                                 else Some (res, nVector, (Texture.getMaterialAtPoint t 0.0 0.0))
 
-            //                               if(denom < 0.0) then none
-            //                               else
-            //                                    let v = Point.distance p       
-                                                
-
-            //                               let denom = Vector.dotProduct d n
-            //                               if(denom > 0.0) then
-                  //                              let v = Point.distance p pVector
-                    //                            let result = Vector.dotProduct v n
-            //                                    Some (result, n, mat)
-            //                               else None
                                     | 3 ->  
                                             let a = floatMap.Item 2
 
@@ -364,9 +355,6 @@ module ImplicitShape =
                                                     else
                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
                                                         Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
-                                    | 4 -> findHit p d floatMap expr
-
-                                    | 5 -> findHit p d floatMap expr
                                            
                                     | _ -> findHit p d floatMap expr 
 

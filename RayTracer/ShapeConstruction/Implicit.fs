@@ -41,43 +41,7 @@ let mkNorm p expr : Vector =
     let derivPolyY = polyToMap (exprToPoly expr "y")
     let derivPolyZ = polyToMap (exprToPoly expr "z")
 
-    let k = ppExpr expr  
-
-    //make list of keys from polyMap
-    let listFst m = List.map fst (Map.toList m)
-
-    
-
-    //get power value as float
-    //let firstFloat m = float(List.last (listFst m))
-
-    //make a list of values from polyMap
-    let listSnd m = List.map snd (Map.toList m)
-    //get multiplication value as float
-    let secondFloat se =                       
-                        let ag = match se with |SE (ag,_) -> ag
-                        if ag = [[]] then 1.0
-                        else 
-                             match se with
-                                |SE (ag,agd) -> let ANumLast = List.last ag |> List.last
-                                                let ANumDLast = List.last agd |> List.last        
-                                                match ANumLast with 
-                                                |ANum f -> let d = match ANumDLast with |ANum x -> x |_ -> failwith "Fuck" 
-                                                           f/d
-                                                |_ -> failwith "Expected to be ANum"
-                       
-                    
-                         
-    let getNew x y c = if x > 1.0 then (y*x)*(pow(c,x-1.0))
-                       else (x*y)
-
-    let eleListWithZero m c = List.map2 (fun x y -> getNew x y c) ((List.map (fun x -> float x) (listFst m)).Tail) (List.map (fun x -> secondFloat x) ((listSnd m).Tail)) 
-
-    let eleListNoZero m c = List.map2 (fun x y -> getNew x y c) (List.map (fun x -> float x) (listFst m)) (List.map (fun x -> secondFloat x) (listSnd m)) 
-
-    let folder1 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListWithZero m c)
-    let folder2 m c = List.fold (fun acc x -> acc+x) 0.0 (eleListNoZero m c)
-    
+    //Function that derives a polynomial with only floats, reprenseted as a map.
     let Derive m = Map.fold (fun acc degree value -> if degree = 0
                                                      then Map.add 0 0.0 acc 
                                                      elif degree = 1
@@ -85,37 +49,30 @@ let mkNorm p expr : Vector =
                                                      else Map.add (degree-1) (value * float degree) acc ) Map.empty m 
                                                      
      
-                                                     
+    //Substitutes variables with their values. Also removes division by dividing.                                                 
     let toFloat se = match se with
                      |SE (agl,agd) -> let rec agF ag s =
                                         match ag with
                                          |[] -> s
-                                         |a::ag' -> let k = match a with
+                                         |a::ag'-> let k = match a with
                                                             |ANum f -> f * s
                                                             |AExponent(e, n) when e = "x" -> pow (x, float n) * s
                                                             |AExponent(e, n) when e = "y" -> pow (y, float n) * s
                                                             |AExponent(e, n) when e = "z" -> pow (z, float n) * s
                                                             |_ -> failwith "Unexpected variable when finding normal vector"
-                                                    agF ag' k
-                                      List.fold (fun acc x  -> acc + (agF x 1.0)) 0.0 agl
-                                                     
+                                                   agF ag' k
+                                                             
+                                         
+                                      List.fold2 (fun acc x y  -> acc + ((agF x 1.0) / (agF y 1.0))) 0.0 agl agd
+                                        
                           
-    
-    let checkMap (m:Map<int,simpleExpr>) c = if m.Count>1 && not (m.ContainsKey(0)) then folder2 m c                                           
-                                             else if m.Count>1 && m.ContainsKey(0) then folder1 m c
-                                                  else if m.Count<1 && not (m.ContainsKey(0)) then folder2 m c
-                                                       else 0.0
-    
-
+    //A Computes the derived polynomial, by first substitute values.
     let derivePoly c m = let k = Map.map (fun key value -> toFloat value) m |> Derive 
                          Map.fold (fun acc key value -> acc + (value * pow(c,float key))) 0.0  k
 
-    let x' = derivePoly x derivPolyX
+    let x' = derivePoly x derivPolyX //Derive with respect to variables.
     let y' = derivePoly y derivPolyY
     let z' = derivePoly z derivPolyZ
-//    let newX = checkMap derivPolyX x
-//    let newY = checkMap derivPolyY y
-//    let newZ = checkMap derivPolyZ z
 
 
     Vector.mkVector x' y' z'
@@ -149,81 +106,4 @@ let mkPoly (s : string) (*(constant:string*float)*)  =
 
     
 
-    
-        
-
-    
-(*
-let hitImplicit (R(p,t,d)) (Bs(pol,s))= 
-   
-
-       // SE to atomGroup list (atom list list)
-    let getSEList s : atomGroup list = 
-        match s with
-        | SE (x) -> x
-
-    // map of SE to map of atomGroupList (atom list list)
-    let mapToAtomList m = Map.map (fun x y -> getSEList y) m
- 
-    //substitute atoms with float values: atom list list -> float list list
-    let substSE ags = 
-        List.map (fun x -> List.map (fun a -> match a with
-                                                | AExponent (s,i) -> let sub s = 
-                                                                        match s with
-                                                                        | "px" -> Point.getX p
-                                                                        | "py" -> Point.getY p
-                                                                        | "pz" -> Point.getZ p
-                                                                        | "dx" -> Vector.getX d
-                                                                        | "dy" -> Vector.getY d
-                                                                        | "dz" -> Vector.getZ d
-                                                                        | _ -> failwith ""
-                                                                     pow (sub s,(float i)) 
-                                                | ANum c  -> c ) x) ags 
-
-    //Collect the float list list into a single float list
-    let collectFloats m = Map.map (fun x y -> List.collect id (substSE y)) m 
-    
-    //Add the floats in each list of the map     
-    let foldMap m = Map.map (fun x y -> List.fold (fun a b -> a+b) 0.0 y) m
-
-    //Poly into Map<int,float>
-    let polyMapOfFloats m = (polyToMap >> mapToAtomList >> collectFloats>> foldMap)  m
-
-
-    let floatMap = polyMapOfFloats pol
-
-    //check what degree of poly we are dealing with, and solve it
-    let solveDegreePoly =
-        match floatMap.Count with
-        | 1 -> failwith "0 degree polynomial doesn't exist"
-        | 2 -> failwith ""
-        | 3 -> let a = floatMap.Item 2
-
-               let b = floatMap.Item 1
-
-               let c = floatMap.Item 0
-
-               let disc = System.Math.Pow(b,2.0) - 4.0 * a * c
-               if(disc < 0.0) then None
-               else
-                    let answer1 = (-b + System.Math.Sqrt(disc)) / (2.0*a)
-                    let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
-                    if answer1 < 0.0 && answer2 < 0.0 then None
-                    else
-            
-                        let answer = System.Math.Min(answer1,answer2)
-                        if answer < 0.0 
-                        then 
-                            let answer = System.Math.Max(answer1,answer2)
-                            Some (answer, (mkNorm answer p s))
-                        else Some (answer, (mkNorm answer p s))
-        | 4 -> failwith ""
-        | 5 -> failwith ""
-        | _ -> failwith ""
-
-    solveDegreePoly
-    *)
-    
-    
-
-                                          
+                        

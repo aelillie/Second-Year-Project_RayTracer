@@ -158,26 +158,26 @@ module ImplicitSurfaces =
               sw.Reset()
               sw.Start()
               t
-//    heart toScreen
-//    printf "%f\n" (time ())
+    heart toScreen
+    printf "%f\n" (time ())
     sphere1 1.0 toScreen;
     printf "%f\n" (time ())
 //    sphere2 1.0 toScreen;
 //    printf "%f\n" (time ())
-//    planeX toScreen;
-//    printf "%f\n" (time ())
-//
-//    planeY toScreen;
-//    printf "%f\n" (time ())
-//
-//    planeZ toScreen;
-//    printf "%f\n" (time ())
+    planeX toScreen;
+    printf "%f\n" (time ())
+
+    planeY toScreen;
+    printf "%f\n" (time ())
+
+    planeZ toScreen;
+    printf "%f\n" (time ())
 
 //    torus 1.5 0.5 toScreen;
 //    printf "%f\n" (time ())
 //    torus2 1.5 0.5 toScreen;
 //    printf "%f\n" (time ())
-    testShape toScreen;
+//    testShape toScreen;
     printf "%f\n" (time ())
 
     chmutov 2 toScreen;
