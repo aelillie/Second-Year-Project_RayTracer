@@ -21,11 +21,11 @@ module BoundingBoxTest =
     let sphere3 = mkSphere (mkPoint 2.5 0.0 0.0) 2.0 (mkMatTexture (mkMaterial(Colour.fromColor Color.Blue) 0.0))
     let sphere4 = mkSphere (mkPoint -2.5 0.0 0.0) 2.0 (mkMatTexture (mkMaterial(Colour.fromColor Color.Blue) 0.0))
     
-    let unionSphere = (union sphere1 sphere2) :> Shape
-    let inteSphere = (intersection sphere1 sphere2) :> Shape
-    let inteSphere1 = (intersection sphere3 sphere4) :> Shape
-    let subSphere = (subtraction sphere1 sphere2) :> Shape
-    let groupSphere = (group sphere1 sphere2) :> Shape
+    let unionSphere = (union sphere1 sphere2) 
+    let inteSphere = (intersection sphere1 sphere2) 
+    let inteSphere1 = (intersection sphere3 sphere4) 
+    let subSphere = (subtraction sphere1 sphere2) 
+    let groupSphere = (group sphere1 sphere2)
     
     let up1 = mkPoint (-2.5 - epsilon) (-2.0 - epsilon) (-2.0 - epsilon)
     let up2 = mkPoint (2.5 + epsilon) (2.0 + epsilon) (2.0 + epsilon)
