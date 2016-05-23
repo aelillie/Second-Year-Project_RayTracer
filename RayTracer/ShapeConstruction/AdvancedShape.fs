@@ -55,8 +55,7 @@ module AdvancedShape =
                 let rightR =  new Rectangle (p, depth, height, right)
 
                 [frontR;backR;bottomR;topR;leftR;rightR] 
-                |> List.map2 (fun t s -> new TransformedShape (s, t)) transformations
-                |> List.map (fun s -> s:>Shape)
+                |> List.map2 (fun t s -> new TransformedShape (s, t) :> Shape) transformations
 
         member this.hit (R(p,d) as ray) = 
                     let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
