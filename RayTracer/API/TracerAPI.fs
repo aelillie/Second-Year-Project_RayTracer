@@ -26,7 +26,7 @@ module API =
   let mkMatTexture (m : material) : texture = failwith "mkMatTexture not implemented"
 
   let mkShape (b : baseShape) (t : texture) : shape = failwith "mkShape not implemented"
-  let mkSphere (p : point) (r : float) (m : material) : shape = failwith "mkSphere not implemented"
+  let mkSphere (p : point) (r : float) (m : texture) : shape = failwith "mkSphere not implemented"
   let mkRectangle (corner : point) (width : float) (height : float) (t : texture) : shape
     = failwith "mkRectangle not implemented"
   let mkTriangle (a:point) (b:point) (c:point) (m : material) : shape = failwith "mkTriangle not implemented"

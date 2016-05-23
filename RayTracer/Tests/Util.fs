@@ -1,7 +1,6 @@
 ﻿namespace TestSuite
 
 open System.IO
-//open Tracer.API
 open Scene
 open System
 
@@ -25,4 +24,5 @@ module Util =
     if toScreen
     then render s None
     else render s (Some toFile)
+  
   

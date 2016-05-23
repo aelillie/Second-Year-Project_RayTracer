@@ -15,12 +15,12 @@ open Shape
 open Texture
 open Shapes.TransformedShape
 
-module Meshes = 
+module Meshes =
   let folder = "meshes"
 
 
   let renderBunny toScreen =
-    let baseBunny = mkPLY "../../../ply/bunny_textured.ply" true
+    let baseBunny = mkPLY "../../../ply/bunny.ply" true
     let t = mergeTransformations
               [rotateY (Math.PI / 4.0);
                scale 40.0 40.0 40.0;
@@ -80,7 +80,7 @@ module Meshes =
     Util.render' scene (folder, "happy.png") toScreen
 
   let renderPorsche toScreen =
-    let baseporsche = mkPLY "../../../ply/porsche.ply" false
+    let baseporsche = mkPLY "../../../ply/porsche.ply" true
     let t = mergeTransformations
               [rotateY (-Math.PI / 4.0);
                scale 2.0 2.0 2.0;
@@ -123,8 +123,8 @@ module Meshes =
    
 
   let render toScreen =
-//    renderBunny toScreen
-//    renderDragon toScreen
-//    renderHappy toScreen
+    renderBunny toScreen
+    renderDragon toScreen
+    renderHappy toScreen
     renderPorsche toScreen
-//    renderHorse toScreen 
+    renderHorse toScreen
