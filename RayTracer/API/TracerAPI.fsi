@@ -4,18 +4,18 @@
 module API =
   type dummy = unit
 
-  type vector = dummy
-  type point = dummy
-  type colour = dummy
-  type material = dummy
-  type shape = dummy
-  type baseShape = dummy
-  type texture = dummy
-  type camera = dummy
-  type scene = dummy
-  type light = dummy
-  type ambientLight = dummy
-  type transformation = dummy
+  type vector = Vector.Vector
+  type point = Point.Point
+  type colour = Colour.Colour
+  type material = Material.Material
+  type shape = Shapes.Shape.Shape
+  type baseShape = Shapes.Shape.BaseShape
+  type texture = Texture.Texture
+  type camera = Camera.Camera
+  type scene = Scene.Scene
+  type light = Light.Light
+  type ambientLight = Light.AmbientLight
+  type transformation = Transformation.Transformation
 
   val mkVector : x:float -> y:float -> z:float -> vector
   val mkPoint : x:float -> y:float -> c:float -> point

@@ -1,19 +1,8 @@
-﻿namespace TestSuite
+﻿namespace TracerTestSuite
+
 open System
 open System.Drawing
-open Light
-open Transformation
-open Point
-open Colour
-open Scene
-open Camera
-open Vector
-open Material
-open Util
-open Shapes
-open Shape
-open Texture
-open Shapes.TransformedShape
+open Tracer.API
 
 module Meshes =
   let folder = "meshes"
