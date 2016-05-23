@@ -133,13 +133,16 @@ module BasicShape =
             member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
-                            let dist = -(Point.getZ p) / (Vector.getZ d)
-                            let n = mkVector 0.0 0.0 1.0 
-                            let mat = let hp = Point.move p (dist * d)
-                                      let u, v = Point.getX hp, Point.getY hp
-                                      Texture.getMaterialAtPoint tex u v
-                            if dist > 0.0 then Some(dist, n, mat)
-                            else None
+                            let dz = Vector.getZ d
+                            if dz = 0.0 then None //Check intersection with the plane the Plane is in
+                            else let dist = -(Point.getZ p) / dz //Infinite plane
+                                 let mat = let hp = Point.move p (dist * d)
+                                           let u, v = Point.getX hp, Point.getY hp
+                                           Texture.getMaterialAtPoint tex u v
+                                 if dist > 0.0 then Some(dist, mkVector 0.0 0.0 1.0, mat)
+                                 else None
+
+
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
@@ -147,18 +150,20 @@ module BasicShape =
                                               ; p2 = (mkPoint (Point.getX c + r + epsilon) (Point.getY c + r + epsilon ) (Point.getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let distance = -(Point.getZ p) / (Vector.getZ d)
-                            let p' = Point.move p (distance * d)
-                            let (px, py, pz) = Point.getCoord p'
-                            let result = px**2.0 + py**2.0
-
-                            if result <= r**2.0 && distance > 0.0
-                            then
-                                let u = (px+r)/(2.0*r)
-                                let v = (py+r)/(2.0*r)
-                                let material = Texture.getMaterialAtPoint tex u v
-                                Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
-                            else None
+                            let dz = Vector.getZ d
+                            if dz = 0.0 then None //Check intersection with the plane
+                            else let distance = -(Point.getZ p) / dz
+                                 let p' = Point.move p (distance * d)
+                                 let (px, py, pz) = Point.getCoord p'
+                                 
+                                 if (px**2.0 + py**2.0) <= r**2.0 && //Check that intersection is in disc
+                                    distance > 0.0
+                                 then
+                                     let u = (px+r)/(2.0*r)
+                                     let v = (py+r)/(2.0*r)
+                                     let material = Texture.getMaterialAtPoint tex u v
+                                     Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
+                                 else None
 
 
     type Triangle(a,b,c,tex, texCoordList) = 
@@ -237,7 +242,7 @@ module BasicShape =
                             let distance = -(Point.getZ p) / (Vector.getZ d)
                             let p' = Point.move p (distance*d) //Hit point
                             let nV = mkVector 0.0 0.0 1.0 //Normal vector
-                            let px, py, pz = getX p', getY p', getZ p' //Hit points coords
+                            let px, py, pz = getX p', getY p', getZ p' //Hit point coords
                             let ax, ay, az = getX c, getY c, getZ c //Center coords
 
                             if ax <= px && px <= (ax + w) &&  //Check for intersection
@@ -262,10 +267,10 @@ module BasicShape =
                                         
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
+                            let a = (Vector.getX d)**2.0 + (Vector.getZ d)**2.0
                             let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
-                            let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
-                            let dis = pow(b, 2.0) - (4.0 * a * c)
+                            let c = (Point.getX p)**2.0 + (Point.getZ p)**2.0 - r**2.0
+                            let dis = b**2.0 - (4.0 * a * c)
 
                                 //calculate material
                             let calculateMaterial x y z h r tex =  
