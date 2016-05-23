@@ -1,7 +1,7 @@
-﻿namespace TestSuite
+﻿namespace TracerTestSuite
 
 open System.IO
-open Scene
+open Tracer.API
 open System
 
 module Util =
@@ -20,9 +20,8 @@ module Util =
       renderToFile s (path + "/" + fn)
     | None -> renderToScreen s
 
-  let render' (s : Scene) (toFile : (string*string)) (toScreen : bool) = 
+  let render' (s : scene) (toFile : (string*string)) (toScreen : bool) = 
     if toScreen
     then render s None
     else render s (Some toFile)
-  
   
