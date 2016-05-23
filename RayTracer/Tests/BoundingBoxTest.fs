@@ -23,8 +23,10 @@ module BoundingBoxTest =
     
     let unionSphere = (union sphere1 sphere2) 
     let inteSphere = (intersection sphere1 sphere2) 
-    let inteSphere1 = (intersection sphere3 sphere4)
-    let subSphere = (subtraction sphere1 sphere2)
+
+    let inteSphere1 = (intersection sphere3 sphere4) 
+    let subSphere = (subtraction sphere1 sphere2) 
+
     let groupSphere = (group sphere1 sphere2)
     
     let up1 = mkPoint (-2.5 - epsilon) (-2.0 - epsilon) (-2.0 - epsilon)

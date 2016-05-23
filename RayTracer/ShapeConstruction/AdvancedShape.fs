@@ -84,7 +84,7 @@ module AdvancedShape =
             let transTop = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (h/2.0) 0.0]
             let transBot = mergeTransformations [rotateX ((pi/2.0));translate 0.0 (-h/2.0) 0.0]
             let top' = (transform topDisc transTop)
-            let bot' = (transform botDisc transBot) 
+            let bot' = (transform botDisc transBot)
             [cyl';bot';top']
 
         interface Shape with
