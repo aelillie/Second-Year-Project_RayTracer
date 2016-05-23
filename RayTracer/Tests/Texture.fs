@@ -1,19 +1,8 @@
-﻿namespace TestSuite
+﻿namespace TracerTestSuite
+
 open System
 open System.Drawing
-open Light
-open Transformation
-open Point
-open Colour
-open Scene
-open Camera
-open Texture
-open Shapes.Shape
-open Shapes.TransformedShape
-open Vector
-open Material
-open Util
-
+open Tracer.API
 
 module Texture =
   let folder = "texture"

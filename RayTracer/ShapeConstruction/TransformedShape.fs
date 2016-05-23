@@ -52,7 +52,7 @@ module TransformedShape =
                                         | None -> None
                                         | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
                                                                   Some(dist, dir', mat) 
-    let transform s tr = new TransformedShape(s,tr)
+    let transform s tr = new TransformedShape(s,tr):> Shape
 
     let makeBounding (s1:Shape) (s2:Shape) = 
                              let min (x:float) (y:float) = System.Math.Min (x,y)
