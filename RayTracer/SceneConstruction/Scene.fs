@@ -15,7 +15,7 @@ type Scene =
   | S of Shape list * Light list * AmbientLight * Camera * int
 
 let mkScene shapes lights ambientLight camera reflection = S(shapes, lights, ambientLight, camera, reflection)
-let epsilon = 0.0000001
+let epsilon = 0.00000000001
 
 
 let plusTripleFloat (a,b,c) (x,y,z) : (float * float * float) =
@@ -86,9 +86,9 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                     let sraysHit = List.filter (fun (l, r) -> not (isShaded r shapes bBoxes l )) srays
 
                     //Okay here calculate intensity for each colour value. 
-                    let lightColourValue = List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r))) sraysHit //Angles calculated
-                                            |> List.map2 (fun (l,r) (i)  -> Light.getColourI l i) sraysHit //RGB Color value calculated from light Intensity and angle
-                                            |> List.fold (fun acc x ->  plusTripleFloat acc x) (Light.getAmbientI ambi) //Folding colours together
+                    let lightColourValue = let ix = List.map (fun (l,r) -> (Light.calculateI nV' (Ray.getD r))) sraysHit //Angles calculated
+                                           let cx = List.map2 (fun (l,r) (i)  -> Light.getColourI l i) sraysHit ix //RGB Color value calculated from light Intensity and angle
+                                           List.fold (fun acc x ->  plusTripleFloat acc x) (Light.getAmbientI ambi) cx//Folding colours together
                     //Scale color from the intensity of each colour
                     let c' = Colour.scaleColour lightColourValue (Material.getColour m)
                     //Create the reflection ray with respect to ingoing ray and the normal vector.

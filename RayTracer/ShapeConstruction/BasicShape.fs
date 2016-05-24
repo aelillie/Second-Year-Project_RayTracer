@@ -9,7 +9,7 @@ open Texture
 
 
 module BasicShape = 
-    let epsilon = 0.0000001
+    let epsilon = 0.0001
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
     
@@ -166,8 +166,11 @@ module BasicShape =
                                  else None
 
 
-    type Triangle(a,b,c,tex, texCoordList) = 
-        override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
+    type Triangle(a,b,c,tex, texCoords, normals) = 
+        let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
+                             let (x2, y2, z2) = getCoord p2
+                             (x1-x2,y1-y2,z1-z2)
+        //override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -181,12 +184,6 @@ module BasicShape =
 
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let u = mkVectorFromPoint (getCoord (b-a))
-                            let v = mkVectorFromPoint (getCoord (c-a))
-
-                            //Function to find the normal of the triangle
-                            let n = crossProduct u v |> normalise
-
                             let a1 = (Point.getX a) - (Point.getX b)
                             let b1 = (Point.getX a) - (Point.getX c)
                             let c1 = Vector.getX d
@@ -209,21 +206,30 @@ module BasicShape =
                             if (D <> 0.0)  then 
                               let beta = (d1*(f*k-g*j)+b1*(g*l-h*k)+c1*(h*j-f*l))/D  //x
                               let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
-                              let alfa = 1.0-beta-gamma
+                              let alpha = 1.0-beta-gamma
                               let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
              
                               if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
                                then 
+
+                                 //Calculate the normal 
+                                 let n = match normals with
+                                         | Some(na, nb, nc) ->   
+                                                let n1 = multScalar na alpha
+                                                let n2 = multScalar nb beta
+                                                let n3 = multScalar nc gamma
+                                                n1+n2+n3 |> normalise
+                                         | None -> let u = mkVector1 (subPoint b a)
+                                                   let v = mkVector1 (subPoint c a)
+                                                   (crossProduct u v) |> normalise 
+
                                  //Find material for the texture
-                                 let mat = if List.isEmpty texCoordList //No texture in ply file
-                                           then let tu, tv = 0.5, 0.5 
+                                 let mat = match texCoords with //No texture in ply file
+                                           | Some((ua, va), (ub, vb), (uc, vc)) ->
+                                                let tu = alpha*ua+beta*ub+gamma*uc
+                                                let tv = alpha*va+beta*vb+gamma*vc
                                                 getMaterialAtPoint tex tu tv
-                                           else let (ua,va) = List.item 0 texCoordList //Vertex a
-                                                let (ub,vb) = List.item 1 texCoordList //Vertex b
-                                                let (uc,vc) = List.item 2 texCoordList //Vertex c
-                                                let tu = alfa*ua+beta*ub+gamma*uc
-                                                let tv = alfa*va+beta*vb+gamma*vc
-                                                getMaterialAtPoint tex tu tv
+                                           | _ -> getMaterialAtPoint tex 0.5 0.5
 
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 

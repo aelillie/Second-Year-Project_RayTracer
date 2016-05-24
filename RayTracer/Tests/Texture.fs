@@ -175,7 +175,7 @@ module Texture =
     renderDiscs toScreen
     renderBox toScreen
     renderBoxes toScreen
-    renderBunny toScreen
+//    renderBunny toScreen
     renderCylinder toScreen
     renderEarth toScreen
     renderPlane toScreen
