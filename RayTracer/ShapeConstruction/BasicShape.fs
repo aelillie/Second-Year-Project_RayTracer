@@ -9,7 +9,7 @@ open Texture
 
 
 module BasicShape = 
-    let epsilon = System.Double.Epsilon
+    let epsilon = 0.0001
     let pi = System.Math.PI
     let pow (x, y) = System.Math.Pow(x, y)
     
