@@ -1,21 +1,8 @@
-﻿namespace TestSuite
+﻿namespace TracerTestSuite
 
-open Shapes
-open Texture
-open Material
-open Colour
-open Shape
-open Point
-open Vector
-open Light
-open Scene
-open Camera
-open TransformedShape
-open Transformation
 open System
 open System.Drawing
-open Scene
-open Util
+open Tracer.API
 
 module AffineTransformations =
   let folder = "affineTransformations"
