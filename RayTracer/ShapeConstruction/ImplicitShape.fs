@@ -18,7 +18,7 @@ module ImplicitShape =
     type Poly = ExprToPoly.poly
 
     type ImplicitShape (pol:Poly, expr, t) as this= 
-        //Given a values computes the resulat of a polynomial p given the value x as the value for the variable.
+        //Given a values computes the result of a polynomial p given the value x as the value for the variable.
         let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
                                                                 then 
                                                                     acc + (value * (System.Math.Pow(x,(float deg))))
@@ -152,39 +152,37 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots 0.0 100.0> 0  then  let mutable counter = 15 
-                                            let mutable prev = 0.0                                   
-                                            let rec getInterval s e : (float*float) = if counter > 0 then
-                                                                                        let roots = nOfRoots s e
-                                                                                        if roots > 0 then
-                                                                                                                prev <- e   
-                                                                                                                counter <- counter-1                                                                                                                                  
-                                                                                                                getInterval s ((e+s)/2.0) 
+            if nOfRoots 0.0 100.0> 0  then  //converge on interval by halving the interval, and look in either the first half or the 2nd half, depending on where the root is                                                                              
+                                            let rec getInterval s e count prev : (float*float) = if count > 0 then
+                                                                                                  let roots = nOfRoots s e
+                                                                                                  if roots > 0 then
+                                                                                                                let newPrev = e  
+                                                                                                                let newC = count-1                                                                                                                                 
+                                                                                                                getInterval s ((e+s)/2.0)  newC newPrev
                                                                                                                                                             
-                                                                                        else counter <- counter-1
-                                                                                             getInterval e prev
+                                                                                                  else let newC = count-1
+                                                                                                       getInterval e prev newC prev
                                                                                                                                              
                                                                                                                                         
-                                                                                       else (s,e)
+                                                                                                 else (s,e)
                                                                                                                                   
-                                            let intv = getInterval 0.0 100.0
-                                            let iStart = fst intv
-                                            
+                                            let intv = getInterval 0.0 100.0 15 0.0
+                                            let iStart = fst intv                                            
                                             let iEnd = snd intv
-                                            let nR = nOfRoots iStart iEnd
+                                           
+                                            //get the function and the derived function
                                             let fNorm = (Map.toList (List.item 0 sturmChain))
                                             let fPrime = (Map.toList (List.item 1 sturmChain))
-                                                                                           
-                                            let mutable raphCount = 6 //(int iEnd)-(int iStart)
 
-                                                                                        
-                                            let rec calcGuess guess = if raphCount > 0 then                                                                      
-                                                                        let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
-                                                                        raphCount <- raphCount - 1
-                                                                        calcGuess newGuess
-                                                                      else guess
-                                                                                          
-                                            let k = calcGuess ((iEnd+iStart)/2.0)
+                                            //calculate a more accurate guess based on an initial guess                                         
+                                            let rec calcGuess guess rc = if rc > 0 then                                                                      
+                                                                           let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
+                                                                           let newrc = rc-1
+                                                                           calcGuess newGuess newrc
+                                                                         else guess
+
+                                            //converge on the root giving a guess based on the interval                                              
+                                            let k = calcGuess ((iEnd+iStart)/2.0) 6
                                             k
 
 

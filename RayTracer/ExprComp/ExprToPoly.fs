@@ -26,7 +26,7 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FRoot(e,n) -> FRoot(subst e (x,ex), n)
   | FDiv(e1,e2) -> FDiv(subst e1 (x,ex), subst e2 (x,ex))
 
-
+  
 
     
 //a number or a variable to some power
@@ -96,6 +96,38 @@ let rec containsRoot = function
   |FRoot(_,_) -> true
   |FNum c -> false
   |FVar x -> false
+
+
+//let rec findRootNumb = function
+//  |FRoot(e1,n) -> n
+//  |FAdd(e1,e2) when containsRoot e1 -> findRootNumb  e1
+//  |FAdd(e1,e2) when containsRoot e2 -> findRootNumb e2
+//  |FMult(e1,e2) when containsRoot e1-> findRootNumb e1
+//  |FMult(e1,e2) when containsRoot e2 -> findRootNumb e2
+//  |FExponent(e,n) -> findRootNumb e
+
+
+let rec workRoot acc = function
+
+    |FAdd(e1,e2) when containsRoot e1 -> workRoot (FAdd(acc,e2)) e1
+    |FAdd(e1,e2) when containsRoot e2 -> workRoot (FAdd(acc,e1)) e2
+
+    |FMult(e1,e2) when containsRoot e1 -> let acc', e' = workRoot acc e1
+                                          acc', FMult(e',FExponent(e2,2))
+    |FMult(e1,e2) when containsRoot e2 -> let acc', e' = workRoot acc e2
+                                          acc', FMult(FExponent(e1,2),e')
+    |FExponent(FAdd(e1,e2),2) -> workRoot acc (FAdd(FAdd(FExponent(e1,2),FExponent(e2,2)),(FMult(FMult(FNum 2.0,e1),e2))))
+    |FExponent(FRoot(e,2),2) ->  acc,e 
+    |FExponent(e,n) -> workRoot acc e
+    |FDiv(e1,e2) -> failwith "not implemented"
+    |FRoot(e,n) -> FExponent(acc,n),e
+
+let rec findRoot acc = function
+  |FAdd(e1,e2) when containsRoot e1 -> findRoot (FAdd(acc,e2)) e1
+  |FAdd(e1,e2) when containsRoot e2 -> findRoot (FAdd(acc,e1)) e2
+  |expr -> workRoot expr
+
+
                   
                
 
@@ -165,12 +197,17 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
   if agConst.Head = ANum (0.0) then SE (agS, agD) //dispose 0s
   else SE (agConst :: agS, [ANum 1.0] :: agD) 
 
-let exprToSimpleExpr e = if (containsRoot e)
-                         then
-                          failwith "Can't handle root"
-                          //removeRoot e
-                         else
-                          simplifySimpleExpr (SE ((simplify e), (simplifyDivisor e)))
+let exprToSimpleExpr e = let rec simpleRoot e =
+                            if (containsRoot e)
+                            then 
+                                let acc, e = workRoot (FNum 0.0) e
+                                let e = FAdd(FMult(FNum -1.0,acc), e)
+                                simpleRoot e
+                            else e
+                         let noRoots = simpleRoot e
+
+                          
+                         simplifySimpleExpr (SE ((simplify noRoots), (simplifyDivisor noRoots)))
 
 type poly = Po of Map<int,simpleExpr>
 
