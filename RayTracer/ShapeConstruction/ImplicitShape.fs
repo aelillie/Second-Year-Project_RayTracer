@@ -152,38 +152,36 @@ module ImplicitShape =
                                        let negative = evalInterval sturmChain iStart
                                        negative-positive
                                            
-            if nOfRoots 0.0 100.0> 0  then  //converge on interval by halving the interval, and look in either the first half or the 2nd half, depending on where the root is                                                                              
-                                            let rec getInterval s e count prev : (float*float) = if count > 0 then
-                                                                                                  let roots = nOfRoots s e
-                                                                                                  if roots > 0 then
-                                                                                                                let newPrev = e  
-                                                                                                                let newC = count-1                                                                                                                                 
-                                                                                                                getInterval s ((e+s)/2.0)  newC newPrev
-                                                                                                                                                            
-                                                                                                  else let newC = count-1
-                                                                                                       getInterval e prev newC prev
-                                                                                                                                             
-                                                                                                                                        
-                                                                                                 else (s,e)
-                                                                                                                                  
-                                            let intv = getInterval 0.0 100.0 15 0.0
-                                            let iStart = fst intv                                            
-                                            let iEnd = snd intv
-                                           
-                                            //get the function and the derived function
-                                            let fNorm = (Map.toList (List.item 0 sturmChain))
-                                            let fPrime = (Map.toList (List.item 1 sturmChain))
+            if nOfRoots 0.0 100.0> 0 
+             then  //converge on interval by halving the interval, and look in either the first half or the 2nd half, depending on where the root is                                                                              
+                let rec getInterval s e count prev : (float*float) = if count > 0 then
+                                                                      let roots = nOfRoots s e
+                                                                      if roots > 0 then
+                                                                                    let newPrev = e  
+                                                                                    let newC = count-1                                                                                                                                 
+                                                                                    getInterval s ((e+s)/2.0)  newC newPrev
+                                                                      else let newC = count-1
+                                                                           getInterval e prev newC prev
+                                                                     else (s,e)
+                                                                                                      
+                let intv = getInterval 0.0 100.0 15 0.0
+                let iStart = fst intv                                            
+                let iEnd = snd intv
+               
+                //get the function and the derived function
+                let fNorm = (Map.toList (List.item 0 sturmChain))
+                let fPrime = (Map.toList (List.item 1 sturmChain))
 
-                                            //calculate a more accurate guess based on an initial guess                                         
-                                            let rec calcGuess guess rc = if rc > 0 then                                                                      
-                                                                           let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
-                                                                           let newrc = rc-1
-                                                                           calcGuess newGuess newrc
-                                                                         else guess
+                //calculate a more accurate guess based on an initial guess                                         
+                let rec calcGuess guess rc = if rc > 0 then                                                                      
+                                               let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
+                                               let newrc = rc-1
+                                               calcGuess newGuess newrc
+                                             else guess
 
-                                            //converge on the root giving a guess based on the interval                                              
-                                            let k = calcGuess ((iEnd+iStart)/2.0) 6
-                                            k
+                //converge on the root giving a guess based on the interval                                              
+                calcGuess ((iEnd+iStart)/2.0) 6
+                
 
 
                                                                                          
@@ -202,7 +200,7 @@ module ImplicitShape =
         
                  
         interface Shape with
-            member this.getBounding () = 
+            member this.getBounding () = None
                                          let this = this :> Shape
                                          //If map only contains 1st degree then it is a plane
                                          let isPlane =

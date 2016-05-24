@@ -2,7 +2,6 @@
 open System.Drawing
 open Tracer.API
 
-
 module ImplicitSurfaces =
 
   let folder = "implicitSurfaces"
@@ -13,7 +12,7 @@ module ImplicitSurfaces =
   let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
 
   let sphere1 (r : float) toScreen =
-    let s = mkShape (mkImplicit ("x^2 + y^2 + z^2 + -" + (string (r * r)))) (mkMatTexture( mkMaterial (fromColor Color.Aqua) 0.0))
+    let s = mkShape (mkImplicit ("x^2 + y^2 + z^2 + -" + (string (r * r)))) (mkMatTexture (mkMaterial (fromColor Color.Aqua) 0.0))
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -22,7 +21,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "sphere1.png"))
 
   let sphere2 (r : float) toScreen =
-    let s = mkShape (mkImplicit ("(x^2 + y^2 + z^2)_2 + -" + (string r))) (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit ("(x^2 + y^2 + z^2)_2 + -" + (string r))) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -31,7 +30,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "sphere2.png"))
 
   let planeX toScreen =
-    let s = mkShape (mkImplicit "x") (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit "x") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
     let camera = mkCamera (mkPoint 1.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 16.0 16.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -40,7 +39,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "planeX.png"))
 
   let planeY toScreen =
-    let s = mkShape (mkImplicit "y")  (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit "y") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
     let camera = mkCamera (mkPoint 0.0 1.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -49,7 +48,7 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "planeY.png"))
 
   let planeZ toScreen =
-    let s = mkShape (mkImplicit "z") (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit "z") (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -61,7 +60,7 @@ module ImplicitSurfaces =
 //  The outer radius is the distance from the center of the torus to the center of the tube
 //  The inner radius is the radius of the tube
   let torus (R : float) (r : float) toScreen =
-    let s = mkShape (mkImplicit ("(((x^2 + y^2)_2 + -" + (string R) + ")^2 + z^2)_2 + -" + (string r)))  (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
+    let s = mkShape (mkImplicit ("(((x^2 + y^2)_2 + -" + (string R) + ")^2 + z^2)_2 + -" + (string r))) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
     let camera = mkCamera (mkPoint 0.0 0.0 4.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -71,15 +70,15 @@ module ImplicitSurfaces =
 
   let torus2 (R : float) (r : float) toScreen =
     let rs1 = "(" + (string R) + "^2" + " + " + (string r) + "^2)"
-    let rs2 = "(" + (string R) + "^2" + " +- " + (string r) + "^2)"
-    let sx = "x^4 + 2x^2*y^2 + 2x^2*z^2 + -2*" + rs1 + "*x^2"
+    let rs2 = "(" + (string R) + "^2" + " - " + (string r) + "^2)"
+    let sx = "x^4 + 2x^2*y^2 + 2x^2*z^2 - 2*" + rs1 + "*x^2"
     let sy = "y^4 + 2y^2*z^2 + 2*" + rs2 + "*y^2"
-    let sz = "z^4 + -2*" + rs1 + "*z^2"
+    let sz = "z^4 - 2*" + rs1 + "*z^2"
     let sc = rs2 + "^2"
     let eqn = sx + " + " + sy + " + " + sz + " + " + sc 
     let _ = printf "torus equation %s\n" eqn
-    let s = mkShape (mkImplicit eqn) (mkMatTexture(mkMaterial (fromColor Color.Blue) 0.0))
-    let camera = mkCamera (mkPoint 0.0 8.0 0.0) (mkPoint 0.0000000001 0.0 0.0) (mkVector 0.00000001 0.0 1.0) 3.0 4.0 4.0 500 500 in
+    let s = mkShape (mkImplicit eqn) (mkMatTexture (mkMaterial (fromColor Color.Blue) 0.0))
+    let camera = mkCamera (mkPoint 0.0 4.0 0.0) (mkPoint 0.000000001 0.0 0.0) (mkVector 0.0 0.0 1.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
       Util.render scene None
@@ -88,8 +87,8 @@ module ImplicitSurfaces =
 
       
   let testShape toScreen =
-    let is = mkImplicit "(x + -2)^2*(x+2)^2 + (y + -2)^2(y+2)^2 + (z + -2)^2*(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z + -10(x^2 + y^2 + z^2) + 22"
-    let s = mkShape is (mkMatTexture(mkMaterial (fromColor Color.Gold) 0.0))
+    let is = mkImplicit "(x - 2)^2(x+2)^2 + (y - 2)^2(y+2)^2 + (z - 2)^2(z+2)^2 + 3(x^2*y^2 + x^2z^2 + y^2z^2) + 6x y z - 10(x^2 + y^2 + z^2) + 22"
+    let s = mkShape is (mkMatTexture (mkMaterial (fromColor Color.Gold) 0.0))
     let camera = mkCamera (mkPoint 0.0 2.0 8.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -98,8 +97,8 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "testShape.png"))
   
   let heart toScreen =
-    let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 + -1)^3 + -x^2 * z^3 + -(9.0/80.0)*y^2*z^3"
-    let s = mkShape is  (mkMatTexture(mkMaterial (fromColor Color.DarkRed) 0.0))
+    let is = mkImplicit "(x^2 + (4.0/9.0)*y^2 + z^2 - 1)^3 - x^2 * z^3 - (9.0/80.0)*y^2*z^3"
+    let s = mkShape is (mkMatTexture (mkMaterial (fromColor Color.DarkRed) 0.0))
     let camera = mkCamera (mkPoint 0.0 3.0 1.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 -0.00000001 1.0) 2.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -130,9 +129,8 @@ module ImplicitSurfaces =
 
   let chmutov degree toScreen =       
     let T x = strSum (degree / 2) (fun (k : int) -> (string (comb degree (2 * k))) + " * (" + x + "^2 + -1.0)^" + (string k) + " * " + x + "^" + (string (degree - (2 * k))))
-    let k = (T "x" + " + " + T "y" + " + " + T "z")
     let is = mkImplicit (T "x" + " + " + T "y" + " + " + T "z")
-    let s = mkShape is  (mkMatTexture(mkMaterial (fromColor Color.Gold) 0.0))
+    let s = mkShape is (mkMatTexture (mkMaterial (fromColor Color.Gold) 0.0))
     let camera = mkCamera (mkPoint 4.0 4.0 4.0) (mkPoint 0.0 -0.5 0.0) (mkVector 0.0 1.0 0.0) 4.0 4.0 4.0 500 500 in
     let scene = mkScene [s] lights ambientLight camera 0 in
     if toScreen then
@@ -141,42 +139,17 @@ module ImplicitSurfaces =
       Util.render scene (Some (folder, "chmutov" + (string degree) + ".png"))
   
   let render toScreen =
-    
-    let sw = System.Diagnostics.Stopwatch.StartNew()
-    let time () = 
-              let t = sw.Elapsed.TotalSeconds
-              sw.Reset()
-              sw.Start()
-              t
-//    heart toScreen
-//    printf "%f\n" (time ())
+    //heart toScreen
 //    sphere1 1.0 toScreen;
-//    printf "%f\n" (time ())
 //    sphere2 1.0 toScreen;
-//    printf "%f\n" (time ())
 //    planeX toScreen;
-//    printf "%f\n" (time ())
-//
 //    planeY toScreen;
-//    printf "%f\n" (time ())
-//
 //    planeZ toScreen;
-//    printf "%f\n" (time ())
-
-    torus 1.5 0.5 toScreen;
-    printf "%f\n" (time ())
-
-//    torus2 1.5 0.5 toScreen;
-//    printf "%f\n" (time ())
+//    torus 1.5 0.5 toScreen;
+    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
-//    printf "%f\n" (time ())
-//
 //    chmutov 2 toScreen;
-//    printf "%f\n" (time ())
-//
-//    chmutov 4 toScreen;
-//    printf "%f\n" (time ())
-//
+//    chmutov 3 toScreen;
+   // chmutov 4 toScreen;
+//    chmutov 5 toScreen;
 //    chmutov 6 toScreen
-//    printf "%f\n" (time ())
-

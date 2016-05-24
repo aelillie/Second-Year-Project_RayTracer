@@ -193,7 +193,7 @@ let simplifySimpleExpr (SE (ags1, ags2)) =
 
 let exprToSimpleExpr e = let rec simpleRoot e =
                             if (containsRoot e)
-                            then 
+                            then                                 
                                 let acc, e = workRoot (FNum 0.0) e
                                 let e = FAdd(FMult(FNum -1.0,acc), e)
                                 simpleRoot e

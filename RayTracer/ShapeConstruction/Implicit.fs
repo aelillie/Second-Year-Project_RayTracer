@@ -90,6 +90,7 @@ let mkPoly (s : string) (*(constant:string*float)*)  =
 
    
     let s = ppExpr expr
+    printfn "%s\n" s
 //     let polX = subst expr ("x", ex)
 //    let polY = subst polX ("y", ey)
 //    let polyExprSubbed = subst polY ("z", ez)
@@ -102,7 +103,7 @@ let mkPoly (s : string) (*(constant:string*float)*)  =
     let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
     printfn "%s\n" print
     //simplify equation 
-    (exprToPoly polyExprSubbed "t"), expr
+    (k), expr
 
     
 

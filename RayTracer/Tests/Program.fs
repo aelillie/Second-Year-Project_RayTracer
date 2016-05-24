@@ -3,7 +3,7 @@ open TracerTestSuite
 open TestSuite
 open System.IO
 open System
-
+open ExprParse
 let testAll () =
     PointTest.doTest ()
     VectorTest.doTest ()
@@ -15,25 +15,26 @@ let testAll () =
 
 
 let renderAll toScreen =
-  Shapes.render toScreen
-  printf "Shapes rendered\n"
-  AffineTransformations.render toScreen
-  printf "AffineTransformations rendered\n"
-//  ImplicitSurfaces.render toScreen
-//  printf "ImplicitSurfaces rendered\n"
+//  Shapes.render toScreen
+//  printf "Shapes rendered\n"
+//  AffineTransformations.render toScreen
+//  printf "AffineTransformations rendered\n"
+  ImplicitSurfaces.render toScreen
+  printf "ImplicitSurfaces rendered\n"
 //  Meshes.render toScreen
 //  printf "Meshes rendered\n"
-  Texture.render toScreen
-  printf "Texture rendered\n"
-  Light.render toScreen
-  printf "Light rendered\n"
-  CSG.render toScreen
-  printf "CSG rendered\n"
+//  Texture.render toScreen
+//  printf "Texture rendered\n"
+//  Light.render toScreen
+//  printf "Light rendered\n"
+//  CSG.render toScreen
+//  printf "CSG rendered\n"
 
 
 [<EntryPoint>]
 let main argv = 
-//
+    let lol = "4 + -1.5"
+    let ex = parseStr lol
 //    let s = "(x^2 + y^2 + z^2)_2 + -2"
 //    let ex = parseStr s
 //    printf "%s\n" (ppExpr ex)
