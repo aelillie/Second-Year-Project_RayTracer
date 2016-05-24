@@ -4,7 +4,7 @@ open TestSuite
 open System.IO
 open System
 
-let testAll =
+let testAll () =
     PointTest.doTest ()
     VectorTest.doTest ()
     ExprParseTest.doTest ()
