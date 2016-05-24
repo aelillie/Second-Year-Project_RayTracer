@@ -94,7 +94,7 @@ module ImplicitSurfaces =
     if toScreen then
       Util.render scene None
     else
-      Util.render scene (Some (folder, "torus.png"))
+      Util.render scene (Some (folder, "torus2.png"))
 
       
   let testShape toScreen =
@@ -158,11 +158,11 @@ module ImplicitSurfaces =
               sw.Reset()
               sw.Start()
               t
-  //  heart toScreen
-  //  printf "%f\n" (time ())
-  //  sphere1 1.0 toScreen;
-   // printf "%f\n" (time ())
-   // sphere2 1.0 toScreen;
+//    heart toScreen
+//    printf "%f\n" (time ())
+//    sphere1 1.0 toScreen;
+//    printf "%f\n" (time ())
+//    sphere2 1.0 toScreen;
 //    printf "%f\n" (time ())
 //    planeX toScreen;
 //    printf "%f\n" (time ())
@@ -172,12 +172,12 @@ module ImplicitSurfaces =
 //
 //    planeZ toScreen;
 //    printf "%f\n" (time ())
-//
+
     torus 1.5 0.5 toScreen;
-////    printf "%f\n" (time ())
-////    torus2 1.5 0.5 toScreen;
-////    printf "%f\n" (time ())
-////    testShape toScreen;
+    printf "%f\n" (time ())
+//    torus2 1.5 0.5 toScreen;
+//    printf "%f\n" (time ())
+//    testShape toScreen;
 //    printf "%f\n" (time ())
 //
 //    chmutov 2 toScreen;

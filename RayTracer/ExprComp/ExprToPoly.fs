@@ -122,16 +122,10 @@ let rec workRoot acc = function
     |FDiv(e1,e2) -> failwith "not implemented"
     |FRoot(e,n) -> FExponent(acc,n),e
 
-let rec findRoot acc = function
-  |FAdd(e1,e2) when containsRoot e1 -> findRoot (FAdd(acc,e2)) e1
-  |FAdd(e1,e2) when containsRoot e2 -> findRoot (FAdd(acc,e1)) e2
-  |expr -> workRoot expr
 
 
                   
-               
-
- 
+                
 
 
 //reduces duplication, so x*x becomes x^2
