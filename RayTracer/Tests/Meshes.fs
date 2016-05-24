@@ -27,7 +27,7 @@ module Meshes =
                translate 0.0 -1.5 0.0] in
     let white = fromColor Color.White
     let black = fromColor Color.Black
-    let bunny = mkShape baseBunny (mkTextureFromFile (fun x y -> (x,1.0-y)) "../../../textures/earth.jpg")
+    let bunny = mkShape baseBunny (mkMatTexture (mkMaterial white 0.0))
     let affineBunny = transform bunny t in
     let t' = scale 0.5 0.5 0.5
     let l1 = mkLight (mkPoint 6.0 2.0 6.0) white 0.5
