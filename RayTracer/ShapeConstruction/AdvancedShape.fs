@@ -83,8 +83,8 @@ module AdvancedShape =
 
             let transTop = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (h/2.0) 0.0]
             let transBot = mergeTransformations [rotateX ((pi/2.0));translate 0.0 (-h/2.0) 0.0]
-            let top' = (transform topDisc transTop) :> Shape
-            let bot' = (transform botDisc transBot) :> Shape 
+            let top' = (transform topDisc transTop)
+            let bot' = (transform botDisc transBot)
             [cyl';bot';top']
 
         interface Shape with
@@ -129,9 +129,10 @@ module AdvancedShape =
                                  if i = faceNum then m else
                                  match faces.[i] with
                                  | [|a;b;c|] -> 
-                                       let norm = let (xa, ya, za) = (getCoord a 0, getCoord a 1, getCoord a 2) //TODO: Right indexes?
-                                                  let (xb, yb, zb) = (getCoord b 0, getCoord b 1, getCoord b 2)
-                                                  let (xc, yc, zc) = (getCoord c 0, getCoord c 1, getCoord c 2)
+                                       let norm = let (xi, yi, zi) = (XYZIndexes plyList).Value
+                                                  let (xa, ya, za) = (getCoord a xi, getCoord a yi, getCoord a zi) 
+                                                  let (xb, yb, zb) = (getCoord b xi, getCoord b yi, getCoord b zi)
+                                                  let (xc, yc, zc) = (getCoord c xi, getCoord c yi, getCoord c zi)
                                                   let u = mkVector1 (xb-xa,yb-ya, zb-za) //b-a
                                                   let v = mkVector1 (xc-xa,yc-ya,zc-za) //c-a
                                                   (crossProduct u v) |> normalise

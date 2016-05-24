@@ -24,18 +24,18 @@ module Shape =
     let moveShape p s = let (x,y,z) = Point.getCoord p in transform s (translate x y z)
 
     //Collect a group of shapes as one union
-    let group s1 s2 = new GroupShape(s1, s2)      
+    let group s1 s2 = new GroupShape(s1, s2) :> Shape  
                      
     //Union compose two shapes
-    let union s1 s2  = new UnionShape(s1,s2)
+    let union s1 s2  = new UnionShape(s1,s2) :> Shape
     //Keep the difference between two shapes
 
-    let intersection s1 s2  = new IntersectionShape(s1,s2)
+    let intersection s1 s2  = new IntersectionShape(s1,s2) :> Shape
     //Subtract s2 from s1 (s2-s1)
-    let subtraction s1 s2  = new SubtractionShape(s1,s2)
+    let subtraction s1 s2  = new SubtractionShape(s1,s2) :> Shape
 
     //Plane
-    let mkPlane (tex : Texture) = new Plane(tex)
+    let mkPlane (tex : Texture) = new Plane(tex) :> Shape
 
     //Rectangle
     let mkRectangle (corner : Point) (width : float) (height : float) (tex : Texture)
@@ -44,26 +44,26 @@ module Shape =
     //Box
     let mkBox (low : Point) (high : Point) (front : Texture) (back : Texture) (top : Texture) 
                 (bottom : Texture) (left : Texture) (right : Texture) 
-          = new Box(low, high,front,back,top,bottom,left,right)
+          = new Box(low, high,front,back,top,bottom,left,right) :> Shape
 
     //Sphere
     let mkSphere (p : Point) (r : float) (tex : Texture) = 
-        new Sphere ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape p
-    let mkSphereCenter r tex = new Sphere (mkPoint 0.0 0.0 0.0,r,tex)
+        new Sphere ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape p 
+    let mkSphereCenter r tex = new Sphere (mkPoint 0.0 0.0 0.0,r,tex) 
     //Cylinders and Discs
     let mkHollowCylinder (c : Point) (r : float) (h : float) (tex : Texture) = 
-        new HollowCylinder((mkPoint 0.0 0.0 0.0),r,h,tex) |> moveShape c
+        new HollowCylinder((mkPoint 0.0 0.0 0.0),r,h,tex) |> moveShape c 
     let mkDisc (c : Point) (r : float) (tex : Texture) = new Disc ((mkPoint 0.0 0.0 0.0),r,tex) |> moveShape c
     let mkSolidCylinder (c : Point) (r : float) (h : float) (t : Texture) (top : Texture) (bottom : Texture) 
          = new SolidCylinder((mkPoint 0.0 0.0 0.0),r,h,t,top,bottom) |> moveShape c
 
     //Triangle
-    let mkTriangle a b c tex = new Triangle(a,b,c,tex, None, None)
+    let mkTriangle a b c mat = new Triangle(a,b,c,(Texture.mkMatTexture mat), None, None) :> Shape
 
     //Make baseshape for a ply file
     let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename, smooth)
 
     let mkShape (b : BaseShape) (t : Texture) = 
         match b with
-        | PLY(plyList, smooth) -> new TriangleMesh(plyList, t, smooth)
+        | PLY(plyList, smooth) -> new TriangleMesh(plyList, t, smooth) :> Shape
         | _ -> failwith "Not implemented"
