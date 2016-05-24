@@ -1,17 +1,7 @@
-﻿namespace TestSuite
+﻿namespace TracerTestSuite
 open System.Drawing
-open Light
-open Implicit
-open Shapes.ImplicitShape
-open Texture
-open Point
-open Colour
-open Shapes.Shape
-open Util
-open Material
-open Camera
-open Scene
-open Vector
+open Tracer.API
+
 
 module ImplicitSurfaces =
 
@@ -175,6 +165,7 @@ module ImplicitSurfaces =
 
     torus 1.5 0.5 toScreen;
     printf "%f\n" (time ())
+
 //    torus2 1.5 0.5 toScreen;
 //    printf "%f\n" (time ())
 //    testShape toScreen;

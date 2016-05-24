@@ -1,48 +1,34 @@
 ﻿module Program
-open Vector
-open Ray
-open Material
-open Colour
-//open BoundingBox 
-open Camera
-open Drawing
-open Texture
-open Light
-open System.Drawing
-open System
-open Point
-open PlyParse
-open System.IO
+open TracerTestSuite
 open TestSuite
-open ExprParse
-open ExprToPoly
-open ImplicitTest
+open System.IO
+open System
 
-let testAll =()
-//    PointTest.doTest ()
-//    VectorTest.doTest ()
-//    ExprParseTest.doTest ()
+let testAll () =
+    PointTest.doTest ()
+    VectorTest.doTest ()
+    ExprParseTest.doTest ()
 //    ExprToPolyTest.doTest ()
-////    BoundingBoxTest.doTest ()
-//    TransformationTest.doTest ()
+    BoundingBoxTest.doTest ()
+    TransformationTest.doTest ()
+    PLYParserTest.doTest ()
 
 
 let renderAll toScreen =
-
-//  Shapes.render toScreen
-//  printf "Shapes rendered"
-//  AffineTransformations.render toScreen
-//  printf "AffineTransformations rendered"
-  ImplicitSurfaces.render toScreen
-  printf "ImplicitSurfaces rendered"
+  Shapes.render toScreen
+  printf "Shapes rendered\n"
+  AffineTransformations.render toScreen
+  printf "AffineTransformations rendered\n"
+//  ImplicitSurfaces.render toScreen
+//  printf "ImplicitSurfaces rendered\n"
 //  Meshes.render toScreen
-//  printf "Meshes rendered"
-//  Texture.render toScreen
-//  printf "Texture rendered"
-//  Light.render toScreen
-//  printf "Light rendered"
-//  CSG.render toScreen
-//  printf "CSG rendered"
+//  printf "Meshes rendered\n"
+  Texture.render toScreen
+  printf "Texture rendered\n"
+  Light.render toScreen
+  printf "Light rendered\n"
+  CSG.render toScreen
+  printf "CSG rendered\n"
 
 
 [<EntryPoint>]

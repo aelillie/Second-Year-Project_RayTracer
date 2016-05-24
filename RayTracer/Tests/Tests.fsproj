@@ -57,17 +57,22 @@
     <Compile Include="ExprToPolyTest.fs" />
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="TransformationTest.fs" />
+    <Compile Include="PLYParserTest.fs" />
     <Compile Include="AffineTransformations.fs" />
+    <Compile Include="CSG.fs" />
     <Compile Include="ImplicitSurfaces.fs" />
-    <Compile Include="TextureTest.fs" />
+    <Compile Include="Light.fs" />
     <Compile Include="Meshes.fs" />
     <Compile Include="Shapes.fs" />
-    <Compile Include="CSG.fs" />
-    <Compile Include="Light.fs" />
-    <Compile Include="ImplicitTest.fs" />
+    <Compile Include="Texture.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\API\API.fsproj">
+      <Name>API</Name>
+      <Project>{5fadbfc0-2609-4110-a205-504603099e5d}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
       <Project>{23b2bd0e-c5f4-4dda-b3f9-07e06899aa0c}</Project>

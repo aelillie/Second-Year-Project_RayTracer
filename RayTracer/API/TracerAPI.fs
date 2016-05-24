@@ -1,74 +1,79 @@
 ﻿namespace Tracer
 
+open Shapes
+
 module API = 
   type dummy = unit
 
-  type vector = dummy
-  type point = dummy
-  type colour = dummy
-  type material = dummy
-  type shape = dummy
-  type baseShape = dummy
-  type texture = dummy
-  type camera = dummy
-  type scene = dummy
-  type light = dummy
-  type ambientLight = dummy
-  type transformation = dummy
+  type vector = Vector.Vector
+  type point = Point.Point
+  type colour = Colour.Colour
+  type material = Material.Material
+  type shape = Shapes.Shape.Shape
+  type baseShape = Shape.BaseShape
+  type texture = Texture.Texture
+  type camera = Camera.Camera
+  type scene = Scene.Scene
+  type light = Light.Light
+  type ambientLight = Light.AmbientLight
+  type transformation = Transformation.Transformation
 
-  let mkVector (x : float) (y : float) (z : float) : vector = failwith "mkVector not implemented"
-  let mkPoint (x : float) (y : float) (z : float) : point = failwith "mkPoint not implemented"
-  let fromColor (c : System.Drawing.Color) : colour = failwith "fromColor not implemented"
-  let mkColour (r : float) (g : float) (b : float) : colour = failwith "mkColour not implemented"
+  let mkVector (x : float) (y : float) (z : float) : vector = Vector.mkVector x y z
+  let mkPoint (x : float) (y : float) (z : float) : point = Point.mkPoint x y z
+  let fromColor (c : System.Drawing.Color) : colour = Colour.fromColor c
+  let mkColour (r : float) (g : float) (b : float) : colour = Colour.mkColour r g b
 
-  let mkMaterial (c : colour) (r : float) : material = failwith "mkMaterial not implemented"
-  let mkTexture (f : float -> float -> material) : texture = failwith "mkTexture not implemented"
-  let mkMatTexture (m : material) : texture = failwith "mkMatTexture not implemented"
+  let mkMaterial (c : colour) (r : float) : material = Material.mkMaterial c r
+  let mkTexture (f : float -> float -> material) : texture = Texture.mkTexture f
+  let mkMatTexture (m : material) : texture = Texture.mkMatTexture m
 
-  let mkShape (b : baseShape) (t : texture) : shape = failwith "mkShape not implemented"
-  let mkSphere (p : point) (r : float) (m : material) : shape = failwith "mkSphere not implemented"
+  let mkShape (b : baseShape) (t : texture) : shape = Shape.mkShape b t
+  let mkSphere (p : point) (r : float) (m : texture) : shape = Shape.mkSphere p r m
   let mkRectangle (corner : point) (width : float) (height : float) (t : texture) : shape
-    = failwith "mkRectangle not implemented"
-  let mkTriangle (a:point) (b:point) (c:point) (m : material) : shape = failwith "mkTriangle not implemented"
-  let mkPlane (m : texture) : shape = failwith "mkPlane not implemented"
+    = Shape.mkRectangle corner width height t
+  let mkTriangle (a:point) (b:point) (c:point) (m : material) : shape = Shape.mkTriangle a b c m
+  let mkPlane (t : texture) : shape = Shape.mkPlane t
   let mkImplicit (s : string) : baseShape = failwith "mkImplicit not implemented"
-  let mkPLY (filename : string) (smooth : bool) : baseShape = failwith "mkPLY not implemented"
+  let mkPLY (filename : string) (smooth : bool) : baseShape = Shape.mkPLY filename smooth
 
-  let mkHollowCylinder (c : point) (r : float) (h : float) (t : texture) : shape = failwith "mkHollowCylinder not implemented"
+  let mkHollowCylinder (c : point) (r : float) (h : float) (t : texture) : shape 
+    = Shape.mkHollowCylinder c r h t 
   let mkSolidCylinder (c : point) (r : float) (h : float) (t : texture) (top : texture) (bottom : texture) : shape
-      = failwith "mkSolidCylinder not implemented"
-  let mkDisc (c : point) (r : float) (t : texture) : shape = failwith "mkDisc not implemented"
+      = Shape.mkSolidCylinder c r h t top bottom
+  let mkDisc (c : point) (r : float) (t : texture) : shape = Shape.mkDisc c r t
   let mkBox (low : point) (high : point) (front : texture) (back : texture) (top : texture) (bottom : texture) (left : texture) (right : texture) : shape
-      = failwith "mkBox not implemented"
+      = Shape.mkBox low high front back top bottom left right
  
 
-  let group (s1 : shape) (s2 : shape) : shape = failwith "group not implemented"
-  let union (s1 : shape) (s2 : shape) : shape = failwith "union not implemented"
-  let intersection (s1 : shape) (s2 : shape) : shape = failwith "intersection not implemented"
-  let subtraction (s1 : shape) (s2 : shape) : shape = failwith "subtraction not implemented"
+  let group (s1 : shape) (s2 : shape) : shape = Shape.group s1 s2
+  let union (s1 : shape) (s2 : shape) : shape = Shape.union s1 s2
+  let intersection (s1 : shape) (s2 : shape) : shape = Shape.intersection s1 s2
+  let subtraction (s1 : shape) (s2 : shape) : shape = Shape.subtraction s1 s2
 
   let mkCamera (pos : point) (look : point) (up : vector) (zoom : float) (width : float)
-    (height : float) (pwidth : int) (pheight : int) : camera = failwith "mkCamera not implemented"
-  let mkLight (p : point) (c : colour) (i : float) : light = failwith "mkLight not implemented"
-  let mkAmbientLight (c : colour) (i : float) : ambientLight = failwith "mkAmbientLight not implemented"
+    (height : float) (pwidth : int) (pheight : int) : camera 
+    = Camera.mkCamera pos look up zoom width height pwidth pheight
+  let mkLight (p : point) (c : colour) (i : float) : light = Light.mkLight p c i
+  let mkAmbientLight (c : colour) (i : float) : ambientLight = Light.mkAmbientLight c i
 
-  let mkScene (s : shape list) (l : light list) (a : ambientLight) (c : camera) (m : int) : scene = failwith "mkScene not implemented"
-  let renderToScreen (sc : scene) : unit = failwith "renderToScreen not implemented"
-  let renderToFile (sc : scene) (path : string) : unit = failwith "renderToFile not implemented"
+  let mkScene (s : shape list) (l : light list) (a : ambientLight) (c : camera) (m : int) : scene 
+    = Scene.mkScene s l a c m 
+  let renderToScreen (sc : scene) : unit = Scene.renderToScreen sc
+  let renderToFile (sc : scene) (path : string) : unit = Scene.renderToFile sc path
 
-  let translate (x : float) (y : float) (z : float) : transformation = failwith "translate not implemented"
-  let rotateX (angle : float) : transformation = failwith "rotateX not implemented"
-  let rotateY (angle : float) : transformation = failwith "rotateY not implemented"
-  let rotateZ (angle : float) : transformation = failwith "rotateZ not implemented"
-  let sheareXY (distance : float) : transformation = failwith "sheareXY not implemented"
-  let sheareXZ (distance : float) : transformation = failwith "sheareXZ not implemented"
-  let sheareYX (distance : float) : transformation = failwith "sheareYX not implemented"
-  let sheareYZ (distance : float) : transformation = failwith "sheareYZ not implemented"
-  let sheareZX (distance : float) : transformation = failwith "sheareZX not implemented"
-  let sheareZY (distance : float) : transformation = failwith "sheareZY not implemented"
-  let scale (x : float) (y : float) (z : float) : transformation = failwith "scale not implemented"
-  let mirrorX : transformation = failwith "mirrorX not implemented"
-  let mirrorY : transformation = failwith "mirrorX not implemented"
-  let mirrorZ : transformation = failwith "mirrorX not implemented"
-  let mergeTransformations (ts : transformation list) : transformation = failwith "mergeTransformation not implemented"
-  let transform (sh : shape) (tr : transformation) : shape = failwith "transform not implemented"
+  let translate (x : float) (y : float) (z : float) : transformation = Transformation.translate x y z
+  let rotateX (angle : float) : transformation = Transformation.rotateX angle
+  let rotateY (angle : float) : transformation = Transformation.rotateY angle
+  let rotateZ (angle : float) : transformation = Transformation.rotateZ angle
+  let sheareXY (distance : float) : transformation = Transformation.sheareXY distance
+  let sheareXZ (distance : float) : transformation = Transformation.sheareXZ distance
+  let sheareYX (distance : float) : transformation = Transformation.sheareYX distance
+  let sheareYZ (distance : float) : transformation = Transformation.sheareYZ distance
+  let sheareZX (distance : float) : transformation = Transformation.sheareZX distance
+  let sheareZY (distance : float) : transformation = Transformation.sheareZY distance
+  let scale (x : float) (y : float) (z : float) : transformation = Transformation.scale x y z
+  let mirrorX : transformation = Transformation.mirrorX
+  let mirrorY : transformation = Transformation.mirrorY
+  let mirrorZ : transformation = Transformation.mirrorZ
+  let mergeTransformations (ts : transformation list) : transformation = Transformation.mergeTransformations ts
+  let transform (sh : shape) (tr : transformation) : shape = Shapes.TransformedShape.transform sh tr

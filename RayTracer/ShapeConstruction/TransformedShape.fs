@@ -52,7 +52,7 @@ module TransformedShape =
                                         | None -> None
                                         | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
                                                                   Some(dist, dir', mat) 
-    let transform s tr = new TransformedShape(s,tr)
+    let transform s tr = new TransformedShape(s,tr):> Shape
 
     let makeBounding (s1:Shape) (s2:Shape) = 
                              let min (x:float) (y:float) = System.Math.Min (x,y)
@@ -114,10 +114,6 @@ module TransformedShape =
             member this.isInside p = s1.isInside p && s2.isInside p
             member this.getBounding () = 
                 let b1, b2 = (s1.getBounding ()).Value, (s2.getBounding ()).Value
-//                if not (b1.isInside (b2.p1 + epsilon)) && not (b1.isInside (b2.p2 - epsilon)) && //Check for intersection
-//                   not (b2.isInside (b1.p1 + epsilon)) && not (b2.isInside (b1.p2 - epsilon))
-//                then Some (makeBounding s1 s2)
-//                else 
                 let (lx1,ly1,lz1) = (Point.getCoord b1.p1) //Low point of s1
                 let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                 let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2

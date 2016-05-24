@@ -18,8 +18,8 @@ let mkAmbientLight (c : Colour) (i : float) : AmbientLight = AL(c,i)
 let getPoint (L(p,c,i)) = p
 
 
-let calculateI (rd:Vector) (nd:Vector) = 
-    (Vector.dotProduct rd nd) 
+let calculateI (nd:Vector) (sd:Vector) = 
+    (Vector.dotProduct nd sd) 
     
 
 let getAmbientI (AL(c,i)) = 
