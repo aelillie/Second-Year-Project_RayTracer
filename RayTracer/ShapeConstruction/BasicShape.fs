@@ -92,33 +92,25 @@ module BasicShape =
                        
                             let calculateMaterial answer = 
                                 let nv = makeNV answer
-                                let n = nv / r
-                                let n = normalise n
+                                let n = nv / r |> normalise
                                 
                                 let theta = System.Math.Acos(Vector.getY n)
                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
                                 let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
 
-                                let u = phi / (2.0 * pi)
-                                let v = 1.0 - (theta/pi)
+                                let u, v = phi / (2.0 * pi), 1.0 - (theta/pi)
                                
-                                let material = Texture.getMaterialAtPoint tex u v
-                                material
+                                getMaterialAtPoint tex u v
+                                
     
-                            let a = (pow((Vector.getX d),2.0) +
-                                        pow((Vector.getY d),2.0) +
-                                        pow((Vector.getZ d),2.0))
-
+                            let a = (Vector.getX d)**2.0 + (Vector.getY d)**2.0 + (Vector.getZ d)**2.0
                             let b =  (2.0 * Point.getX p * Vector.getX d) +
                                         (2.0 * Point.getY p * Vector.getY d) +
                                         (2.0 * Point.getZ p * Vector.getZ d)
+                            let c =  (Point.getX p)**2.0 + (Point.getY p)**2.0 +
+                                        (Point.getZ p)**2.0 - r**2.0
 
-                            let c =  pow(Point.getX p,2.0) +
-                                        pow(Point.getY p,2.0) +
-                                        pow(Point.getZ p,2.0) -
-                                        pow(r,2.0)
-
-                            let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)
+                            let disc = b**2.0 - (4.0 * a * c)
 
                             if(disc < 0.0) then None
                             else
@@ -126,12 +118,11 @@ module BasicShape =
                                 let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
                                 if answer1 < 0.0 && answer2 < 0.0 then None
                                 else
-            
-                                    let answer = System.Math.Min(answer1,answer2)
+                                    let answer = min answer1 answer2
                                     let material = calculateMaterial answer
                                     if answer < 0.0 
                                     then 
-                                        let answer = System.Math.Max(answer1,answer2)
+                                        let answer = max answer1 answer2
                                         let material = calculateMaterial answer
                                         Some (answer, makeNV answer, material)
                                     else Some (answer, makeNV answer, material)
@@ -142,15 +133,16 @@ module BasicShape =
             member this.getBounding () = None
             member this.isSolid () = false
             member this.hit (R(p,d)) =
-                            let dist = -(Point.getZ p) / (Vector.getZ d)
-                            let n = mkVector 0.0 0.0 1.0 
-                            let getMat a =
-                                    let hp = Point.move p (a * d)
-                                    let u = Point.getX hp
-                                    let v = Point.getY hp
-                                    Texture.getMaterialAtPoint tex u v
-                            if dist > 0.0 then Some(dist, n, getMat dist)
-                            else None
+                            let dz = Vector.getZ d
+                            if dz = 0.0 then None //Check intersection with the plane the Plane is in
+                            else let dist = -(Point.getZ p) / dz //Infinite plane
+                                 let mat = let hp = Point.move p (dist * d)
+                                           let u, v = Point.getX hp, Point.getY hp
+                                           Texture.getMaterialAtPoint tex u v
+                                 if dist > 0.0 then Some(dist, mkVector 0.0 0.0 1.0, mat)
+                                 else None
+
+
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
@@ -159,21 +151,20 @@ module BasicShape =
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
                             let dz = Vector.getZ d
-                            let px = Point.getX p
-                            let py = Point.getY p 
-                            let pz = Point.getZ p
-                            let distance = (-1.0 * pz) / dz
-                            let p' = Point.move p (Vector.multScalar d distance)
-                            let result = (pow (Point.getX p', 2.0)) + (pow (Point.getY p', 2.0))
+                            if dz = 0.0 then None //Check intersection with the plane
+                            else let distance = -(Point.getZ p) / dz
+                                 let p' = Point.move p (distance * d)
+                                 let (px, py, pz) = Point.getCoord p'
+                                 
+                                 if (px**2.0 + py**2.0) <= r**2.0 && //Check that intersection is in disc
+                                    distance > 0.0
+                                 then
+                                     let u = (px+r)/(2.0*r)
+                                     let v = (py+r)/(2.0*r)
+                                     let material = Texture.getMaterialAtPoint tex u v
+                                     Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
+                                 else None
 
-                            if result <= (pow (r,2.0)) && distance > 0.0
-                            then
-                                let (x, y, z) = Point.getCoord p'
-                                let u = (x+r)/2.0*r
-                                let v = (y+r)/2.0*r
-                                let material = Texture.getMaterialAtPoint tex u v
-                                Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
-                            else None
 
     type Triangle(a,b,c,tex, texCoordList) = 
         override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
@@ -248,23 +239,20 @@ module BasicShape =
                                               ; p2 = (mkPoint (getX c + (w/2.0) + epsilon) (getY c + (h/2.0) + epsilon) (getZ c + epsilon))}
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let dz = Vector.getZ d
-                            let pz = Point.getZ p
-                            let distance = (-1.0 * pz) / dz
-                            let p' = Point.move p (Vector.multScalar d distance)
-    
-                            let px = Point.getX p'
-                            let py = Point.getY p'
-                            let ax = Point.getX c
-                            let ay = Point.getY c
+                            let distance = -(Point.getZ p) / (Vector.getZ d)
+                            let p' = Point.move p (distance*d) //Hit point
+                            let nV = mkVector 0.0 0.0 1.0 //Normal vector
+                            let px, py, pz = getX p', getY p', getZ p' //Hit point coords
+                            let ax, ay, az = getX c, getY c, getZ c //Center coords
 
-
-                            if ax <= px && px <= (ax + w)  && ay <= py && py <= (ay + h) && distance > 0.0
+                            if ax <= px && px <= (ax + w) &&  //Check for intersection
+                               ay <= py && py <= (ay + h) && 
+                               distance > 0.0
                             then 
                                  let u = (px-ax)/w
                                  let v = (py-ay)/h
-                                 let material = Texture.getMaterialAtPoint tex u v
-                                 Some(distance, Vector.mkVector 0.0 0.0 1.0, material)
+                                 let material = getMaterialAtPoint tex u v
+                                 Some(distance, nV, material)
                             else None
 
     type HollowCylinder (center,r,h,tex) = 
@@ -279,10 +267,10 @@ module BasicShape =
                                         
             member this.isSolid () = false
             member this.hit (R(p,d)) = 
-                            let a = pow (Vector.getX d, 2.0) + pow (Vector.getZ d, 2.0)
+                            let a = (Vector.getX d)**2.0 + (Vector.getZ d)**2.0
                             let b = (2.0 * Point.getX p * Vector.getX d) + (2.0 * Point.getZ p * Vector.getZ d)
-                            let c = pow(Point.getX p, 2.0) + pow(Point.getZ p, 2.0) - pow(r, 2.0)
-                            let dis = pow(b, 2.0) - (4.0 * a * c)
+                            let c = (Point.getX p)**2.0 + (Point.getZ p)**2.0 - r**2.0
+                            let dis = b**2.0 - (4.0 * a * c)
 
                                 //calculate material
                             let calculateMaterial x y z h r tex =  
