@@ -21,10 +21,10 @@ module BasicShape =
                         let (lx,ly,lz) = Point.getCoord b.p1
                         let (hx,hy,hz) = Point.getCoord b.p2
                         lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
-        member b.getLongestAxis l h =
-                        let xdim = ((Point.getX h) - (Point.getX l), "x")
-                        let ydim = ((Point.getY h) - (Point.getY l), "y")
-                        let zdim = ((Point.getZ h) - (Point.getZ l), "z") 
+        member b.getLongestAxis =
+                        let xdim = ((Point.getX b.getH) - (Point.getX b.getL), "x")
+                        let ydim = ((Point.getY b.getH) - (Point.getY b.getL), "y")
+                        let zdim = ((Point.getZ b.getH) - (Point.getZ b.getL), "z") 
                         List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
         member b.getH =
                 b.p2
@@ -170,6 +170,13 @@ module BasicShape =
         let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
                              let (x2, y2, z2) = getCoord p2
                              (x1-x2,y1-y2,z1-z2)
+        member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
+        member this.getCoords s = 
+            match s with
+            | "x" -> (Point.getX a,Point.getX b,Point.getX c)
+            | "y" -> (Point.getY a,Point.getY b,Point.getY c)
+            | "z" -> (Point.getZ a,Point.getZ b,Point.getZ c)
+            | _ -> failwith "Unknown axis"
         //override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"

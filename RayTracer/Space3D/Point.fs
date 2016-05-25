@@ -20,9 +20,16 @@ let direction p q = Vector.normalise(distance p q)
 let round (P(px,py,pz)) (d:int) =
     let r (c:float) = System.Math.Round(c, d)
     P(r px, r py, r pz)
+let getFromAxis (P(x,y,z)) axis =
+    match axis with
+    |"x" -> x
+    |"y" -> y
+    |"z" -> z
+    | _ -> failwith "Unknown axis"
 
 type Point with
   static member ( + ) ((P(x,y,z)), f) = (P(x+f,y+f,z+f))
+  static member ( + ) (P(ux,uy,uz),P(vx,vy,vz)) = P(ux+vx, uy+vy, uz+vz)
   static member ( - ) ((P(x,y,z)), f) = (P(x-f,y-f,z-f))
   static member ( - ) ((P(x1,y1,z1)), (P(x2,y2,z2))) = ((P(x1-x2,y1-y2,z1-z2)))
   static member ( / ) ((P(x,y,z)), f) = (P(x/f,y/f,z/f))

@@ -16,9 +16,7 @@ module Shape =
 
     type BaseShape =
         | PLY of Ply list * bool
-
-    let getPly (PLY(l, _)) = l
-    let getSmooth (PLY(_, b)) = b
+        | Dummy of unit
 
     ///Translate a shape to some point
     let moveShape p s = let (x,y,z) = Point.getCoord p in transform s (translate x y z)
