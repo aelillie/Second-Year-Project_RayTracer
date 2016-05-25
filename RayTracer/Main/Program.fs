@@ -42,7 +42,7 @@ let main argv =
 
         (*******Scene******)
 
-        let scene = mkScene [bunny] [light;light1] ambientLight camera 3
+        let scene = mkScene [bunny;p] [light;light1] ambientLight camera 3
         if toScreen then
           Util.render scene None
         else
