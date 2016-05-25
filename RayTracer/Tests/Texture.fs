@@ -173,11 +173,11 @@ module Texture =
 
 
   let render toScreen =
-//    renderDiscs toScreen
-//    renderBox toScreen
-//    renderBoxes toScreen
+    renderDiscs toScreen
+    renderBox toScreen
+    renderBoxes toScreen
     renderBunny toScreen
-//    renderCylinder toScreen
-//    renderEarth toScreen
-//    renderPlane toScreen
-//    renderSphere toScreen
+    renderCylinder toScreen
+    renderEarth toScreen
+    renderPlane toScreen
+    renderSphere toScreen

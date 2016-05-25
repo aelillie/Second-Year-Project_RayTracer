@@ -33,19 +33,6 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
-    let lol = "4 + -1.5"
-    let ex = parseStr lol
-//    let s = "(x^2 + y^2 + z^2)_2 + -2"
-//    let ex = parseStr s
-//    printf "%s\n" (ppExpr ex)
-//    let se = exprToSimpleExpr ex
-//    let pp = ppSimpleExpr se
-//    printf "%s" pp
-//    printf "%s\n" eqn
-//    let expr = parseStr eqn
-//    printf "\n%s" (ppExpr expr)
-//    testall
-//    ImplicitTest.doTest() 
     renderAll false
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
