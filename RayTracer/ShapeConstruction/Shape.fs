@@ -15,10 +15,10 @@ open Shapes.ImplicitShape
 
 module Shape = 
     type Shape = Shapes.BasicShape.Shape
-
+    type simpleExpr = ExprToPoly.simpleExpr
     type BaseShape =
         | PLY of Ply list * bool
-        | Bs of poly*expr
+        | Bs of poly*simpleExpr
         | Dummy of unit
 
     ///Translate a shape to some point

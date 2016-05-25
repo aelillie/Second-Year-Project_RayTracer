@@ -63,9 +63,6 @@ let rec simplify = function
   | FExponent(e1,1) -> simplify e1
   | FExponent(e1,n) when n < 0 -> simplify (FDiv(FNum 1.0, FExponent(e1,System.Math.Abs(n))))
   | FExponent(e1,n) -> simplify (FMult(e1, FExponent(e1, n-1)))
-//  | FDiv(FNum x, FNum y) -> [[ANum (x/y)]]
-//  | FDiv(FVar s, FNum c) -> [[ANum(1.0/c);AExponent (s,1)]]
-  //| FDiv(e1,e2) -> combDiv (simplify e1) (simplify e2)
   | FRoot(e,n) -> simplify (FExponent(e,1/n))
   | FDiv(e1, e2) -> simplify e1
 
@@ -96,15 +93,6 @@ let rec containsRoot = function
   |FRoot(_,_) -> true
   |FNum c -> false
   |FVar x -> false
-
-
-//let rec findRootNumb = function
-//  |FRoot(e1,n) -> n
-//  |FAdd(e1,e2) when containsRoot e1 -> findRootNumb  e1
-//  |FAdd(e1,e2) when containsRoot e2 -> findRootNumb e2
-//  |FMult(e1,e2) when containsRoot e1-> findRootNumb e1
-//  |FMult(e1,e2) when containsRoot e2 -> findRootNumb e2
-//  |FExponent(e,n) -> findRootNumb e
 
 
 let rec workRoot acc = function
