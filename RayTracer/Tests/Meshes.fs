@@ -112,8 +112,8 @@ module Meshes =
    
 
   let render toScreen =
-    renderBunny toScreen
-    renderDragon toScreen
-    renderHappy toScreen
+//    renderBunny toScreen
+//    renderDragon toScreen
+//    renderHappy toScreen
     renderPorsche toScreen
-    renderHorse toScreen
+//    renderHorse toScreen

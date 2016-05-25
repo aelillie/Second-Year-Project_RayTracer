@@ -50,7 +50,7 @@ module TransformedShape =
                                         let d' = transVector (getInv tr) d //transformed direction
                                         match s.hit (R(p', d')) with
                                         | None -> None
-                                        | Some(dist, dir, mat) -> let dir' = transVector (transpose (getInv tr)) dir
+                                        | Some(dist, dir, mat) -> let dir' = (transVector (transpose (getInv tr)) dir) |> normalise
                                                                   Some(dist, dir', mat) 
     let transform s tr = new TransformedShape(s,tr):> Shape
 

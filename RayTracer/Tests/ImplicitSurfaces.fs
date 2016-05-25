@@ -145,8 +145,8 @@ module ImplicitSurfaces =
 //    planeX toScreen;
 //    planeY toScreen;
 //    planeZ toScreen;
-//    torus 1.5 0.5 toScreen;
-    torus2 1.5 0.5 toScreen;
+    torus 1.5 0.5 toScreen;
+//    torus2 1.5 0.5 toScreen;
 //    testShape toScreen;
 //    chmutov 2 toScreen;
 //    chmutov 3 toScreen;

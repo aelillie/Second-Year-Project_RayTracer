@@ -21,8 +21,8 @@ let renderAll toScreen =
 //  printf "AffineTransformations rendered\n"
   ImplicitSurfaces.render toScreen
   printf "ImplicitSurfaces rendered\n"
-//  Meshes.render toScreen
-//  printf "Meshes rendered\n"
+ // Meshes.render toScreen
+  //printf "Meshes rendered\n"
 //  Texture.render toScreen
 //  printf "Texture rendered\n"
 //  Light.render toScreen

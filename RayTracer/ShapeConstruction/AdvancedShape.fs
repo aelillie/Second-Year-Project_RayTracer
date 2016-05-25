@@ -8,6 +8,7 @@ open Transformation
 open BasicShape
 open TransformedShape
 open PlyParse
+open TmKdtree
 
 module AdvancedShape = 
     
@@ -110,7 +111,7 @@ module AdvancedShape =
         let getCoord vi i = let vertex = vertices.[vi] in vertex.[i]
         let uvCoords v = match textureIndexes plyList with
                          | None -> None
-                         | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi)
+                         | Some(ui, vi) -> Some(getCoord v vi, getCoord v ui) //Somehow swapped around
         let vertex vi = match XYZIndexes plyList with
                         | None -> failwith "No x y z coordinates in PLY"
                         | Some(xi, yi, zi) -> let x = getCoord vi xi
@@ -171,8 +172,8 @@ module AdvancedShape =
                                          | [|a;b;c|] ->  if i = top then shapes
                                                          else if smooth 
                                                               then let norms = vNorm a b c
-                                                                   iter (i+1) (makeTriangle a b c norms :> Shape::shapes) 
-                                                              else iter (i+1) (makeTriangle a b c None :> Shape::shapes)              
+                                                                   iter (i+1) (makeTriangle a b c norms ::shapes) 
+                                                              else iter (i+1) (makeTriangle a b c None ::shapes)              
                                          | [||] -> shapes //This should not happen
                                          | _ -> failwith "Not a triangle mesh"
                                  iter bot [] 
@@ -182,13 +183,15 @@ module AdvancedShape =
                                       async {return makeTriangles q3 c}]  
                          let t = Async.RunSynchronously (Async.Parallel tasks) |> List.concat
                          s.Stop() ; printf "Built triangles in %f seconds\n" s.Elapsed.TotalSeconds
-                         t
+                         TmKdtree.mkTmKdtree t (bBoxFromList (List.map(fun x -> x:> Shape) t)).Value
+        let bBawx = let box = (TmKdtree.getBox triangles)
+                    match box with
+                    |Some b -> b
+                    |None -> failwith"expected the triangle mesh to have a bounding box"
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
-            member this.getBounding () = bBoxFromList triangles
+            member this.getBounding () = TmKdtree.getBox triangles
             member this.isSolid () = true
-            member this.hit (R(p,d) as ray) = 
-                                    let min = List.map(fun (x:Shape) -> x.hit ray) triangles |> List.choose id
-                                    match min with
-                                    |[] -> None
-                                    |_ -> Some(List.minBy (fun (di, nV, mat) -> di) min)
+            member this.hit (R(p,d) as ray) = match TmKdtree.traverse triangles ray bBawx with
+                                              |Some x -> x
+                                              |None -> None

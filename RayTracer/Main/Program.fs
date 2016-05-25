@@ -25,28 +25,23 @@ let main argv =
 
     let render toScreen =
         (*******Light******)
-        let light = mkLight (mkPoint 1.0 0.0 7.0) (fromColor Color.White) 1.0
+        let light = mkLight (mkPoint 1.0 1.0 10.0) (fromColor Color.White) 1.0
         let light1 = mkLight (mkPoint 0.0 4.0 0.0) (fromColor Color.White) 1.0
         let ambientLight = mkAmbientLight (fromColor Color.White) 0.1 in
         (*******Camera******)
-        let camera = mkCamera (mkPoint 0.0 0.0 10.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 1000 1000 in
+        let camera = mkCamera (mkPoint 0.0 0.0 10.0) (mkPoint 0.0 0.0 0.0) (mkVector 0.0 1.0 0.0) 1.0 2.0 2.0 500 500 in
         (*******Shapes******)
         let s = System.Diagnostics.Stopwatch.StartNew()
-        let ply = mkPLY "../../../ply/apple.ply" true
-
+        let ply = mkPLY "../../../ply/bunny_textured.ply" true
         s.Stop() ; printf "Ply parsed in %f seconds\n" s.Elapsed.TotalSeconds
-        //let tex = (mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png")
-        let mat c = mkMatTexture (mkMaterial (fromColor c) 0.0)
-        let ant1 = transform (mkShape ply (mat Color.Gold)) (mergeTransformations [scale 30.0 30.0 30.0;translate 2.0 0.0 0.0])
-        let ant2 = transform (mkShape ply (mat Color.Gold)) (mergeTransformations [scale 30.0 30.0 30.0;translate 4.0 0.0 0.0])
-        let ant3 = transform (mkShape ply (mat Color.Gold)) (mergeTransformations [scale 30.0 30.0 30.0;translate -2.0 0.0 0.0])
-        let ant4 = transform (mkShape ply (mat Color.Gold)) (mergeTransformations [scale 30.0 30.0 30.0;translate -4.0 0.0 0.0])
-        let ant5 = transform (mkShape ply (mat Color.Gold)) (mergeTransformations [scale 30.0 30.0 30.0])
-        //let plane = transform (mkPlane (mat Color.LightGray)) (rotateX (pi/2.0)) 
+        let tex = (mkTextureFromFile (fun x y -> (y,x)) "../../../textures/bunny.png")
+        let mat c = mkMatTexture (mkMaterial (fromColor c) 0.2)
+        let bunny = transform (mkShape ply tex) (mergeTransformations [scale 6.0 6.0 6.0;rotateY (Math.PI/4.0);rotateX (Math.PI/10.0)])
+        let p = transform (mkPlane (mat Color.Blue)) (mergeTransformations [rotateX (Math.PI/2.0);translate 0.0 -3.5 2.0])
 
         (*******Scene******)
 
-        let scene = mkScene [ant1;ant2;ant3;ant4;ant5] [light] ambientLight camera 3
+        let scene = mkScene [p;bunny] [light] ambientLight camera 3
         if toScreen then
           Util.render scene None
         else
