@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
+    <Compile Include="Util.fs" />
     <Compile Include="PointTest.fs" />
     <Compile Include="VectorTest.fs" />
     <Compile Include="ExprParseTest.fs" />
@@ -57,7 +58,6 @@
     <Compile Include="BoundingBoxTest.fs" />
     <Compile Include="TransformationTest.fs" />
     <Compile Include="PLYParserTest.fs" />
-    <Compile Include="Util.fs" />
     <Compile Include="AffineTransformations.fs" />
     <Compile Include="CSG.fs" />
     <Compile Include="ImplicitSurfaces.fs" />

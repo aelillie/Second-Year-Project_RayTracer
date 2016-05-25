@@ -8,11 +8,9 @@ open Shapes
 open Utilities
 open Vector
 open Material
+open Texture
 open Shape
 open Shapes.TransformedShape
-open Shapes
-open Texture
-open TransformedShape
 open Transformation
 open System
 open System.Drawing
@@ -26,9 +24,6 @@ let main argv =
     let pi = System.Math.PI
 
     let render toScreen =
-        (******Helper******)
-        let mkColourTexture c r = mkMatTexture (mkMaterial (fromColor c) r)
-
         (*******Light******)
         let light = mkLight (mkPoint 1.0 1.0 10.0) (fromColor Color.White) 1.0
         let light1 = mkLight (mkPoint 0.0 4.0 0.0) (fromColor Color.White) 1.0

@@ -6,16 +6,19 @@ open ExprParse
 open Material
 open Transformation
 open PlyParse
+open Implicit
 open Shapes.AdvancedShape
 open Shapes.BasicShape
 open Shapes.TransformedShape
 open Texture
+open Shapes.ImplicitShape
 
 module Shape = 
     type Shape = Shapes.BasicShape.Shape
 
     type BaseShape =
         | PLY of Ply list * bool
+        | Bs of poly*expr
         | Dummy of unit
 
     ///Translate a shape to some point
@@ -61,7 +64,10 @@ module Shape =
     //Make baseshape for a ply file
     let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename, smooth)
 
-    let mkShape (b : BaseShape) (t : Texture) = 
+
+    let mkImplicit s = Bs(mkPoly s)
+    let mkShape (b : BaseShape) (t : Texture) : Shape= 
         match b with
         | PLY(plyList, smooth) -> new TriangleMesh(plyList, t, smooth) :> Shape
+        | Bs(p,e) -> (new ImplicitShape(p,e, t)) :> Shape
         | _ -> failwith "Not implemented"

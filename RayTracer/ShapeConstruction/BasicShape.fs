@@ -89,7 +89,7 @@ module BasicShape =
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction o
-                       
+    
                             let calculateMaterial answer = 
                                 let nv = makeNV answer
                                 let n = nv / r |> normalise
@@ -236,8 +236,6 @@ module BasicShape =
                                                 let tu = alpha*ua+beta*ub+gamma*uc
                                                 let tv = alpha*va+beta*vb+gamma*vc
                                                 getMaterialAtPoint tex tu tv
-                                           | _ -> getMaterialAtPoint tex 0.5 0.5
-
                                  //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
                                  if t > 0.0 
                                  then Some(t, n, mat)

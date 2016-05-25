@@ -76,9 +76,9 @@ module CSG =
       Util.render scene (Some (folder, "lantern.png"))
 
   let render toScreen =
-    renderUnion toScreen;
-    renderIntersection toScreen;
-    renderSubtraction toScreen;
-    renderCross toScreen;
+//    renderUnion toScreen;
+//    renderIntersection toScreen;
+//    renderSubtraction toScreen;
+//    renderCross toScreen;
     renderIntersection2 toScreen;
     renderLantern toScreen

@@ -33,7 +33,7 @@ module API =
     = Shape.mkRectangle corner width height t
   let mkTriangle (a:point) (b:point) (c:point) (m : material) : shape = Shape.mkTriangle a b c m
   let mkPlane (t : texture) : shape = Shape.mkPlane t
-  let mkImplicit (s : string) : baseShape = failwith "mkImplicit not implemented"
+  let mkImplicit (s : string) : baseShape = Shape.mkImplicit s
   let mkPLY (filename : string) (smooth : bool) : baseShape = Shape.mkPLY filename smooth
 
   let mkHollowCylinder (c : point) (r : float) (h : float) (t : texture) : shape 

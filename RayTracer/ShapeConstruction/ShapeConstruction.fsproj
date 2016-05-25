@@ -51,6 +51,8 @@
     <Compile Include="TransformedShape.fs" />
     <Compile Include="TmKdtree.fs" />
     <Compile Include="AdvancedShape.fs" />
+    <Compile Include="Implicit.fs" />
+    <Compile Include="ImplicitShape.fs" />
     <Compile Include="Shape.fs" />
   </ItemGroup>
   <ItemGroup>
