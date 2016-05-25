@@ -154,15 +154,14 @@ module ImplicitShape =
                                            
             if nOfRoots 0.0 100.0> 0 
              then  //converge on interval by halving the interval, and look in either the first half or the 2nd half, depending on where the root is                                                                              
-                let rec getInterval s e count prev : (float*float) = if count > 0 then
-                                                                      let roots = nOfRoots s e
-                                                                      if roots > 0 then
-                                                                                    let newPrev = e  
-                                                                                    let newC = count-1                                                                                                                                 
-                                                                                    getInterval s ((e+s)/2.0)  newC newPrev
-                                                                      else let newC = count-1
-                                                                           getInterval e prev newC prev
-                                                                     else (s,e)
+                let rec getInterval s e count prev : (float*float) = 
+                    if count > 0 then
+                     let roots = nOfRoots s e
+                     if roots > 0 then                                                                                                                                                                                                      
+                                   getInterval s ((e+s)/2.0) (count-1) e
+                     else
+                          getInterval e prev (count-1) prev
+                    else (s,e)
                                                                                                       
                 let intv = getInterval 0.0 100.0 15 0.0
                 let iStart = fst intv                                            
@@ -174,9 +173,8 @@ module ImplicitShape =
 
                 //calculate a more accurate guess based on an initial guess                                         
                 let rec calcGuess guess rc = if rc > 0 then                                                                      
-                                               let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                   
-                                               let newrc = rc-1
-                                               calcGuess newGuess newrc
+                                               let newGuess = guess - ((calcValue guess fNorm )/(calcValue guess  fPrime))                                                                                                                                                           
+                                               calcGuess newGuess (rc-1)
                                              else guess
 
                 //converge on the root giving a guess based on the interval                                              
@@ -188,63 +186,63 @@ module ImplicitShape =
 
             else 0.0   
         
-        let findHit (p:Point) (d:Vector) floatmap e = let root = newtRaph (sturm floatmap)
-                                           
-                                                      if root = 0.0 || root < 0.0 then None
-                                                      else                                             
-                                                        let hitPoint = Point.move p (root*d)
-
-                                                        Some (root, Vector.normalise(mkNorm hitPoint e),(Texture.getMaterialAtPoint t 0.0 0.0))  
+        let findHit (p:Point) (d:Vector) floatmap e = 
+            let root = newtRaph (sturm floatmap)                                           
+            if root = 0.0 || root < 0.0 then None
+            else                                             
+              let hitPoint = Point.move p (root*d)
+          
+              Some (root, Vector.normalise(mkNorm hitPoint e),(Texture.getMaterialAtPoint t 0.0 0.0))  
 
 
         
                  
         interface Shape with
             member this.getBounding () = None
-                                         let this = this :> Shape
-                                         //If map only contains 1st degree then it is a plane
-                                         let isPlane =
-                                                match pol with
-                                                |Po x -> x.Count = 2
-
-                                         let doesHit r = 
-                                                match this.hit r with
-                                                 |None -> false
-                                                 |Some (_) -> true
-                                        
-                                         let rec findBoundary cam p axis (n:float) c =  //Recursively find the boundary point for a given axis.
-                                            let nf = float n    
-                                            if c = 20
-                                            then 
-                                                let x,y,z = Point.getCoord p
-                                                mkPoint (x-(10.0*nf)) (y-(10.0*nf)) (z-(10.0*nf))
-                                            else
-                                                
-                                                let x,y,z = Point.getCoord p
-                                                let p' = match axis with
-                                                        |"x" -> (mkPoint (x+nf) y z)
-                                                        |"y" -> (mkPoint (x) (y+nf) z)
-                                                        |"z" -> (mkPoint x y (z+nf))
-                                                        |_ -> failwith "Expected an axis"
-                                                let r = mkRay cam (Point.direction cam p')
-                                                match doesHit r with
-                                                |true  -> findBoundary cam p' axis n 0
-                                                |false -> findBoundary cam p' axis n (c+1)
-
-                                         if isPlane 
-                                         then 
-                                             None
-                                         else
-                                             let n = 0.1
-                                             let p = mkPoint 0.0 0.0 0.0
-                                             let plx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" -n 0
-                                             let ply = findBoundary (mkPoint 0.0 0.0 100.0) p "y" -n 0
-                                             let plz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" -n 0
-                                             let phx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" n 0
-                                             let phy = findBoundary (mkPoint 0.0 0.0 100.0) p "y" n 0
-                                             let phz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" n 0
-
-                                             Some ({p1 = (Point.mkPoint (Point.getX plx) (Point.getY ply) (Point.getZ plz)) ; p2 = (Point.mkPoint (Point.getX phx) (Point.getY phy) (Point.getZ phz)) })
+//                                         let this = this :> Shape
+//                                         //If map only contains 1st degree then it is a plane
+//                                         let isPlane =
+//                                                match pol with
+//                                                |Po x -> x.Count = 2
+//
+//                                         let doesHit r = 
+//                                                match this.hit r with
+//                                                 |None -> false
+//                                                 |Some (_) -> true
+//                                        
+//                                         let rec findBoundary cam p axis (n:float) c =  //Recursively find the boundary point for a given axis.
+//                                            let nf = float n    
+//                                            if c = 20
+//                                            then 
+//                                                let x,y,z = Point.getCoord p
+//                                                mkPoint (x-(10.0*nf)) (y-(10.0*nf)) (z-(10.0*nf))
+//                                            else
+//                                                
+//                                                let x,y,z = Point.getCoord p
+//                                                let p' = match axis with
+//                                                        |"x" -> (mkPoint (x+nf) y z)
+//                                                        |"y" -> (mkPoint (x) (y+nf) z)
+//                                                        |"z" -> (mkPoint x y (z+nf))
+//                                                        |_ -> failwith "Expected an axis"
+//                                                let r = mkRay cam (Point.direction cam p')
+//                                                match doesHit r with
+//                                                |true  -> findBoundary cam p' axis n 0
+//                                                |false -> findBoundary cam p' axis n (c+1)
+//
+//                                         if isPlane 
+//                                         then 
+//                                             None
+//                                         else
+//                                             let n = 0.1
+//                                             let p = mkPoint 0.0 0.0 0.0
+//                                             let plx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" -n 0
+//                                             let ply = findBoundary (mkPoint 0.0 0.0 100.0) p "y" -n 0
+//                                             let plz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" -n 0
+//                                             let phx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" n 0
+//                                             let phy = findBoundary (mkPoint 0.0 0.0 100.0) p "y" n 0
+//                                             let phz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" n 0
+//
+//                                             Some ({p1 = (Point.mkPoint (Point.getX plx) (Point.getY ply) (Point.getZ plz)) ; p2 = (Point.mkPoint (Point.getX phx) (Point.getY phy) (Point.getZ phz)) })
                                             
 //                                       
 
