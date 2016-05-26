@@ -38,6 +38,7 @@ module AdvancedShape =
                 let depth = System.Math.Abs(Point.getZ high - Point.getZ low)
                 let az = System.Math.Max(Point.getZ high, Point.getZ low)
 
+                //Transformation for setting up all 6 sides.
                 let frontT = translate (Point.getX low) (Point.getY low) az 
                 let backT =   mergeTransformations [frontT;translate 0.0 0.0 -depth]
                 let bottomT = mergeTransformations [rotateX (pi/(-2.0));frontT]
@@ -55,10 +56,10 @@ module AdvancedShape =
                 let leftR =   new Rectangle (p, depth, height, left)
                 let rightR =  new Rectangle (p, depth, height, right)
 
-                [frontR;backR;bottomR;topR;leftR;rightR] 
-                |> List.map2 (fun t s -> new TransformedShape (s, t) :> Shape) transformations
+                [frontR;backR;bottomR;topR;leftR;rightR]    //Transform the rectangles to their positions.
+                |> List.map2 (fun t s ->transform s t) transformations
 
-        member this.hit (R(p,d) as ray) = 
+        member this.hit (R(p,d) as ray) =   //Try to hit all sides if some hit returns the one with lowest distance to.
                     let min = List.map(fun (x:Shape) -> x.hit ray) rects |> List.choose id
                     match min with
                         |[] -> None
@@ -77,10 +78,12 @@ module AdvancedShape =
 
     type SolidCylinder(c,r,h,t,top,bottom) = 
         let cyl = 
+            //Create the components.
             let cyl' = (new HollowCylinder (c, r, h, t)) :> Shape
             let botDisc = new Disc (c, r, bottom)
             let topDisc = new Disc (c, r, top)
 
+            //Setup transformations.
             let transTop = mergeTransformations [rotateX (-(pi/2.0));translate 0.0 (h/2.0) 0.0]
             let transBot = mergeTransformations [rotateX ((pi/2.0));translate 0.0 (-h/2.0) 0.0]
             let top' = (transform topDisc transTop)
@@ -111,7 +114,7 @@ module AdvancedShape =
         let getCoord vi i = let vertex = vertices.[vi] in vertex.[i]
         let uvCoords v = match textureIndexes plyList with
                          | None -> None
-                         | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi) //Somehow swapped around
+                         | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi)
         let vertex vi = match XYZIndexes plyList with
                         | None -> failwith "No x y z coordinates in PLY"
                         | Some(xi, yi, zi) -> let x = getCoord vi xi

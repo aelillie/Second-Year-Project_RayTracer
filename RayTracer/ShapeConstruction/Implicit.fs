@@ -54,7 +54,7 @@ let mkNorm p (polyX,polyY,polyZ) : Vector =
                                       List.fold2 (fun acc x y  -> acc + ((agF x 1.0) / (agF y 1.0))) 0.0 agl agd
                                         
                           
-    //A Computes the derived polynomial, by first substitute values.
+    //A Computes the derived polynomial, by first substitute variables with their float values.
     let derivePoly c m = let k = Map.map (fun key value -> toFloat value) m |> Derive 
                          Map.fold (fun acc key value -> acc + (value * pow(c,float key))) 0.0  k
     let x' = derivePoly x polyX //Derive with respect to variables.

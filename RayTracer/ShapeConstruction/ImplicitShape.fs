@@ -24,16 +24,15 @@ module ImplicitShape =
                               polyToMap (simpleExprToPoly simpleE "y"),
                               polyToMap (simpleExprToPoly simpleE "z")
 
+         // map of SE to map of atomGroupList (atom list list)
         let pol' = let getSEList s = 
                       match s with
                         | SE (ag, ags) -> (ag,ags)
                    let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
                    polyToMap pol |> mapSEToAtomGroups
-
-                // map of SE to map of atomGroupList (atom list list)
                   
         //Given a values computes the result of a polynomial p given the value x as the value for the variable.
-        let calcValue x p = List.fold (fun acc (deg,value) 
+        let calcValue x p = Map.fold (fun acc deg value 
                                          -> if deg > 0 
                                             then acc + (value * (pown x deg))
                                             else acc + value) 0.0 p
@@ -41,8 +40,8 @@ module ImplicitShape =
         let intervalSize = 100.0    //Arbitrary size.
         //Returns the number of times the sign (+,-) changes through the sturm chain using the interval value.
         let evalInterval (sc:Map<int,float> list) interval =
-                        let sameSign x y = x*y >= 0.0
-                        let values = List.map (fun l -> calcValue interval (Map.toList l) ) sc 
+                        let sameSign x y = x*y >= 0.0   
+                        let values = List.map (fun l -> calcValue interval l ) sc 
                         let rec matchSign x=
                          function 
                             |[] -> x
@@ -158,8 +157,7 @@ module ImplicitShape =
                 let iEnd = snd intv
                
                 //get the function and the derived function
-                let fNorm = (Map.toList (List.item 0 sturmChain))
-                let fPrime = (Map.toList (List.item 1 sturmChain))
+                let fNorm,fPrime = List.item 0 sturmChain,List.item 1 sturmChain 
 
                 //calculate a more accurate guess based on an initial guess                                         
                 let rec calcGuess guess rc = if rc > 0 then                                                                      
@@ -260,9 +258,7 @@ module ImplicitShape =
                                                          //normal vector point with maximum answer value
                                                          let nvPointMax = Point.move p (answer * d)
                                                          let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
-                                                     
                                                          Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
-                                                         
                                                      //else Some (answer, (mkNorm nvPointMin nvExpr),m)
                                                      else
                                                          let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 

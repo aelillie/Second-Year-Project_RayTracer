@@ -266,14 +266,14 @@ module BasicShape =
 
                             if dis < 0.0 
                             then None
-                            else 
+                            else        //Find possible distances for hit.
                              let (t1, t2) = (-b + System.Math.Sqrt(dis)) / (2.0*a), (-b - System.Math.Sqrt(dis)) / (2.0*a)
                              let (tbig, tlittle) = System.Math.Max(t1,t2), System.Math.Min(t1,t2)
                              let pyt1 = Point.getY p + tlittle * Vector.getY d
                              let pyt2 = Point.getY p + tbig * Vector.getY d
      
-
-                             if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0
+                                //Check if in the right y-coordinate
+                             if (h / (-2.0)) <= pyt1 && pyt1 <= (h / 2.0) && tlittle > 0.0 
                              then 
                                 let px = Point.getX p + tlittle * Vector.getX d
                                 let pz = Point.getZ p + tlittle * Vector.getZ d
