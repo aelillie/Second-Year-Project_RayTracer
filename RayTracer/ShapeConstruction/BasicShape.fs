@@ -215,32 +215,31 @@ module BasicShape =
                               let gamma = (a1*(h*k-g*l)+d1*(g*i-e*k)+c1*(e*l-h*i))/D //y
                               let alpha = 1.0-beta-gamma
                               let t = (a1*(f*l-h*j)+b1*(h*i-e*l)+d1*(e*j-f*i))/D     //z
-             
-                              if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0
-                               then 
 
-                                 //Calculate the normal 
-                                 let n = match normals with
-                                         | Some(na, nb, nc) ->   
-                                                let n1 = multScalar na alpha
-                                                let n2 = multScalar nb beta
-                                                let n3 = multScalar nc gamma
-                                                n1+n2+n3 |> normalise
-                                         | None -> let u = mkVector1 (subPoint b a)
-                                                   let v = mkVector1 (subPoint c a)
-                                                   (crossProduct u v) |> normalise 
+                              if t > 0.0 then 
+                                if beta >= 0.0 && gamma >= 0.0 && gamma+beta <= 1.0 then 
 
-                                 //Find material for the texture
-                                 let mat = match texCoords with //No texture in ply file
-                                           | Some((ua, va), (ub, vb), (uc, vc)) ->
-                                                let tu = alpha*ua+beta*ub+gamma*uc
-                                                let tv = alpha*va+beta*vb+gamma*vc
-                                                getMaterialAtPoint tex tu tv
-                                            | _ -> getMaterialAtPoint tex 0.5 0.5
-                                 //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
-                                 if t > 0.0 
-                                 then Some(t, n, mat)
-                                 else None
+                                     //Calculate the normal 
+                                     let n = match normals with
+                                             | Some(na, nb, nc) ->   
+                                                    let n1 = multScalar na alpha
+                                                    let n2 = multScalar nb beta
+                                                    let n3 = multScalar nc gamma
+                                                    n1+n2+n3 |> normalise
+                                             | None -> let u = mkVector1 (subPoint b a)
+                                                       let v = mkVector1 (subPoint c a)
+                                                       (crossProduct u v) |> normalise 
+
+                                     //Find material for the texture
+                                     let mat = match texCoords with //No texture in ply file
+                                               | Some((ua, va), (ub, vb), (uc, vc)) ->
+                                                    let tu = alpha*ua+beta*ub+gamma*uc
+                                                    let tv = alpha*va+beta*vb+gamma*vc
+                                                    getMaterialAtPoint tex tu tv
+                                                | _ -> getMaterialAtPoint tex 0.5 0.5
+                                     //Returns the distance to the hit point, t, the normal of the hit point, and the material of the hit point
+                                     Some(t, n, mat)
+                                 else None //distance t is smaller than 0
                               else None //gamma + beta is less than 0 or greater than 1
                             else None // Can't divide with zero
 

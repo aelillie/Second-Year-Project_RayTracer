@@ -6,13 +6,16 @@ open Colour
 type Texture =
     | T of (float -> float -> Material)
 
-
+//Creates a Texture
 let mkTexture (f : float -> float -> Material) : Texture = T(f)
 
+//Takes a Materiale and make a Texture from that
 let mkMatTexture (m : Material) : Texture = mkTexture (fun x y -> m)
 
+//Function, that takes a function, for finding the Material at an exact pixel
 let getMaterialAtPoint (T(f)) x y = f x y
 
+//Takes two floats and a string and finds the Material at a specific pixel in the Bitmap and returns a Texture 
 let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
     let img = new Bitmap(file)
     let width = img.Width - 1
@@ -24,15 +27,8 @@ let mkTextureFromFile (tr : float -> float -> float * float) (file : string) =
       let x'', y'' = int (widthf * x'), int (heightf * y')
       let c = lock img (fun () -> img.GetPixel(x'',y''))
       mkMaterial (fromColor c) 0.0
-    mkTexture texture
-
- //checkerboard
-let checkerBoard (mat1:Material) (mat2:Material) (factor:float) = 
-    let texture (u:float) (v:float) = 
-        let xMod = u % factor > factor/2.0
-        let yMod = v % factor > factor/2.0
-        if (xMod && not yMod) || (not xMod && yMod) then mat1 else mat2
     T(texture)
+
 
 
 
