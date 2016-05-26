@@ -41,19 +41,19 @@ val mirrorZ : Transformation
 val rotateX : angle : float -> Transformation
 ///Rotate shape around the x-axis by the given angle
 ///measured in degrees
-val rotateX1 : angle : float -> Transformation
+//val rotateX1 : angle : float -> Transformation
 ///Rotate shape around the y-axis by the given angle
 ///measured in radians
 val rotateY : angle : float -> Transformation
 ///Rotate shape around the x-axis by the given angle
 ///measured in degrees
-val rotateY1 : angle : float -> Transformation
+//val rotateY1 : angle : float -> Transformation
 ///Rotate shape around the z-axis by the given angle
 ///measured in radians
 val rotateZ : angle : float -> Transformation
 ///Rotate shape around the x-axis by the given angle
 ///measured in degrees
-val rotateZ1 : angle : float -> Transformation
+//val rotateZ1 : angle : float -> Transformation
 ///Shear shape some distance with respect
 ///to the x- and y-axis
 val sheareXY : distance : float -> Transformation

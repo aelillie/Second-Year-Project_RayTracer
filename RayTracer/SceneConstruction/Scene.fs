@@ -52,13 +52,9 @@ let rec isShaded (r:Ray) (xs:Shape list) (bx) (l:Light) =
                         match hit r b s with
                         |None   -> isShaded r xs' (bx.Tail) l        //Check all possible shapes.
                         |Some(t',_,_) -> let tlight = Point.distance (Ray.getP r) (Light.getPoint l) |> Vector.magnitude
-  
                                          if t' > tlight     //Remember to check if shape is behind the lightsource.
-                                         then 
-                                          isShaded r xs' (bx.Tail) l 
-                                         else
-                                          true
-
+                                         then isShaded r xs' (bx.Tail) l 
+                                         else true
 
 
 // recursively casts rays to determine the color a given ray should register
@@ -103,9 +99,7 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
                                                           let res = castRay reflRay (reflNumber+1)
                                                           match res with
                                                            |None -> Some c'
-                                                           |Some (cRef) -> Some (Colour.merge reflV cRef c' )
-                                                         
-                                                          
+                                                           |Some (cRef) -> Some (Colour.merge reflV cRef c' )  
                          | _ -> Some c'
                     else Some c'    //Else return own color.    
     //Mapping the rays to colours for each pixel.
@@ -118,11 +112,8 @@ let renderScene (S(shapes, lights, ambi, cam, n)) =
 
 
 let renderToFile ((S(shapes, lights, ambi, cam, n)) as scene) (filename:string) = 
-    
     let res = renderScene scene
-
     let (px, py) = Camera.getRes cam
-
     let bitmap = Drawing.mkPicture res px py
     //Saves the file
     bitmap.Save(filename)
@@ -130,17 +121,12 @@ let renderToFile ((S(shapes, lights, ambi, cam, n)) as scene) (filename:string) 
 
 
 let renderToScreen ((S(shapes, lights, ambi, cam, n)) as scene) =
-    
     let res = renderScene scene
-
     let (px, py) = Camera.getRes cam
-
     //Create a bitmap using the values rendered from the scene
     let bitmap = Drawing.mkPicture res px py
-
     //Make window for showing image
     let window = Drawing.mkWindow bitmap
-
     System.Windows.Forms.Application.Run window 
 
 

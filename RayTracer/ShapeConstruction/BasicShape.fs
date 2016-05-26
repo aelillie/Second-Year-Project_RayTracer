@@ -28,38 +28,18 @@ module BasicShape =
                         List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
         member b.getH = b.p2
         member b.getL = b.p1
-        member b.hit (R(p,d)) =
-                //Check intersection between bbox and ray 
+        member b.hit (R(p,d)) = //Check intersection between bbox and ray 
             let (ox,oy,oz) = Point.getCoord p
             let (dx,dy,dz) = Vector.getCoord d
             let ((hx,hy,hz), (lx,ly,lz)) = (Point.getCoord b.getH, Point.getCoord b.getL)    
-            let (tx,tx') = 
-                if dx >= 0.0 then
-                   (lx - ox)/dx,  
-                   (hx - ox)/dx 
-                else 
-                   (hx - ox)/dx, 
-                   (lx - ox)/dx
-
-            let (ty,ty') = 
-                if dy >= 0.0 then
-                    (ly - oy)/dy,  
-                    (hy - oy)/dy 
-                else 
-                    (hy - oy)/dy, 
-                    (ly - oy)/dy
-            let (tz,tz') = 
-                if dz >= 0.0 then
-                    (lz - oz)/dz,  
-                    (hz - oz)/dz 
-                else 
-                    (hz - oz)/dz, 
-                    (lz - oz)/dz
-            let t = List.max [tx;ty;tz]
-            let t'= List.min [tx';ty';tz']
-            if t < t' && t' > 0.0
-            then Some (t,t')
-            else None
+            let (tx,tx') = if dx >= 0.0 then (lx - ox)/dx, (hx - ox)/dx 
+                           else (hx - ox)/dx, (lx - ox)/dx
+            let (ty,ty') = if dy >= 0.0 then (ly - oy)/dy, (hy - oy)/dy 
+                           else (hy - oy)/dy, (ly - oy)/dy
+            let (tz,tz') = if dz >= 0.0 then (lz - oz)/dz, (hz - oz)/dz 
+                           else (hz - oz)/dz, (lz - oz)/dz
+            let t, t' = List.max [tx;ty;tz], List.min [tx';ty';tz']
+            if t < t' && t' > 0.0 then Some (t,t') else None
 
     type Shape = 
          abstract member hit : Ray -> (float * Vector * Material) option
@@ -87,20 +67,16 @@ module BasicShape =
             member this.isSolid() = true
             member this.hit (R(p,d)) = 
                             let makeNV a = Point.move p (a * d) |> Point.direction o
-    
+
                             let calculateMaterial answer = 
                                 let nv = makeNV answer
                                 let n = nv / r |> normalise
-                                
                                 let theta = System.Math.Acos(Vector.getY n)
                                 let phi' = System.Math.Atan2(Vector.getX n, Vector.getZ n)
                                 let phi = if phi' < 0.0 then phi' + (2.0 * pi) else phi'
-
                                 let u, v = phi / (2.0 * pi), 1.0 - (theta/pi)
-                               
                                 getMaterialAtPoint tex u v
-                                
-    
+
                             let a = (Vector.getX d)**2.0 + (Vector.getY d)**2.0 + (Vector.getZ d)**2.0
                             let b =  (2.0 * Point.getX p * Vector.getX d) +
                                         (2.0 * Point.getY p * Vector.getY d) +
@@ -172,7 +148,7 @@ module BasicShape =
         member this.getX = (Point.getX a,Point.getX b,Point.getX c)
         member this.getY = (Point.getY a,Point.getY b,Point.getY c)
         member this.getZ = (Point.getZ a,Point.getZ b,Point.getZ c)
-        //override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
+        override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
@@ -312,12 +288,3 @@ module BasicShape =
                                 let material = calculateMaterial x y z h r tex
                                 Some(tbig, Vector.mkVector (px / r) 0.0 (pz / r), material)
                              else None
-
-
-
-
-
-
-
-
-

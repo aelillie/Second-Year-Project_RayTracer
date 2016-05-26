@@ -177,10 +177,9 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
    // let right = if(rightTest.IsEmpty && leftTest.Length > 0) then leftTest else rightTest
 
     //Check for duplicates among the lists. 
-    if(((float(left.Length+right.Length)/float(shapes.Length)) < 1.6) && left.Length <> shapes.Length && right.Length<>shapes.Length) then 
+    if(((float(left.Length+right.Length)/float(shapes.Length)) < 1.6) && 
+                left.Length <> shapes.Length && right.Length<>shapes.Length) then 
       let leftTree = mkTmKdtree left (BoundingBoxL box axis axisMidPoint)
       let rightTree = mkTmKdtree right (BoundingBoxR box axis axisMidPoint)
       Node(shapes,leftTree, rightTree, (box),(axis,axisMidPoint))
-
     else Leaf(shapes, (box))
-

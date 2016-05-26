@@ -4,6 +4,7 @@ open TestSuite
 open System.IO
 open System
 open ExprParse
+
 let testAll () =
     PointTest.doTest ()
     VectorTest.doTest ()
@@ -33,6 +34,7 @@ let renderAll toScreen =
 
 [<EntryPoint>]
 let main argv = 
+//    testAll ()
     renderAll false
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code

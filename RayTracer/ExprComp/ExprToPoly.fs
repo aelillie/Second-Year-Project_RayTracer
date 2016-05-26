@@ -26,8 +26,6 @@ let rec subst e (x,ex) = //expression (variable to replace, substitution)
   | FRoot(e,n) -> FRoot(subst e (x,ex), n)
   | FDiv(e1,e2) -> FDiv(subst e1 (x,ex), subst e2 (x,ex))
 
-  
-
     
 //a number or a variable to some power
 //Single variable, x, is represented as AExponent(x,1)
@@ -35,9 +33,6 @@ type atom = ANum of float | AExponent of string * int
 type atomGroup = atom list //implicitly multiplied atoms
 type simpleExpr = SE of atomGroup list * atomGroup list  //implicitly added atom groups
 let isSimpleExprEmpty (SE (ags,ags')) = ags = [] || ags = [[]]
-
-
-
 
 let ppAtom = function
   | ANum c -> string(c)
@@ -109,12 +104,6 @@ let rec workRoot acc = function
     |FExponent(e,n) -> workRoot acc e
     |FDiv(e1,e2) -> failwith "not implemented"
     |FRoot(e,n) -> FExponent(acc,n),e
-
-
-
-                  
-                
-
 
 //reduces duplication, so x*x becomes x^2
 //implicitly multiplied atoms

@@ -1,6 +1,5 @@
 ﻿namespace Shapes
 
-
 open Ray
 open Material
 open Vector
@@ -19,10 +18,6 @@ module ImplicitShape =
 
     type ImplicitShape (pol:Poly, simpleE, t) = 
         let sameSign x y = x*y >= 0.0
-        
-//        inline bool SameSign(float a, float b) {
-//            return a*b >= 0.0f;
-//        }
         //Polys with respect to each variable used for generating normalvectors for hit point.
         let polX,polY,polZ = 
                               polyToMap (simpleExprToPoly simpleE "x"),
@@ -40,10 +35,8 @@ module ImplicitShape =
         //Given a values computes the result of a polynomial p given the value x as the value for the variable.
         let calcValue x p = List.fold (fun acc (deg,value) 
                                          -> if deg > 0 
-                                            then 
-                                                acc + (value * (pown x deg))
-                                            else 
-                                                acc + value) 0.0 p
+                                            then acc + (value * (pown x deg))
+                                            else acc + value) 0.0 p
         
         let intervalSize = 100.0    //Arbitrary size.
         //Returns the number of times the sign (+,-) changes through the sturm chain using the interval value.
@@ -71,8 +64,6 @@ module ImplicitShape =
                                 match Map.tryFind deg t2 with
                                 |None ->  Map.add deg t1 t2
                                 |Some (x) -> Map.add deg (t1+x) t2
-
-                               
 
                         let polyMinus t1 t2 =               //Subtracting 2 polys.
                                 let minus x1 x2 =           
@@ -112,7 +103,6 @@ module ImplicitShape =
                     
                     //Addition of 2 polynomials represented as maps
                     let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) =
-
                         let merge a  b f  =
                             Map.fold (fun s k v ->
                             match Map.tryFind k s with
@@ -120,28 +110,19 @@ module ImplicitShape =
                             | None -> Map.add k v s) a b
                         merge m1 m2 (fun x y -> x+y)
 
-                    let negatePolyMaps m = 
-                        Map.map (fun key value -> value * (-1.0)) m
+                    let negatePolyMaps m = Map.map (fun key value -> value * (-1.0)) m
                     
                     //Check if only contains constants.
                     let onlyConstant (m:Map<_,_>) = 
                         if m.Count = 1 && m.ContainsKey 0 
-                        then true
-                        else false
+                        then true else false
                     //Creates the list of Remainders from doing polynomial long division on 2 polynomials                            
                     let rec pLong p px xs = 
-                        if Map.isEmpty px 
-                        then
-                         xs
-                        elif onlyConstant px
-                        then 
-                         xs
-                        else
-                         let (q, rem) = pLongDivision p px
-                         let px' = negatePolyMaps rem
-                         pLong px px' (px'::xs)
-                          
-                         
+                        if Map.isEmpty px then xs
+                        elif onlyConstant px then xs
+                        else let (q, rem) = pLongDivision p px
+                             let px' = negatePolyMaps rem
+                             pLong px px' (px'::xs)
                     pLong xs1 xs2 List.empty
 
 
@@ -168,10 +149,8 @@ module ImplicitShape =
                 let rec getInterval s e count prev : (float*float) = 
                     if count > 0 then
                      let roots = nOfRoots s e
-                     if roots > 0 then                                                                                                                                                                                                      
-                                   getInterval s ((e+s)/2.0) (count-1) e
-                     else
-                          getInterval e prev (count-1) prev
+                     if roots > 0 then getInterval s ((e+s)/2.0) (count-1) e
+                     else getInterval e prev (count-1) prev
                     else (s,e)
                                                                                                       
                 let intv = getInterval 0.0 100.0 15 0.0
@@ -195,14 +174,10 @@ module ImplicitShape =
         let findHit (p:Point) (d:Vector) floatmap  = 
             let root = newtRaph (sturm floatmap)                                           
             if root = 0.0 || root < 0.0 then None
-            else                                             
-              let hitPoint = Point.move p (root*d)
-          
-              Some (root, Vector.normalise(mkNorm hitPoint (polX,polY,polZ)),(Texture.getMaterialAtPoint t 0.0 0.0))  
+            else let hitPoint = Point.move p (root*d)
+                 Some (root, Vector.normalise(mkNorm hitPoint (polX,polY,polZ)),
+                    (Texture.getMaterialAtPoint t 0.0 0.0))  
 
-
-        
-                 
         interface Shape with
             member this.getBounding () = None
             member this.isInside p = failwith "Not implemented"
@@ -213,28 +188,29 @@ module ImplicitShape =
                                 let dx,dy,dz = Vector.getCoord d
                                 //substitute atoms with float values: atom list list -> float list list
                                 let substAtomG ags = 
-                                    List.map (fun x -> List.map (fun a -> match a with
-                                                                            | AExponent (s,i) -> let sub = 
-                                                                                                    match s with
-                                                                                                    | "px" -> px
-                                                                                                    | "py" -> py
-                                                                                                    | "pz" -> pz
-                                                                                                    | "dx" -> dx
-                                                                                                    | "dy" -> dy
-                                                                                                    | "dz" -> dz
-                                                                                                    | _ ->  failwith ""
-                                                                                                 pown sub i
-                                                                            | ANum c  -> c ) x) ags 
+                                    List.map (fun x -> List.map (fun a -> 
+                                                match a with
+                                                | AExponent (s,i) -> let sub = 
+                                                                        match s with
+                                                                        | "px" -> px
+                                                                        | "py" -> py
+                                                                        | "pz" -> pz
+                                                                        | "dx" -> dx
+                                                                        | "dy" -> dy
+                                                                        | "dz" -> dz
+                                                                        | _ ->  failwith ""
+                                                                     pown sub i
+                                                | ANum c  -> c ) x) ags 
 
                                 //Collect the float list list into a single float list
                                 let subFloats m = Map.map (fun x (y,d) -> (substAtomG y, substAtomG d) ) m
 
-                                let multFloats m = Map.map (fun x (y,d) -> let y' = List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y
-                                                                           let d' = List.map (fun ds -> List.fold (fun a b -> a*b) 1.0 ds) d
-                                                                           (y',d')) m
+                                let multFloats m = 
+                                    Map.map (fun x (y,d) -> 
+                                        let y' = List.map (fun ys -> List.fold (fun a b -> a*b) 1.0 ys) y
+                                        let d' = List.map (fun ds -> List.fold (fun a b -> a*b) 1.0 ds) d
+                                        (y',d')) m
                                 
-                                
-
                                 let divideFloats m = 
                                                     Map.map (fun x (y,d) -> (List.map2 (fun t d -> t/d) y d)) m
                                 //let collectFloats m = Map.map (fun x y -> List.collect id (substSE y)) m 
@@ -246,7 +222,6 @@ module ImplicitShape =
 
                                 let polyMapOFloats m = (subFloats >> multFloats >> divideFloats >> foldMap )  m
 
-                                
                                 let floatMap = polyMapOFloats pol'
 
                                 //check what degree of poly we are dealing with, and solve it
@@ -254,13 +229,10 @@ module ImplicitShape =
                                     match floatMap.Count with
                                     | 1 -> failwith "0 degree polynomial doesn't exist"
                                     | 2 -> let a = floatMap.Item 1
-
                                            let b = floatMap.Item 0                               
                                             
                                            if a=0.0 then None
                                            else let res = (-b)/a
-                                           
-                               
                                                 let hitPoint = Point.move p (res*d)
                                                 let nVector = Vector.normalise(mkNorm hitPoint (polX,polY,polZ))
                                                 let denom = Vector.dotProduct  d nVector 
@@ -268,13 +240,9 @@ module ImplicitShape =
                                                 //else if res < 0.0 then None
                                                 else Some (res, nVector, (Texture.getMaterialAtPoint t 0.0 0.0))
 
-                                    | 3 ->  
-                                            let a = floatMap.Item 2
-
+                                    | 3 ->  let a = floatMap.Item 2
                                             let b = floatMap.Item 1
-
                                             let c = floatMap.Item 0
-
                                             let disc = System.Math.Pow(b,2.0) - (4.0 * a * c)                              
                                 
                                             if(disc < 0.0) then None
@@ -283,29 +251,22 @@ module ImplicitShape =
                                                 let answer2 = (-b - System.Math.Sqrt(disc)) / (2.0*a)
                                   
                                                 if answer1 < 0.0 && answer2 < 0.0 then None
-                                                else
-                                                    let answer = System.Math.Min(answer1,answer2)
-                                                    //normal vector point with minimum answer value
-                                                    let nvPointMin = Point.move p (answer * d)
-                                                    if answer < 0.0 
-                                                    then 
-                                                        let answer = System.Math.Max(answer1,answer2)
-                                                        //normal vector point with maximum answer value
-                                                        let nvPointMax = Point.move p (answer * d)
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
-
-                                                        Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
-                                                        
-                                                    //else Some (answer, (mkNorm nvPointMin nvExpr),m)
-                                                    else
-                                                        let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
-                                                        Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
+                                                else let answer = System.Math.Min(answer1,answer2)
+                                                     //normal vector point with minimum answer value
+                                                     let nvPointMin = Point.move p (answer * d)
+                                                     if answer < 0.0 
+                                                     then 
+                                                         let answer = System.Math.Max(answer1,answer2)
+                                                         //normal vector point with maximum answer value
+                                                         let nvPointMax = Point.move p (answer * d)
+                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMax
+                                                     
+                                                         Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
+                                                         
+                                                     //else Some (answer, (mkNorm nvPointMin nvExpr),m)
+                                                     else
+                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
+                                                         Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
                                            
                                     | _ -> findHit p d floatMap 
-
-
                                 solveDegreePoly
-                                           
-               
-        
-

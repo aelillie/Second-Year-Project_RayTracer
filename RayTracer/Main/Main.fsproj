@@ -54,6 +54,11 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\API\API.fsproj">
+      <Name>API</Name>
+      <Project>{5fadbfc0-2609-4110-a205-504603099e5d}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
       <Name>DrawAttributes</Name>
       <Project>{23b2bd0e-c5f4-4dda-b3f9-07e06899aa0c}</Project>
