@@ -130,12 +130,12 @@ module TransformedShape =
                       | Some(dist1, _, _), 
                         Some(dist2, _, _) -> 
                             match ((s1.isInside p), (s2.isInside p)) with
-                            | (true, true) -> if dist1 < dist2 then hit1 else hit2
+                            | (true, true) -> if dist1 < (dist2+epsilon) then hit1 else hit2
                             | (true, false) -> if (s1.isInside (move p (dist2 * d)))
                                                then hit2 else None 
                             | (false, true) -> if (s2.isInside (move p (dist1 * d)))
                                                then hit1 else None
-                            | (false, false) -> let dist = if dist1 < dist2 then dist1 else dist2
+                            | (false, false) -> let dist = if dist1 < (dist2+epsilon) then dist1 else dist2
                                                 let newPoint = move p ((dist+epsilon) * d)
                                                 let newRay = mkRay newPoint d
                                                 match hit newRay this with
