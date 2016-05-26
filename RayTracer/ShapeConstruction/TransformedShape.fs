@@ -131,11 +131,7 @@ module TransformedShape =
                         Some(dist2, _, _) -> 
                             match ((s1.isInside p), (s2.isInside p)) with
                             | (true, true) -> if dist1 < (dist2+epsilon) then hit1 else hit2
-<<<<<<< HEAD
-                            | (true, false) -> if (s1.isInside (move p (dist2 * d)))
-=======
                             | (true, false) -> if (s1.isInside (move p ((dist2+epsilon) * d)))
->>>>>>> 422a2ae96b843ad817be9d9d6cd752ab19343d40
                                                then hit2 else None 
                             | (false, true) -> if (s2.isInside (move p ((dist1+epsilon) * d)))
                                                then hit1 else None

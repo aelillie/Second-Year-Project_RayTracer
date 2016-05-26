@@ -67,7 +67,7 @@ let getShapes s =
 let getAxis s =
     match s with
     | Node(_,_,_,_,a) -> a
-    | Leaf(_,_) -> failwith "leaf ramt af axis"
+    | Leaf(_,_) -> failwith "Leaf hit by axis"
 
 
 //Get bounding box
@@ -140,13 +140,13 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
     let rec largerThanSplit (xs:BasicShape.Triangle list) = 
         let results = List.choose(fun (elem:BasicShape.Triangle) ->
                         match axis with
-                        |"x" -> let (x1,x2,x3) = elem.getCoords "x"
+                        |"x" -> let (x1,x2,x3) = elem.getX
                                 let mpX = (Point.getX axisMidPoint)
                                 if x1>=mpX || x2>=mpX ||x3>=mpX  then Some elem else None
-                        |"y" -> let (y1,y2,y3) = elem.getCoords "y"
+                        |"y" -> let (y1,y2,y3) = elem.getY
                                 let mpY = (Point.getY axisMidPoint)
                                 if y1>=mpY || y2>=mpY ||y3>=mpY  then Some elem else None
-                        |"z" -> let (z1,z2,z3) = elem.getCoords "z"
+                        |"z" -> let (z1,z2,z3) = elem.getZ
                                 let mpZ = (Point.getZ axisMidPoint)
                                 if z1>=mpZ || z2>=mpZ ||z3>=mpZ  then Some elem else None
                         | _ -> failwith "Unknown axis") xs
@@ -156,13 +156,13 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
     let rec lessThanSplit (xs:BasicShape.Triangle list) = 
         let results = List.choose(fun (elem:BasicShape.Triangle) ->
                         match axis with
-                        |"x" -> let (x1,x2,x3) = elem.getCoords "x"
+                        |"x" -> let (x1,x2,x3) = elem.getX
                                 let mpX = (Point.getX axisMidPoint)
                                 if x1<=mpX || x2<=mpX ||x3<=mpX  then Some elem else None
-                        |"y" -> let (y1,y2,y3) = elem.getCoords "y"
+                        |"y" -> let (y1,y2,y3) = elem.getY
                                 let mpY = (Point.getY axisMidPoint)
                                 if y1<=mpY || y2<=mpY ||y3<=mpY  then Some elem else None
-                        |"z" -> let (z1,z2,z3) = elem.getCoords "z"
+                        |"z" -> let (z1,z2,z3) = elem.getZ
                                 let mpZ = (Point.getZ axisMidPoint)
                                 if z1<=mpZ || z2<=mpZ ||z3<=mpZ  then Some elem else None
                         | _ ->  None) xs

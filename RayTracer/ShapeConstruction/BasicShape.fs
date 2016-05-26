@@ -26,10 +26,8 @@ module BasicShape =
                         let ydim = ((Point.getY b.getH) - (Point.getY b.getL), "y")
                         let zdim = ((Point.getZ b.getH) - (Point.getZ b.getL), "z") 
                         List.maxBy(fun (x,y) -> x) <| [xdim;ydim;zdim]
-        member b.getH =
-                b.p2
-        member b.getL =
-                b.p1
+        member b.getH = b.p2
+        member b.getL = b.p1
         member b.hit (R(p,d)) =
                 //Check intersection between bbox and ray 
             let (ox,oy,oz) = Point.getCoord p
@@ -171,12 +169,9 @@ module BasicShape =
                              let (x2, y2, z2) = getCoord p2
                              (x1-x2,y1-y2,z1-z2)
         member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
-        member this.getCoords s = 
-            match s with
-            | "x" -> (Point.getX a,Point.getX b,Point.getX c)
-            | "y" -> (Point.getY a,Point.getY b,Point.getY c)
-            | "z" -> (Point.getZ a,Point.getZ b,Point.getZ c)
-            | _ -> failwith "Unknown axis"
+        member this.getX = (Point.getX a,Point.getX b,Point.getX c)
+        member this.getY = (Point.getY a,Point.getY b,Point.getY c)
+        member this.getZ = (Point.getZ a,Point.getZ b,Point.getZ c)
         //override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
             member this.isInside p = failwith "Not a solid shape"
