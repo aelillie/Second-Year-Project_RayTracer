@@ -18,7 +18,6 @@ module TransformationTest =
     let pc = transPointParallel (getInv c) pb
     let transP = transPointParallel (getInv d) pc
     
-    
     let norm = mergeTransformations [a;b;c;d]
     let rev = mergeTransformations [d;c;b;a]
     
