@@ -1,20 +1,10 @@
 ﻿//Entry point for running the program
-open Scene
-open Light
-open Point
-open Camera
-open Colour
-open Shapes
+
 open Utilities
-open Vector
-open Material
+open Tracer.API
 open Texture
-open Shape
-open Shapes.TransformedShape
-open Transformation
 open System
 open System.Drawing
-open PlyParse
 
 [<STAThreadAttribute>]
 [<EntryPoint>]
