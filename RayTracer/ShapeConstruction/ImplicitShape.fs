@@ -17,7 +17,7 @@ open Texture
 module ImplicitShape =
     type Poly = ExprToPoly.poly
 
-    type ImplicitShape (pol:Poly, simpleE, t) as this= 
+    type ImplicitShape (pol:Poly, simpleE, t) = 
         let sameSign x y = x*y >= 0.0
         
 //        inline bool SameSign(float a, float b) {
