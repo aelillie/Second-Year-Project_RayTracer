@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{66CFC955-B8C4-498E-B4D6-1AD7EF81BDB5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TracerTestSuite</RootNamespace>
+    <AssemblyName>TracerTestSuite</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <Externalconsole>true</Externalconsole>
+    <GenerateTailCalls>true</GenerateTailCalls>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Util.fs" />
+    <Compile Include="ImplicitSurfaces.fs" />
+    <Compile Include="Shapes.fs" />
+    <Compile Include="Light.fs" />
+    <Compile Include="AffineTransformations.fs" />
+    <Compile Include="Meshes.fs" />
+    <Compile Include="Texture.fs" />
+    <Compile Include="CSG.fs" />
+    <Compile Include="Program.fs" />
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\API\API.fsproj">
+      <Name>API</Name>
+      <Project>{5fadbfc0-2609-4110-a205-504603099e5d}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\DrawAttributes\DrawAttributes.fsproj">
+      <Name>DrawAttributes</Name>
+      <Project>{23b2bd0e-c5f4-4dda-b3f9-07e06899aa0c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ExprComp\ExprComp.fsproj">
+      <Name>ExprComp</Name>
+      <Project>{43cdd2b1-d3d2-469e-93c4-4b536abb3fbe}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Main\Main.fsproj">
+      <Name>Main</Name>
+      <Project>{f8e23745-d937-49e0-a513-a814d23d4bb9}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PlyParser\PlyParser.fsproj">
+      <Name>PlyParser</Name>
+      <Project>{ea58233c-8bae-4fa2-8a21-d9f34373481c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SceneConstruction\SceneConstruction.fsproj">
+      <Name>SceneConstruction</Name>
+      <Project>{cb0d89de-1378-405c-94d3-fffa04e2e114}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ShapeConstruction\ShapeConstruction.fsproj">
+      <Name>ShapeConstruction</Name>
+      <Project>{c897a112-f268-4564-9743-9def1f15fe2e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Space3D\Space3D.fsproj">
+      <Name>Space3D</Name>
+      <Project>{60e1b77c-8213-45ce-8662-21c240d44f5b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1 @@
+meshes/horse.png rendered in 57.9805083 seconds
