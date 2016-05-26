@@ -12,7 +12,7 @@ open TmKdtree
 
 module AdvancedShape = 
     
-
+    //Compute the bounding box containing all the shapes given
     let bBoxFromList xs = 
         let sbbox = List.map (fun (c:Shape) -> c.getBounding().Value) xs
 

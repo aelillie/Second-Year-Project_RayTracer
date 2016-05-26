@@ -5,16 +5,12 @@ type point = Point.Point
 type vector = Vector.Vector
 type ray = Ray.Ray
 
-///Actual pixel resolution of the drawing
 type Resolution = 
     | Res of int * int
 
-///A pixel's unit resolution
 type UnitRes =
     | UR of float * float
 
-///Representation of a camera, made up by its position, entry view point on the view plane,
-///direction vector, zoom scale, unit resolution and drawing resolution of the scene
 type Camera = 
     | C of point * point * vector * float * UnitRes * Resolution
 
@@ -49,9 +45,6 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
     [for x in 0..pw do
          for y in 0..ph do           
             yield createRay (x,y) p p', (x,y)]
-//    let result = List.init (pw * ph)
-//
-//    Parallel.For (0,pw, (fun x -> for y in 0..ph do result.[(y*x)] <- createRay (x,y) p p')) |> ignore
     
 let getPoint (C(p,_,_,_,_,_)) = p
 

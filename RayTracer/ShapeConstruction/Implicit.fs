@@ -26,24 +26,18 @@ let polyToMap p : Map<int,simpleExpr> =
     match p with
     |Po (x) -> x
 
-
-
-
-let mkNorm p (polyX,polyY,polyZ) : Vector = 
-
+let mkNorm p (polyX,polyY,polyZ) : Vector =
     //get x,y,z from Point
     let x = Point.getX p
     let y = Point.getY p
     let z = Point.getZ p
-    
 
     //Function that derives a polynomial with only floats, reprenseted as a map.
     let Derive m = Map.fold (fun acc degree value -> if degree = 0
                                                      then Map.add 0 0.0 acc 
                                                      elif degree = 1
                                                      then Map.add 0 value acc
-                                                     else Map.add (degree-1) (value * float degree) acc ) Map.empty m 
-                                                     
+                                                     else Map.add (degree-1) (value * float degree) acc ) Map.empty m                      
      
     //Substitutes variables with their values. Also removes division by dividing.                                                 
     let toFloat se = match se with
@@ -56,28 +50,21 @@ let mkNorm p (polyX,polyY,polyZ) : Vector =
                                                             |AExponent(e, n) when e = "y" -> pow (y, float n) * s
                                                             |AExponent(e, n) when e = "z" -> pow (z, float n) * s
                                                             |_ -> failwith "Unexpected variable when finding normal vector"
-                                                   agF ag' k
-                                                             
-                                         
+                                                   agF ag' k                            
                                       List.fold2 (fun acc x y  -> acc + ((agF x 1.0) / (agF y 1.0))) 0.0 agl agd
                                         
                           
     //A Computes the derived polynomial, by first substitute values.
     let derivePoly c m = let k = Map.map (fun key value -> toFloat value) m |> Derive 
                          Map.fold (fun acc key value -> acc + (value * pow(c,float key))) 0.0  k
-
     let x' = derivePoly x polyX //Derive with respect to variables.
     let y' = derivePoly y polyY
     let z' = derivePoly z polyZ
-
-
     Vector.mkVector x' y' z'
 
 
 let mkPoly (s : string)   = 
     let expr = parseStr s
-   // let con = FNum (snd constant)
-
   
     //replace x,y,z with the ray equations corresponding values and 
     let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))

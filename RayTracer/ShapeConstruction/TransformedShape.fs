@@ -1,6 +1,5 @@
 ﻿namespace Shapes
 
-
 open Ray
 open Material
 open Vector
@@ -54,6 +53,7 @@ module TransformedShape =
                                                                   Some(dist, dir', mat) 
     let transform s tr = new TransformedShape(s,tr):> Shape
 
+    //Computes the bounding box of a combined shape
     let makeBounding (s1:Shape) (s2:Shape) = 
                              let min (x:float) (y:float) = System.Math.Min (x,y)
                              let max (x:float) y = System.Math.Max (x,y)
@@ -62,12 +62,8 @@ module TransformedShape =
                              let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                              let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2
                              let (hx2,hy2,hz2) = (Point.getCoord b2.p2) //High point of s2
-                             let (lx,ly,lz) =  min lx1 lx2, min ly1 ly2, min lz1 lz2
-                                            
+                             let (lx,ly,lz) =  min lx1 lx2, min ly1 ly2, min lz1 lz2     
                              let hx, hy, hz = max hx1 hx2, max hy1 hy2, max hz1 hz2
-
-
-                             
                              {p1 = (mkPoint lx ly lz); p2 = (mkPoint hx hy hz)}
 
     type GroupShape(s1:Shape,s2:Shape) = 

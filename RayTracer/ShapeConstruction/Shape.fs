@@ -61,11 +61,12 @@ module Shape =
     //Triangle
     let mkTriangle a b c mat = new Triangle(a,b,c,(Texture.mkMatTexture mat), None, None) :> Shape
 
-    //Make baseshape for a ply file
+    //Make baseshape for a .ply file
     let mkPLY (filename : string) (smooth : bool) = PLY(parsePly filename, smooth)
-
-
+    //Make baseshape for an equation
     let mkImplicit s = Bs(mkPoly s)
+
+    //Construct a shape from a baseshape and a texture
     let mkShape (b : BaseShape) (t : Texture) : Shape= 
         match b with
         | PLY(plyList, smooth) -> new TriangleMesh(plyList, t, smooth) :> Shape

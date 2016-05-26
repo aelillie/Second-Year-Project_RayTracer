@@ -3,7 +3,6 @@
 open FParsec
 open System.IO
 
-
 type UserState = unit
 type Ply = 
          | Vertex of float []
@@ -17,7 +16,6 @@ type Ply =
           match p with
            Property x -> x
           |_ -> "Override rest of elements if needed"
-
 
 let print p writer = 
       match p with

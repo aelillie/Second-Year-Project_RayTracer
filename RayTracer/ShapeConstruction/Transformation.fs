@@ -81,7 +81,7 @@ let rotateX angle =
                       [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
-let rotateX1 angle = rotateX (degrees_to_radians angle)
+//let rotateX1 angle = rotateX (degrees_to_radians angle)
 
 
 let rotateY angle =
@@ -97,7 +97,7 @@ let rotateY angle =
                       [0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
-let rotateY1 angle = rotateX (degrees_to_radians angle)
+//let rotateY1 angle = rotateX (degrees_to_radians angle)
 
 let rotateZ angle =
     let cos = System.Math.Cos angle
@@ -112,7 +112,7 @@ let rotateZ angle =
                       [ 0.0; 0.0; 0.0; 1.0]]
     T(m, m')
 
-let rotateZ1 angle = rotateX (degrees_to_radians angle)
+//let rotateZ1 angle = rotateX (degrees_to_radians angle)
 
 let inverseShear (m : float [,]) = 
     let m' = Array2D.copy m
