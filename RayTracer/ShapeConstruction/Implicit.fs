@@ -29,17 +29,13 @@ let polyToMap p : Map<int,simpleExpr> =
 
 
 
-let mkNorm p expr : Vector = 
+let mkNorm p (polyX,polyY,polyZ) : Vector = 
 
     //get x,y,z from Point
     let x = Point.getX p
     let y = Point.getY p
     let z = Point.getZ p
     
-    //get derived polynomials with respect to x,y,z
-    let derivPolyX = polyToMap (exprToPoly expr "x")
-    let derivPolyY = polyToMap (exprToPoly expr "y")
-    let derivPolyZ = polyToMap (exprToPoly expr "z")
 
     //Function that derives a polynomial with only floats, reprenseted as a map.
     let Derive m = Map.fold (fun acc degree value -> if degree = 0
@@ -70,15 +66,15 @@ let mkNorm p expr : Vector =
     let derivePoly c m = let k = Map.map (fun key value -> toFloat value) m |> Derive 
                          Map.fold (fun acc key value -> acc + (value * pow(c,float key))) 0.0  k
 
-    let x' = derivePoly x derivPolyX //Derive with respect to variables.
-    let y' = derivePoly y derivPolyY
-    let z' = derivePoly z derivPolyZ
+    let x' = derivePoly x polyX //Derive with respect to variables.
+    let y' = derivePoly y polyY
+    let z' = derivePoly z polyZ
 
 
     Vector.mkVector x' y' z'
 
 
-let mkPoly (s : string) (*(constant:string*float)*)  = 
+let mkPoly (s : string)   = 
     let expr = parseStr s
    // let con = FNum (snd constant)
 
@@ -87,23 +83,17 @@ let mkPoly (s : string) (*(constant:string*float)*)  =
     let ex = FAdd(FVar "px", FMult(FVar "t",FVar "dx"))
     let ey = FAdd(FVar "py", FMult(FVar "t",FVar "dy"))
     let ez = FAdd(FVar "pz", FMult(FVar "t",FVar "dz"))
+    //Create simpleExpr of the original expression 
+    let simpleE = exprToSimpleExpr expr
 
-   
-    let s = ppExpr expr
-    printfn "%s\n" s
-//     let polX = subst expr ("x", ex)
-//    let polY = subst polX ("y", ey)
-//    let polyExprSubbed = subst polY ("z", ez)
-
+    //Substitute x y and z with the function of the ray
     let polyExprSubbed = List.fold subst expr [("x",ex);("y",ey);("z",ez)]
+    
+    //Create a poly with respect to t - the distance.
+    let poly =  exprToPoly polyExprSubbed "t"
 
-    let k = ppExpr polyExprSubbed
-
-    let k = exprToPoly polyExprSubbed "t"
-    let print = ppPoly "" (exprToPoly polyExprSubbed "t") 
-    printfn "%s\n" print
     //simplify equation 
-    (k), expr
+    (poly), simpleE
 
     
 

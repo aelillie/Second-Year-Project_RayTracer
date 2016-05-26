@@ -17,31 +17,44 @@ open Texture
 module ImplicitShape =
     type Poly = ExprToPoly.poly
 
-    type ImplicitShape (pol:Poly, expr, t) as this= 
+    type ImplicitShape (pol:Poly, simpleE, t) = 
+        let sameSign x y = x*y >= 0.0
+        
+//        inline bool SameSign(float a, float b) {
+//            return a*b >= 0.0f;
+//        }
+        //Polys with respect to each variable used for generating normalvectors for hit point.
+        let polX,polY,polZ = 
+                              polyToMap (simpleExprToPoly simpleE "x"),
+                              polyToMap (simpleExprToPoly simpleE "y"),
+                              polyToMap (simpleExprToPoly simpleE "z")
+
+        let pol' = let getSEList s = 
+                      match s with
+                        | SE (ag, ags) -> (ag,ags)
+                   let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
+                   polyToMap pol |> mapSEToAtomGroups
+
+                // map of SE to map of atomGroupList (atom list list)
+                  
         //Given a values computes the result of a polynomial p given the value x as the value for the variable.
-        let calcValue x p = List.fold (fun acc (deg,value)  -> if deg > 0 
-                                                                then 
-                                                                    acc + (value * (System.Math.Pow(x,(float deg))))
-                                                                else 
-                                                                    acc + value) 0.0 p
+        let calcValue x p = List.fold (fun acc (deg,value) 
+                                         -> if deg > 0 
+                                            then 
+                                                acc + (value * (pown x deg))
+                                            else 
+                                                acc + value) 0.0 p
         
         let intervalSize = 100.0    //Arbitrary size.
         //Returns the number of times the sign (+,-) changes through the sturm chain using the interval value.
         let evalInterval (sc:Map<int,float> list) interval =
+                        let sameSign x y = x*y >= 0.0
                         let values = List.map (fun l -> calcValue interval (Map.toList l) ) sc 
                         let rec matchSign x=
                          function 
                             |[] -> x
-                            |n1::n2::ns' -> let n1Sign = System.Math.Sign (n1:float)
-                                            let n2Sign = System.Math.Sign n2
-                                            if n2Sign = 0
-                                            then
-                                             matchSign (x) (n1::ns')
-                                            elif n1Sign <> n2Sign
-                                            then
-                                             matchSign (x+1) (n2::ns')
-                                            else 
-                                             matchSign (x) (n2::ns')
+                            |n1::n2::ns' ->  if sameSign n1 n2 then matchSign (x) (n2::ns') else matchSign (x+1) (n2::ns')
+
                             |_ -> x
                                                
                         matchSign 0 values
@@ -66,10 +79,8 @@ module ImplicitShape =
                                           match x1 with 
                                            |None ->  x2
                                            |Some t -> x2 - t
-                                        
-                                let t1' = Map.toList t1
-                                List.map (fun (deg, t) -> let x = Map.tryFind deg t2 in (deg, minus x t) ) t1'
-                                |> Map.ofList               
+                                Map.map (fun deg t -> let x = Map.tryFind deg t2 in ( minus x t) ) t1
+                                             
                             
                         //Multiply a polynomial with a term
                         let polyMult (deg, t1:float) t2 = 
@@ -102,12 +113,12 @@ module ImplicitShape =
                     //Addition of 2 polynomials represented as maps
                     let plusPolyMaps (m1:Map<int,float>) (m2:Map<int,float>) =
 
-                        let merge a  b  =
+                        let merge a  b f  =
                             Map.fold (fun s k v ->
                             match Map.tryFind k s with
-                            | Some v' -> Map.add k (v + v') s
+                            | Some v' -> Map.add k (f v v') s
                             | None -> Map.add k v s) a b
-                        merge m1 m2
+                        merge m1 m2 (fun x y -> x+y)
 
                     let negatePolyMaps m = 
                         Map.map (fun key value -> value * (-1.0)) m
@@ -179,100 +190,40 @@ module ImplicitShape =
 
                 //converge on the root giving a guess based on the interval                                              
                 calcGuess ((iEnd+iStart)/2.0) 6
-                
-
-
-                                                                                         
-
             else 0.0   
         
-        let findHit (p:Point) (d:Vector) floatmap e = 
+        let findHit (p:Point) (d:Vector) floatmap  = 
             let root = newtRaph (sturm floatmap)                                           
             if root = 0.0 || root < 0.0 then None
             else                                             
               let hitPoint = Point.move p (root*d)
           
-              Some (root, Vector.normalise(mkNorm hitPoint e),(Texture.getMaterialAtPoint t 0.0 0.0))  
+              Some (root, Vector.normalise(mkNorm hitPoint (polX,polY,polZ)),(Texture.getMaterialAtPoint t 0.0 0.0))  
 
 
         
                  
         interface Shape with
             member this.getBounding () = None
-//                                         let this = this :> Shape
-//                                         //If map only contains 1st degree then it is a plane
-//                                         let isPlane =
-//                                                match pol with
-//                                                |Po x -> x.Count = 2
-//
-//                                         let doesHit r = 
-//                                                match this.hit r with
-//                                                 |None -> false
-//                                                 |Some (_) -> true
-//                                        
-//                                         let rec findBoundary cam p axis (n:float) c =  //Recursively find the boundary point for a given axis.
-//                                            let nf = float n    
-//                                            if c = 20
-//                                            then 
-//                                                let x,y,z = Point.getCoord p
-//                                                mkPoint (x-(10.0*nf)) (y-(10.0*nf)) (z-(10.0*nf))
-//                                            else
-//                                                
-//                                                let x,y,z = Point.getCoord p
-//                                                let p' = match axis with
-//                                                        |"x" -> (mkPoint (x+nf) y z)
-//                                                        |"y" -> (mkPoint (x) (y+nf) z)
-//                                                        |"z" -> (mkPoint x y (z+nf))
-//                                                        |_ -> failwith "Expected an axis"
-//                                                let r = mkRay cam (Point.direction cam p')
-//                                                match doesHit r with
-//                                                |true  -> findBoundary cam p' axis n 0
-//                                                |false -> findBoundary cam p' axis n (c+1)
-//
-//                                         if isPlane 
-//                                         then 
-//                                             None
-//                                         else
-//                                             let n = 0.1
-//                                             let p = mkPoint 0.0 0.0 0.0
-//                                             let plx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" -n 0
-//                                             let ply = findBoundary (mkPoint 0.0 0.0 100.0) p "y" -n 0
-//                                             let plz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" -n 0
-//                                             let phx = findBoundary (mkPoint 0.0 0.0 100.0) p "x" n 0
-//                                             let phy = findBoundary (mkPoint 0.0 0.0 100.0) p "y" n 0
-//                                             let phz = findBoundary (mkPoint 100.0 0.0 0.0) p "z" n 0
-//
-//                                             Some ({p1 = (Point.mkPoint (Point.getX plx) (Point.getY ply) (Point.getZ plz)) ; p2 = (Point.mkPoint (Point.getX phx) (Point.getY phy) (Point.getZ phz)) })
-                                            
-//                                       
-
-                                       
-                                      
-                                        
             member this.isInside p = failwith "Not implemented"
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
-                                let getSEList s = 
-                                    match s with
-                                    | SE (ag, ags) -> (ag,ags)
-
-
-                                // map of SE to map of atomGroupList (atom list list)
-                                let mapSEToAtomGroups m = Map.map (fun x y -> getSEList y) m
- 
+                                
+                                let px,py,pz = Point.getCoord p
+                                let dx,dy,dz = Vector.getCoord d
                                 //substitute atoms with float values: atom list list -> float list list
                                 let substAtomG ags = 
                                     List.map (fun x -> List.map (fun a -> match a with
                                                                             | AExponent (s,i) -> let sub = 
                                                                                                     match s with
-                                                                                                    | "px" -> Point.getX p
-                                                                                                    | "py" -> Point.getY p
-                                                                                                    | "pz" -> Point.getZ p
-                                                                                                    | "dx" -> Vector.getX d
-                                                                                                    | "dy" -> Vector.getY d
-                                                                                                    | "dz" -> Vector.getZ d
-                                                                                                    | _ -> failwith ""
-                                                                                                 pow (sub,(float i)) 
+                                                                                                    | "px" -> px
+                                                                                                    | "py" -> py
+                                                                                                    | "pz" -> pz
+                                                                                                    | "dx" -> dx
+                                                                                                    | "dy" -> dy
+                                                                                                    | "dz" -> dz
+                                                                                                    | _ ->  failwith ""
+                                                                                                 pown sub i
                                                                             | ANum c  -> c ) x) ags 
 
                                 //Collect the float list list into a single float list
@@ -293,10 +244,10 @@ module ImplicitShape =
                                                                     (ys)) m
 
 
-                                let polyMapOFloats m = (polyToMap >> mapSEToAtomGroups >> subFloats >> multFloats >> divideFloats >> foldMap )  m
+                                let polyMapOFloats m = (subFloats >> multFloats >> divideFloats >> foldMap )  m
 
                                 
-                                let floatMap = polyMapOFloats pol
+                                let floatMap = polyMapOFloats pol'
 
                                 //check what degree of poly we are dealing with, and solve it
                                 let solveDegreePoly =
@@ -311,7 +262,7 @@ module ImplicitShape =
                                            
                                
                                                 let hitPoint = Point.move p (res*d)
-                                                let nVector = Vector.normalise(mkNorm hitPoint expr)
+                                                let nVector = Vector.normalise(mkNorm hitPoint (polX,polY,polZ))
                                                 let denom = Vector.dotProduct  d nVector 
                                                 if -denom<0.000001 then None
                                                 //else if res < 0.0 then None
@@ -350,7 +301,7 @@ module ImplicitShape =
                                                         let nV = Point.direction (mkPoint 0.0 0.0 0.0) nvPointMin 
                                                         Some (answer, Vector.normalise(nV),(Texture.getMaterialAtPoint t 0.0 0.0)) 
                                            
-                                    | _ -> findHit p d floatMap expr 
+                                    | _ -> findHit p d floatMap 
 
 
                                 solveDegreePoly

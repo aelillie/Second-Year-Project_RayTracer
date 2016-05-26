@@ -22,13 +22,12 @@ let toColor (C(r,g,b)) =
         | _ when x < 0.0 -> 0.0
         | _ when x > 1.0 -> 1.0
         | _ -> x
-    let r' =  int (255.0 *(pow (edge r) 0.5))
-    let g' =  int (255.0 *(pow (edge g) 0.5))
-    let b' =  int (255.0 *(pow (edge b) 0.5))
-
+    let r' =  int (255.0 *(edge r**0.5))
+    let g' =  int (255.0 *(edge g**0.5))
+    let b' =  int (255.0 *(edge b**0.5))
     Color.FromArgb(255, r',g', b')
 
-//Takes a colour list and returns a color.
+///Takes a colour list and returns a color.
 let toColorFromList xs =
     match xs with
     |[] -> System.Drawing.Color.Black

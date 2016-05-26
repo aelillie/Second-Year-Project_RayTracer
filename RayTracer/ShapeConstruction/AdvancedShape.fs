@@ -111,7 +111,7 @@ module AdvancedShape =
         let getCoord vi i = let vertex = vertices.[vi] in vertex.[i]
         let uvCoords v = match textureIndexes plyList with
                          | None -> None
-                         | Some(ui, vi) -> Some(getCoord v vi, getCoord v ui) //Somehow swapped around
+                         | Some(ui, vi) -> Some(getCoord v ui, getCoord v vi) //Somehow swapped around
         let vertex vi = match XYZIndexes plyList with
                         | None -> failwith "No x y z coordinates in PLY"
                         | Some(xi, yi, zi) -> let x = getCoord vi xi
