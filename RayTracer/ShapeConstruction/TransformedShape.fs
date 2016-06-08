@@ -21,7 +21,7 @@ module TransformedShape =
                                             let (x1, y1, z1), (x2, y2, z2) = getCoord p1, getCoord p2
                                             //Bottom vertices:
                                             let b = p1 //left low (2D rectangle)
-                                            let by = mkPoint x1 y2 z1 //right low
+                                            let by = mkPoint x1 y2 z1 //right low //THESE COMMENTS DON'T MATCH
                                             let bzy = mkPoint x1 y2 z2 //left top
                                             let bz = mkPoint x1 y1 z2 //right top
                                             //Top vertices
@@ -114,11 +114,14 @@ module TransformedShape =
                 let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                 let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2
                 let (hx2,hy2,hz2) = (Point.getCoord b2.p2) //High point of s2
-                let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
-                               then b2.p1 else b1.p1 //Choose the highest low point
-                let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
-                                then b1.p2 else b2.p2 //Choose the lowest high point
-                Some{p1 = lowPoint; p2 = highPoint}
+//                let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
+//                               then b2.p1 else b1.p1 //Choose the highest low point //THIS IS NOT ALWAYS TRUE
+//                let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
+//                                then b1.p2 else b2.p2 //Choose the lowest high point
+//                Some{p1 = lowPoint; p2 = highPoint}
+                let lx, ly, lz = max lx1 lx2, max ly1 ly2, max lz1 lz2     
+                let hx, hy, hz = min hx1 hx2, min hy1 hy2, min hz1 hz2
+                Some {p1 = (mkPoint lx ly lz); p2 = (mkPoint hx hy hz)}
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
                       let hit1, hit2 = s1.hit ray, s2.hit ray
