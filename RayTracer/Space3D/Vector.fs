@@ -16,7 +16,7 @@ let multScalar (V(x, y, z)) s = V(x*s, y*s, z*s)
 let magnitude (V(x, y, z)) = sqrt(x**2.0 + y**2.0 + z**2.0)
 let dotProduct (V(x1, y1, z1)) (V(x2, y2, z2)) = (x1*x2)+(y1*y2)+(z1*z2)
 let crossProduct (V(x1, y1, z1)) (V(x2, y2, z2)) = 
-    V(x1*z2-z1*y2, z1*x2-x1*z2, x1*y2-y1*x2)
+    V(y1*z2-z1*y2, z1*x2-x1*z2, x1*y2-y1*x2)
 let normalise (V(x,y,z) as v) = let a = magnitude v 
                                 V(x/a, y/a, z/a)
 let round (V(x,y,z)) (d:int) =  
