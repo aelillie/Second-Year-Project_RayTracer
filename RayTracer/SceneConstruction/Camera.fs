@@ -40,7 +40,7 @@ let mkRays (C(p, q, up, z, (UR(w, h)), (Res(pw,ph)))) =
         let p2 = //move p' to pixel row
             Point.move p2 (((float yy + 0.5) * H) * d)
         let v = Point.direction p1 p2 //ray direction
-        Ray.mkRay p2 v
+        Ray.mkRay p1 v
        
     [for x in 0..pw do
          for y in 0..ph do           

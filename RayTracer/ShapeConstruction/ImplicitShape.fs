@@ -179,7 +179,8 @@ module ImplicitShape =
         interface Shape with
             member this.getBounding () = None
             member this.isInside p = failwith "Not implemented"
-            member this.isSolid () = true
+            member this.isSolid () = false
+            member this.midPoint() = None
             member this.hit (R(p,d) as ray) = 
                                 
                                 let px,py,pz = Point.getCoord p

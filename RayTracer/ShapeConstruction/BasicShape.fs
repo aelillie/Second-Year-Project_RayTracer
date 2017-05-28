@@ -46,10 +46,12 @@ module BasicShape =
          abstract member isInside : Point -> bool
          abstract member isSolid : unit -> bool
          abstract member getBounding : unit -> BoundingBox option
+         abstract member midPoint : unit -> Point option
     
 
     type Sphere(o:Point, r:float, tex:Texture) = 
         interface Shape with
+            member this.midPoint () = Some o
             member this.isInside p = let (x, y, z) = Point.getCoord p
                                      (x**2.0+y**2.0+z**2.0) < r**2.0
             member this.getBounding () = 
@@ -103,6 +105,7 @@ module BasicShape =
 
     type Plane(tex:Texture) = 
         interface Shape with
+            member this.midPoint () = None
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = None
             member this.isSolid () = false
@@ -119,6 +122,7 @@ module BasicShape =
 
     type Disc(c:Point, r:float, tex:Texture) =
         interface Shape with
+            member this.midPoint () = Some c
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = Some {p1 = (mkPoint (Point.getX c - r - epsilon) (Point.getY c - r - epsilon ) (Point.getZ c - epsilon))
                                               ; p2 = (mkPoint (Point.getX c + r + epsilon) (Point.getY c + r + epsilon ) (Point.getZ c + epsilon))}
@@ -144,12 +148,21 @@ module BasicShape =
         let subPoint p1 p2 = let (x1, y1, z1) = getCoord p1
                              let (x2, y2, z2) = getCoord p2
                              (x1-x2,y1-y2,z1-z2)
-        member this.getMidPoint () = mkPoint((Point.getX a + Point.getX b + Point.getX c)/3.0) ((Point.getY a + Point.getY b + Point.getY c)/3.0) ((Point.getZ a + Point.getZ b + Point.getZ c)/3.0)
         member this.getX = (Point.getX a,Point.getX b,Point.getX c)
         member this.getY = (Point.getY a,Point.getY b,Point.getY c)
         member this.getZ = (Point.getZ a,Point.getZ b,Point.getZ c)
+        member this.getMidPoint = 
+                let (ax, bx, cx) = this.getX
+                let (ay, by, cy) = this.getY
+                let (az, bz, cz) = this.getZ
+                mkPoint ((ax + bx + cx)/3.0) ((ay + by + cy)/3.0) ((az + bz + cz)/3.0)
         override t.ToString() = "a: " + a.ToString() + " b: " + b.ToString() + " c: "+ c.ToString()
         interface Shape with
+            member this.midPoint () = 
+                let (ax, bx, cx) = this.getX
+                let (ay, by, cy) = this.getY
+                let (az, bz, cz) = this.getZ
+                Some (mkPoint ((ax + bx + cx)/3.0) ((ay + by + cy)/3.0) ((az + bz + cz)/3.0))
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = 
                             let xlist = [(Point.getX a);(Point.getX b);(Point.getX c)]
@@ -216,6 +229,7 @@ module BasicShape =
 
     type Rectangle(c,w,h,tex) = 
         interface Shape with
+            member this.midPoint () = Some c
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = Some {p1 = (mkPoint (getX c - (w/2.0) - epsilon ) (getY c - (h/2.0) - epsilon) (getZ c - epsilon)) 
                                               ; p2 = (mkPoint (getX c + (w/2.0) + epsilon) (getY c + (h/2.0) + epsilon) (getZ c + epsilon))}
@@ -239,6 +253,7 @@ module BasicShape =
 
     type HollowCylinder (center,r,h,tex) = 
         interface Shape with
+            member this.midPoint () = Some center
             member this.isInside p = failwith "Not a solid shape"
             member this.getBounding () = let pLow = mkPoint (getX center - r) (getY center - (h)) (getZ center - r )
                                          let pLow = pLow - epsilon

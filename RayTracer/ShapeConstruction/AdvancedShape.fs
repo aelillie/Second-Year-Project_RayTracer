@@ -72,6 +72,10 @@ module AdvancedShape =
                                      lx < x && x < hx && ly < y && y < hy && lz < z && z < hz 
             member this.getBounding () = bBoxFromList rects
             member this.isSolid () = true
+            member this.midPoint () = let (x1, y1, z1) = getCoord low
+                                      let (x2, y2, z2) = getCoord high
+                                      let avg a b = (a+b)/2.0
+                                      Some (mkPoint (avg x1 x2) (avg y1 y2) (avg z1 z2))
             member this.hit (R(p,d) as ray) = this.hit ray 
 
 
@@ -99,6 +103,7 @@ module AdvancedShape =
             member this.getBounding () = let cylinder = cyl.[0]
                                          cylinder.getBounding()
             member this.isSolid () = true
+            member this.midPoint () = Some c
             member this.hit (R(p,d) as ray) = 
                             let hits = List.map(fun (x:Shape) -> x.hit ray) cyl
                             let min = hits |> List.choose id
@@ -194,7 +199,8 @@ module AdvancedShape =
         interface Shape with 
             member this.isInside p = failwith "Not implemented"
             member this.getBounding () = TmKdtree.getBox triangles
-            member this.isSolid () = true
+            member this.isSolid () = false
+            member this.midPoint () = None
             member this.hit (R(p,d) as ray) = match TmKdtree.traverse triangles ray bBawx with
                                               |Some x -> x
                                               |None -> None

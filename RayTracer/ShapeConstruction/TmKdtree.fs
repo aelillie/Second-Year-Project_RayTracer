@@ -130,7 +130,7 @@ let rec mkTmKdtree (shapes : BasicShape.Triangle list) (box:BasicShape.BoundingB
      //Finding biggest dimension in the shapes list
     let axis = snd (box.getLongestAxis)
     let axisMidPoint = 
-        let midPoint = List.fold (fun acc (ele:BasicShape.Triangle) -> (acc + ele.getMidPoint())) (Point.mkPoint 0.0 0.0 0.0) shapes
+        let midPoint = List.fold (fun acc (ele:BasicShape.Triangle) -> (acc + ele.getMidPoint)) (Point.mkPoint 0.0 0.0 0.0) shapes
         let avgMid = midPoint / float(shapes.Length)
         avgMid 
     

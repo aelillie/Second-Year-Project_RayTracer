@@ -13,7 +13,10 @@ module TransformedShape =
 
     type TransformedShape(s:Shape, tr) = 
         interface Shape with
-            member this.isInside p = s.isInside (transPoint (getInv tr) p)
+            member this.midPoint () = match s.midPoint () with
+                                      | Some p -> Some (transPoint (getT tr) p)
+                                      | _ -> None
+            member this.isInside p = s.isInside (transPoint (getT tr) p)
             member this.getBounding () = match s.getBounding () with
                                          | None -> None //E.g. a plane
                                          | Some b ->
@@ -66,27 +69,42 @@ module TransformedShape =
                              let hx, hy, hz = max hx1 hx2, max hy1 hy2, max hz1 hz2
                              {p1 = (mkPoint lx ly lz); p2 = (mkPoint hx hy hz)}
 
+    let combinedMidPoint (s1:Shape) (s2:Shape) =
+        if s1.midPoint().IsSome && s2.midPoint().IsSome 
+        then let (x1, y1, z1) = s1.midPoint().Value |> getCoord
+             let (x2, y2, z2) = s2.midPoint().Value |> getCoord
+             let avg a b = (a+b)/2.0
+             Some (mkPoint (avg x1 x2) (avg y1 y2) (avg z1 z2))
+        else None
+
+    exception NotSolidException
+
     type GroupShape(s1:Shape,s2:Shape) = 
         interface Shape with
+            member this.midPoint () = combinedMidPoint s1 s2
             member this.isInside p = s1.isInside p || s2.isInside p
             member this.getBounding () = Some(makeBounding s1 s2)
-            member this.isSolid () = s1.isSolid() && s2.isSolid()
-            member this.hit (R(p,d) as ray) =  let hit1, hit2 = s1.hit ray, s2.hit ray
-                                               match (hit1, hit2) with
-                                               | (None, None) -> None
-                                               | (hit1, None) -> hit1
-                                               | (None, hit2) -> hit2
-                                               | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
-                                                                                           then hit2
-                                                                                           else hit1
+            member this.isSolid () = true
+            member this.hit (R(p,d) as ray) =  
+                if not (s1.isSolid()) && not (s2.isSolid()) then raise NotSolidException
+                let hit1, hit2 = s1.hit ray, s2.hit ray
+                match (hit1, hit2) with
+                | (None, None) -> None
+                | (hit1, None) -> hit1
+                | (None, hit2) -> hit2
+                | (Some(dist1, _, _), Some(dist2, _, _)) -> if dist1 > dist2
+                                                            then hit2
+                                                            else hit1
 
     type UnionShape(s1:Shape, s2:Shape) = 
         let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
+            member this.midPoint () = combinedMidPoint s1 s2
             member this.isInside p = s1.isInside p || s2.isInside p
             member this.getBounding () = Some (makeBounding s1 s2)
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
+                       if not (s1.isSolid()) && not (s2.isSolid()) then raise NotSolidException
                        let hit1, hit2 = s1.hit ray, s2.hit ray
                        match (hit1, hit2) with
                        | (None, None) -> None
@@ -107,6 +125,7 @@ module TransformedShape =
     type IntersectionShape(s1:Shape, s2:Shape) = 
         let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
+            member this.midPoint () = combinedMidPoint s1 s2
             member this.isInside p = s1.isInside p && s2.isInside p
             member this.getBounding () = 
                 let b1, b2 = (s1.getBounding ()).Value, (s2.getBounding ()).Value
@@ -114,16 +133,12 @@ module TransformedShape =
                 let (lx2,ly2,lz2) = (Point.getCoord b2.p1) //Low point of s2
                 let (hx1,hy1,hz1) = (Point.getCoord b1.p2) //High point of s2
                 let (hx2,hy2,hz2) = (Point.getCoord b2.p2) //High point of s2
-//                let lowPoint = if lx1 < lx2 && ly1 < ly2 && lz1 < lz2
-//                               then b2.p1 else b1.p1 //Choose the highest low point //THIS IS NOT ALWAYS TRUE
-//                let highPoint = if hx1 < hx2 && hy1 < hy2 && hz1 < hz2
-//                                then b1.p2 else b2.p2 //Choose the lowest high point
-//                Some{p1 = lowPoint; p2 = highPoint}
                 let lx, ly, lz = max lx1 lx2, max ly1 ly2, max lz1 lz2     
                 let hx, hy, hz = min hx1 hx2, min hy1 hy2, min hz1 hz2
                 Some {p1 = (mkPoint lx ly lz); p2 = (mkPoint hx hy hz)}
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
+                      if not (s1.isSolid()) && not (s2.isSolid()) then raise NotSolidException
                       let hit1, hit2 = s1.hit ray, s2.hit ray
                       match (hit1, hit2) with
                       | Some(dist1, _, _), 
@@ -146,10 +161,12 @@ module TransformedShape =
     type SubtractionShape(s1:Shape, s2:Shape) =
         let hit (R(p,d) as ray) (s:Shape) = s.hit ray
         interface Shape with
+            member this.midPoint () = s1.midPoint ()
             member this.isInside p = s1.isInside p && (not (s2.isInside p))
             member this.getBounding () = s1.getBounding ()
             member this.isSolid () = true
             member this.hit (R(p,d) as ray) = 
+                      if not (s1.isSolid()) && not (s2.isSolid()) then raise NotSolidException
                       let hit1, hit2 = s1.hit ray, s2.hit ray
                       match (hit1, hit2) with
                       | (hit1, None) -> hit1 //Only hit s1

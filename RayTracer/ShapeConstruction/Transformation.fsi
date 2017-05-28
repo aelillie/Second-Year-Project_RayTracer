@@ -17,14 +17,10 @@ val transpose : float[,] -> float[,]
 ///Returns a new point, with same dimensions, but
 ///with updated values
 val transPoint : float[,] -> Point -> Point
-///Does the same as transPoint, but runs in parallel
-val transPointParallel : float[,] -> Point -> Point
 ///Multiply a transformation matrix with some vector.
 ///Returns a new vector, with same dimensions, but
 ///with updated values
 val transVector : float[,] -> Vector -> Vector
-///Does the same as transVector, but runs in parallel
-val transVectorParallel : float[,] -> Vector -> Vector
 
 ///Move a shape in some direction/dimension
 val translate : x : float -> y : float -> z : float -> Transformation

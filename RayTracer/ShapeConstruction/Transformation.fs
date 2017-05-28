@@ -205,34 +205,18 @@ let matrixMult (a:float[,]) (b:float[,]) =
     result
 
 let transPoint (m : float[,]) (p : Point) =
-    let px = [|Point.getX p; Point.getY p; Point.getZ p; 1.0|]
-    let out = [|0.0; 0.0; 0.0; 0.0;|]
-    Array2D.iteri (fun row col elem -> out.[row] <- out.[row] + px.[col] * elem) m
-    Point.mkPoint out.[0] out.[1] out.[2]
+    let (px, py, pz) = Point.getCoord p
+    let x = m.[0, 0]*px+m.[0, 1]*py+m.[0, 2]*pz+m.[0, 3]
+    let y = m.[1, 0]*px+m.[1, 1]*py+m.[1, 2]*pz+m.[1, 3]
+    let z = m.[2, 0]*px+m.[2, 1]*py+m.[2, 2]*pz+m.[2, 3]
+    mkPoint x y z
 
-let transPointParallel (m : float[,]) (p : Point) =
-    let px = array2D [[Point.getX p]
-                      [Point.getY p]
-                      [Point.getZ p]
-                      [1.0]]
-    let out = matrixMult m px
-    Point.mkPoint out.[0,0] out.[1,0] out.[2,0]
-
-//Same as transPoint, except the vector has a 0.0 in its
-//4th dimension
 let transVector (m : float[,]) (v : Vector) =
-    let vx = [|Vector.getX v; Vector.getY v; Vector.getZ v; 0.0|]
-    let out = [|0.0; 0.0; 0.0; 0.0;|]
-    Array2D.iteri (fun row col elem -> out.[row] <- out.[row] + vx.[col] * elem) m
-    Vector.mkVector out.[0] out.[1] out.[2]
-
-let transVectorParallel (m : float[,]) (v : Vector) =
-    let vx = array2D [[Vector.getX v]
-                      [Vector.getY v]
-                      [Vector.getZ v]
-                      [0.0]]
-    let out = matrixMult m vx
-    Vector.mkVector out.[0,0] out.[1,0] out.[2,0]
+    let (vx, vy, vz) = Vector.getCoord v
+    let x = m.[0, 0]*vx+m.[0, 1]*vy+m.[0, 2]*vz
+    let y = m.[1, 0]*vx+m.[1, 1]*vy+m.[1, 2]*vz
+    let z = m.[2, 0]*vx+m.[2, 1]*vy+m.[2, 2]*vz
+    mkVector x y z
 
 let mergeTransformations (tL : Transformation list) =
     let idM = Array2D.init<float> 4 4 (fun row col -> if row = col then 1.0 else 0.0)

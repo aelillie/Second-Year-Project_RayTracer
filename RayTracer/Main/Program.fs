@@ -27,19 +27,19 @@ let main argv =
         s.Stop() ; printf "Ply parsed in %f seconds\n" s.Elapsed.TotalSeconds
         let tex = (mkTextureFromFile (fun x y -> (x,y)) "../../../textures/bunny.png")
         let mat c r = mkMatTexture (mkMaterial (fromColor c) r)
-        let torus = transform (mkShape imp (mat Color.Yellow 0.0)) (mergeTransformations [rotateX (pi/2.0);scale 0.5 0.5 0.5; translate -1.6 5.5 0.0])
+//        let torus = transform (mkShape imp (mat Color.Yellow 0.0)) (mergeTransformations [rotateX (pi/2.0);scale 0.5 0.5 0.5; translate -1.6 5.5 0.0])
         let bunny = transform (mkShape ply tex) (mergeTransformations [scale 5.0 5.0 5.0;rotateY (Math.PI/4.0);rotateX (Math.PI/14.0);translate 0.0 0.5 0.0])
         let sphere = mkSphere (mkPoint 0.0 1.0 0.0) 1.0 (mat Color.Red 0.0)
         let sphere' = transform sphere (mergeTransformations [translate 1.0 3.0 -2.0])
-        let p = transform (mkPlane (mat Color.Blue 0.2)) (mergeTransformations [rotateX (Math.PI/2.0);translate 0.0 -2.5 2.0])
+//        let p = transform (mkPlane (mat Color.Blue 0.2)) (mergeTransformations [rotateX (Math.PI/2.0);translate 0.0 -2.5 2.0])
 
-        let sc = mkSolidCylinder (mkPoint 0.0 1.0 0.0) 1.0 3.0 (mat Color.Green 0.0) (mat Color.Yellow 0.0) (mat Color.Yellow 0.0)
-        let sc' = transform sc (mergeTransformations [translate -0.5 0.0 0.0])
-        let s = intersection sphere' sc
+//        let sc = mkSolidCylinder (mkPoint 0.0 1.0 0.0) 1.0 3.0 (mat Color.Green 0.0) (mat Color.Yellow 0.0) (mat Color.Yellow 0.0)
+//        let sc' = transform sc (mergeTransformations [translate -0.5 0.0 0.0])
+//        let s = intersection sphere' sc
 
         (*******Scene******)
 
-        let scene = mkScene [bunny;torus;p] [light] ambientLight camera 3
+        let scene = mkScene [sphere'] [light] ambientLight camera 3
         if toScreen then
           Util.render scene None
         else
